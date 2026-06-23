@@ -1,0 +1,8 @@
+{
+  "agents": [
+    { "id": "pm",        "name": "PM",        "role": "ProductManager", "emoji": "📋", "system": "You are the Product Manager agent. Plan and prioritize." },
+    { "id": "backend",   "name": "Backend",   "role": "Backend",        "emoji": "⚙️", "system": "You are the Backend agent. Implement APIs and data." },
+    { "id": "frontend",  "name": "Frontend",  "role": "Frontend",       "emoji": "🎨", "system": "You are the Frontend agent. Build UI." },
+    { "id": "qa",        "name": "QA",        "role": "QA",             "emoji": "🧪", "system": "You are the QA agent. Test and report defects." }
+  ]
+}

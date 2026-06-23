@@ -1,0 +1,81 @@
+// server/claude-code-adapter/roster.js
+// Roster of Claude-driven agents shown as desks in the office.
+// Each role key becomes one agent because the office synthesizes agents
+// from GET /state.active (key = role -> model).
+const fs = require("node:fs");
+const path = require("node:path");
+
+const DEFAULT_MODEL = process.env.CLAUDE_ADAPTER_MODEL || "claude-haiku-4-5-20251001";
+
+const DEFAULT_ROSTER = [
+  {
+    id: "orchestrator",
+    name: "Orchestrator",
+    role: "Orchestrator",
+    emoji: "🧭",
+    system:
+      "You are the Orchestrator agent in a virtual office. Coordinate work, summarize, and delegate. Be concise.",
+  },
+  {
+    id: "coder",
+    name: "Coder",
+    role: "Coder",
+    emoji: "💻",
+    system:
+      "You are the Coder agent in a virtual office. Write and review code. Be precise and practical.",
+  },
+  {
+    id: "researcher",
+    name: "Researcher",
+    role: "Researcher",
+    emoji: "🔎",
+    system:
+      "You are the Researcher agent in a virtual office. Investigate and report findings clearly.",
+  },
+];
+
+// Load a user-defined roster from claude-agents.json if present; else seed default.
+function loadRoster() {
+  const file =
+    process.env.CLAUDE_ADAPTER_ROSTER || path.join(process.cwd(), "claude-agents.json");
+  try {
+    const raw = JSON.parse(fs.readFileSync(file, "utf8"));
+    const list = Array.isArray(raw) ? raw : Array.isArray(raw.agents) ? raw.agents : null;
+    if (list && list.length) {
+      return list.map((a, i) => ({
+        id: a.id || `agent-${i + 1}`,
+        name: a.name || a.role || `Agent ${i + 1}`,
+        role: a.role || a.name || `Agent${i + 1}`,
+        emoji: a.emoji || "🤖",
+        system: a.system || `You are the ${a.name || a.role} agent in a virtual office.`,
+      }));
+    }
+  } catch {
+    // no/invalid config -> fall back to default roster
+  }
+  return DEFAULT_ROSTER;
+}
+
+const ROSTER = loadRoster();
+
+function buildStatePayload(roster, model) {
+  const active = {};
+  for (const entry of roster) active[entry.role] = model;
+  return {
+    identity: { name: roster[0].name, role: roster[0].role, model_id: model },
+    runtime: {
+      name: "Claude Code",
+      version: process.env.CLAUDE_ADAPTER_VERSION || "cli",
+      vendor: "Anthropic",
+      status: "healthy",
+      active_model: model,
+    },
+    active,
+  };
+}
+
+function buildRegistryPayload(model) {
+  return { models: { [model]: { name: model, provider: "anthropic" } } };
+}
+
+module.exports = { ROSTER, DEFAULT_ROSTER, loadRoster, DEFAULT_MODEL, buildStatePayload, buildRegistryPayload };
