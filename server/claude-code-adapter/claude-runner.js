@@ -31,6 +31,7 @@ function runClaudeCli({ prompt, model, system, claudeBin }) {
         }
       }
     );
+    child.stdin.on("error", () => {});
     child.stdin.write(prompt);
     child.stdin.end();
   });

@@ -11,6 +11,7 @@ const server = http.createServer((req, res) => {
   const { pathname } = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   const chunks = [];
   req.on("data", (c) => chunks.push(c));
+  req.on("error", () => res.destroy());
   req.on("end", async () => {
     let body;
     if (chunks.length) {
