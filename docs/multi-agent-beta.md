@@ -1,179 +1,183 @@
 # Multi-Agent Beta
 
-This document explains the current multi-agent beta in VN AI Agent Office: what it does, how the two connection modes work, and how to connect a second office.
+Tài liệu này giải thích multi-agent beta hiện tại trong VN AI Agent Office: nó làm gì, hai chế độ kết nối hoạt động như thế nào và cách kết nối văn phòng thứ hai.
 
-## What This Beta Does
+## Beta này làm gì
 
-VN AI Agent Office can render a second office inside the same 3D scene so you can visualize agents from another machine.
+VN AI Agent Office có thể render văn phòng thứ hai bên trong cùng cảnh 3D để bạn có thể hiển thị agent từ máy khác.
 
-Today the beta supports:
+Hiện tại beta hỗ trợ:
 
-- showing a second office in the same world;
-- displaying remote agents as read-only presence;
-- optionally sending a plain-text message to a remote agent;
-- keeping the remote side isolated from your local files and office controls.
+- hiển thị văn phòng thứ hai trong cùng thế giới;
+- hiển thị remote agent dưới dạng sự hiện diện read-only;
+- tùy chọn gửi tin nhắn văn bản thuần túy tới remote agent;
+- giữ phía remote cô lập khỏi file cục bộ và điều khiển văn phòng của bạn.
 
-This is a beta feature. It is designed for visibility and lightweight cross-office messaging, not full shared-state collaboration.
+Đây là tính năng beta. Nó được thiết kế cho khả năng hiển thị và nhắn tin cross-office nhẹ, không phải cộng tác shared-state đầy đủ.
 
-## Mental Model
+## Mô hình tư duy
 
-There are always two roles:
+Luôn có hai vai trò:
 
-- **Local office**: the VN AI Agent Office instance you are currently using;
-- **Remote office**: another VN AI Agent Office instance or another OpenClaw gateway you want to visualize.
+- **Văn phòng cục bộ**: instance VN AI Agent Office bạn đang sử dụng;
+- **Văn phòng từ xa**: instance VN AI Agent Office khác hoặc OpenClaw gateway khác bạn muốn hiển thị.
 
-The remote office can be connected in one of two ways:
+Văn phòng từ xa có thể được kết nối theo một trong hai cách:
 
 1. **Remote VN AI Agent Office presence endpoint**.
 2. **Remote OpenClaw gateway**.
 
-## Connection Modes
+## Chế độ kết nối
 
 ### 1. Remote VN AI Agent Office Presence Endpoint
 
-Use this when the other machine is also running VN AI Agent Office.
+Dùng khi máy kia cũng đang chạy VN AI Agent Office.
 
-How it works:
+Cách hoạt động:
 
-- your local VN AI Agent Office server polls the remote VN AI Agent Office `presence` endpoint;
-- it also tries to load the remote office `layout` snapshot;
-- the local 3D scene renders the remote office as a read-only clone inside the same world.
+- Studio VN AI Agent Office cục bộ của bạn poll endpoint `presence` của VN AI Agent Office từ xa;
+- nó cũng cố tải snapshot `layout` của văn phòng từ xa;
+- cảnh 3D cục bộ render văn phòng từ xa như một bản sao read-only bên trong cùng thế giới.
 
-Typical URL:
+URL điển hình:
 
 ```text
 https://other-office.example.com/api/office/presence
 ```
 
-This mode is best when you want the remote side to feel like another full VN AI Agent Office office.
+Chế độ này phù hợp nhất khi bạn muốn phía remote cảm giác như một văn phòng VN AI Agent Office đầy đủ khác.
 
 ### 2. Remote OpenClaw Gateway
 
-Use this when the other machine only runs OpenClaw and does not run VN AI Agent Office.
+Dùng khi máy kia chỉ chạy OpenClaw và không chạy VN AI Agent Office.
 
-How it works:
+Cách hoạt động:
 
-- the browser connects directly to the remote gateway;
-- VN AI Agent Office derives a read-only presence snapshot from gateway data such as `agents.list`, `status`, and `sessions.preview`;
-- because there is no remote VN AI Agent Office layout endpoint, the second office uses a fallback office visualization.
+- trình duyệt kết nối trực tiếp tới remote gateway;
+- VN AI Agent Office dẫn xuất snapshot sự hiện diện read-only từ dữ liệu gateway như `agents.list`, `status` và `sessions.preview`;
+- vì không có remote VN AI Agent Office layout endpoint, văn phòng thứ hai sử dụng hiển thị văn phòng fallback.
 
-Typical URL:
+URL điển hình:
 
 ```text
 ws://remote-host:18789
 ```
 
-or:
+hoặc:
 
 ```text
 wss://remote-host.example.com
 ```
 
-If you paste an `http://` or `https://` URL into gateway mode, VN AI Agent Office normalizes it to `ws://` or `wss://` before connecting.
+Nếu bạn dán URL `http://` hoặc `https://` vào chế độ gateway, VN AI Agent Office chuẩn hóa nó thành `ws://` hoặc `wss://` trước khi kết nối.
 
-This mode is best when you want remote agent visibility without requiring a second VN AI Agent Office deployment.
+Chế độ này phù hợp nhất khi bạn muốn khả năng hiển thị remote agent mà không cần triển khai VN AI Agent Office thứ hai.
 
-## What You Can See
+## Những gì bạn có thể thấy
 
-When the beta is enabled, you can:
+Khi beta được bật, bạn có thể:
 
-- see a second office in the same environment;
-- see remote agents appear in that office;
-- see remote agents move and change basic activity state;
-- click a remote agent and open a text-only messaging panel.
+- thấy văn phòng thứ hai trong cùng môi trường;
+- thấy remote agent xuất hiện trong văn phòng đó;
+- thấy remote agent di chuyển và thay đổi trạng thái hoạt động cơ bản;
+- nhấp vào remote agent và mở panel nhắn tin chỉ văn bản.
 
-## What You Cannot See
+## Những gì bạn không thể thấy
 
-The remote office is intentionally limited.
+Văn phòng từ xa bị giới hạn có chủ đích.
 
-You cannot:
+Bạn không thể:
 
-- inspect the remote machine filesystem;
-- browse the remote agent chat history in full;
-- control the remote office furniture or builder state;
-- take over the remote instance as if it were local.
+- kiểm tra remote machine filesystem;
+- duyệt lịch sử chat agent từ xa đầy đủ;
+- điều khiển đồ nội thất văn phòng từ xa hoặc trạng thái builder;
+- tiếp quản instance từ xa như thể nó là cục bộ.
 
-The goal is cross-office visualization, not remote workstation access.
+Mục tiêu là hiển thị cross-office, không phải truy cập workstation từ xa.
 
-## Remote Messaging
+## Nhắn tin từ xa
 
-Remote messaging is currently a lightweight relay with two send modes.
+Nhắn tin từ xa hiện là relay nhẹ với hai chế độ gửi.
 
-What it does:
+Nó làm gì:
 
-- lets you send a plain-text note to a remote agent;
-- lets you choose `direct` or `interval` delivery in the remote chat panel;
-- is available from the remote agent chat panel;
-- is designed to avoid exposing remote files or tool output in the VN AI Agent Office UI.
+- cho phép bạn gửi ghi chú văn bản thuần túy tới remote agent;
+- cho phép bạn chọn delivery `direct` hoặc `interval` trong remote chat panel;
+- có sẵn từ remote agent chat panel;
+- được thiết kế để tránh expose file từ xa hoặc tool output trong VN AI Agent Office UI.
 
-`direct` is for one-off pings.
+`direct` dành cho các ping một lần.
 
-`interval` is for an ongoing coordination thread where you expect short periodic updates or checkpoints.
+`interval` dành cho thread điều phối liên tục nơi bạn mong đợi các cập nhật định kỳ ngắn hoặc checkpoint.
 
-Current limitations:
+Giới hạn hiện tại:
 
-- remote replies are not mirrored back into the panel yet;
-- the panel currently shows your sent message plus delivery/system feedback;
-- this is not a shared transcript viewer.
+- remote reply chưa được mirror trở lại vào panel;
+- panel hiện hiển thị tin nhắn đã gửi của bạn cộng với delivery/system feedback;
+- đây không phải là shared transcript viewer.
 
-## Runtime Message And Handoff Layer
+## Lớp Runtime Message và Handoff
 
-Under the hood, VN AI Agent Office now uses a shared runtime contract for:
+Phía sau, VN AI Agent Office hiện dùng hợp đồng runtime chung cho:
 
 - `agents.message`
 - `agents.handoff`
 
-OpenClaw, Hermes, Demo, and direct custom/local/claw3d runtime profiles can all target the same message/handoff seam. Provider-native adapters such as Anthropic or Claude Code are still a follow-up slice.
+OpenClaw, Hermes, Demo và các direct runtime profile custom/local/claw3d đều có thể target cùng message/handoff seam. Các provider-native adapter như Anthropic hoặc Claude Code vẫn là một slice follow-up.
 
-## How To Connect
+## Lưu ý quan trọng: token header văn phòng-tới-văn phòng
 
-### Prerequisites
+Header token presence/layout giữa hai instance VN AI Agent Office đã được đổi tên từ `X-Claw3D-Office-Token` thành `X-VN-Office-Token`. Khi kết nối hai văn phòng VN AI Agent Office với nhau, cả hai phải chạy build đã đổi tên. Nếu một bên vẫn gửi header cũ `X-Claw3D-Office-Token`, kết nối presence sẽ bị từ chối.
 
-Before enabling the second office, make sure:
+## Cách kết nối
 
-- your local VN AI Agent Office is already working with your local OpenClaw gateway;
-- you know which remote mode you want to use;
-- the remote machine is reachable from your machine or browser;
-- any required token, origin allowlist, or private-network access is already configured.
+### Điều kiện tiên quyết
 
-### Setup Steps
+Trước khi bật văn phòng thứ hai, đảm bảo:
 
-1. Start your local VN AI Agent Office instance.
-2. Open the office UI.
-3. Open the office settings panel.
-4. Turn on `Show second office`.
-5. Choose the correct `Source type`.
-6. Fill the matching connection fields.
+- VN AI Agent Office cục bộ của bạn đã hoạt động với OpenClaw gateway cục bộ;
+- bạn biết chế độ từ xa nào bạn muốn dùng;
+- máy từ xa có thể truy cập từ máy hoặc trình duyệt của bạn;
+- bất kỳ token, origin allowlist hoặc quyền truy cập private-network cần thiết đã được cấu hình.
 
-### Setup For `Remote VN AI Agent Office presence endpoint`
+### Các bước cài đặt
 
-Use:
+1. Khởi động instance VN AI Agent Office cục bộ của bạn.
+2. Mở office UI.
+3. Mở office settings panel.
+4. Bật `Show second office`.
+5. Chọn `Source type` đúng.
+6. Điền các trường kết nối phù hợp.
+
+### Cài đặt cho `Remote VN AI Agent Office presence endpoint`
+
+Dùng:
 
 - `Source type`: `Remote VN AI Agent Office presence endpoint`.
-- `Presence URL`: the remote `/api/office/presence` URL.
-- `Optional token`: only if that remote VN AI Agent Office endpoint is protected.
+- `Presence URL`: URL `/api/office/presence` từ xa.
+- `Optional token`: chỉ khi endpoint VN AI Agent Office từ xa đó được bảo vệ.
 
-Example:
+Ví dụ:
 
 ```text
 https://other-office.example.com/api/office/presence
 ```
 
-Expected behavior:
+Hành vi mong đợi:
 
-- the second office appears inside the world;
-- remote agents show up when the remote office has active presence;
-- if the remote layout snapshot is unavailable, VN AI Agent Office falls back to a default/fallback office rendering for the remote side.
+- văn phòng thứ hai xuất hiện bên trong thế giới;
+- remote agent hiển thị khi văn phòng từ xa có sự hiện diện active;
+- nếu remote layout snapshot không khả dụng, VN AI Agent Office fallback về rendering văn phòng default/fallback cho phía từ xa.
 
-### Setup For `Remote OpenClaw gateway`
+### Cài đặt cho `Remote OpenClaw gateway`
 
-Use:
+Dùng:
 
 - `Source type`: `Remote OpenClaw gateway`.
-- `Gateway URL`: the remote gateway WebSocket URL.
-- `Shared gateway token`: optional when the gateway already allows your Control UI origin and connection model.
+- `Gateway URL`: remote gateway WebSocket URL.
+- `Shared gateway token`: tùy chọn khi gateway đã cho phép Control UI origin và connection model của bạn.
 
-Examples:
+Ví dụ:
 
 ```text
 ws://remote-host:18789
@@ -183,83 +187,83 @@ ws://remote-host:18789
 wss://remote-host.example.com
 ```
 
-Expected behavior:
+Hành vi mong đợi:
 
-- the second office appears inside the world;
-- remote agents are derived from gateway presence data;
-- the office shell is a fallback visualization, not a true remote layout clone from another VN AI Agent Office instance.
+- văn phòng thứ hai xuất hiện bên trong thế giới;
+- remote agent được dẫn xuất từ dữ liệu gateway presence;
+- office shell là hiển thị fallback, không phải bản sao remote layout thực từ instance VN AI Agent Office khác.
 
-## Recommended Network Patterns
+## Các pattern mạng được khuyến nghị
 
-### Same private network
+### Cùng private network
 
-Use a reachable private IP or local hostname for the remote VN AI Agent Office endpoint or OpenClaw gateway.
+Dùng private IP hoặc local hostname có thể truy cập cho remote VN AI Agent Office endpoint hoặc OpenClaw gateway.
 
 ### Tailscale
 
-Tailscale is a good fit for this beta because it lets both sides connect over a private network without exposing services publicly.
+Tailscale phù hợp tốt với beta này vì nó cho phép cả hai phía kết nối qua private network mà không expose service công khai.
 
-Common patterns:
+Các pattern phổ biến:
 
-- remote VN AI Agent Office endpoint over `https://<machine>.ts.net/api/office/presence`;
-- remote OpenClaw gateway over `wss://<machine>.ts.net` if you are proxying the gateway through HTTPS/WSS;
-- direct gateway over `ws://<machine>:18789` when both devices can reach the service privately.
+- remote VN AI Agent Office endpoint qua `https://<machine>.ts.net/api/office/presence`;
+- remote OpenClaw gateway qua `wss://<machine>.ts.net` nếu bạn đang proxy gateway qua HTTPS/WSS;
+- direct gateway qua `ws://<machine>:18789` khi cả hai thiết bị có thể truy cập service riêng tư.
 
-## Disable Behavior
+## Hành vi tắt
 
-If you turn `Show second office` off:
+Nếu bạn tắt `Show second office`:
 
-- the extra office should disappear from the 3D scene;
-- the path/outdoor connection should disappear;
-- remote office presence and layout hooks should stop driving the scene.
+- văn phòng thêm nên biến mất khỏi cảnh 3D;
+- path/outdoor connection nên biến mất;
+- presence và layout hook văn phòng từ xa nên ngừng điều khiển cảnh.
 
-This lets you return to a single-office view.
+Điều này cho phép bạn trở về chế độ single-office.
 
-## Troubleshooting
+## Khắc phục sự cố
 
-### No remote agents appear
+### Không có remote agent xuất hiện
 
-Check:
+Kiểm tra:
 
-- the remote URL is correct;
-- the remote machine is actually reachable;
-- the remote service is running;
-- the selected `Source type` matches the service you are pointing at.
+- URL từ xa là đúng;
+- máy từ xa thực sự có thể truy cập;
+- service từ xa đang chạy;
+- `Source type` được chọn khớp với service bạn đang trỏ vào.
 
-### Presence endpoint works but the remote layout does not
+### Presence endpoint hoạt động nhưng remote layout không
 
-That usually means the other machine has VN AI Agent Office presence available but not a layout snapshot yet. The beta should still render a fallback remote office.
+Điều đó thường có nghĩa là máy kia có VN AI Agent Office presence khả dụng nhưng chưa có layout snapshot. Beta vẫn nên render một remote office fallback.
 
-### Gateway mode connects but messaging fails
+### Gateway mode kết nối nhưng nhắn tin thất bại
 
-In gateway mode, the browser connects directly to the remote gateway. That means the remote gateway may still reject the connection based on origin policy or other gateway-side security rules.
+Trong chế độ gateway, trình duyệt kết nối trực tiếp tới remote gateway. Điều đó có nghĩa là remote gateway vẫn có thể từ chối kết nối dựa trên origin policy hoặc các quy tắc bảo mật phía gateway khác.
 
-If that happens, check:
+Nếu điều đó xảy ra, kiểm tra:
 
-- the remote gateway URL;
-- whether the remote gateway allows your Control UI origin;
-- whether the remote gateway expects a token or device-auth flow you have not configured.
+- remote gateway URL;
+- liệu remote gateway có cho phép Control UI origin của bạn không;
+- liệu remote gateway có mong đợi token hoặc device-auth flow bạn chưa cấu hình không.
 
-### You can reach an HTTPS page but gateway mode still fails
+### Bạn có thể truy cập trang HTTPS nhưng chế độ gateway vẫn thất bại
 
-Opening a web page in the browser does not automatically mean the OpenClaw gateway WebSocket is reachable.
+Mở trang web trong trình duyệt không tự động có nghĩa là OpenClaw gateway WebSocket có thể truy cập.
 
-Examples:
+Ví dụ:
 
-- `https://host` may be reachable while `ws://host:18789` is not;
-- a website reverse proxy may exist even though the raw gateway port is closed;
-- the remote side may need a dedicated WSS proxy path for the gateway.
+- `https://host` có thể truy cập trong khi `ws://host:18789` thì không;
+- reverse proxy website có thể tồn tại mặc dù cổng gateway thô bị đóng;
+- phía từ xa có thể cần một WSS proxy path chuyên dụng cho gateway.
 
-## Current Beta Limitations
+## Giới hạn Beta hiện tại
 
-- The second office is read-only.
-- Remote replies are not mirrored into the local remote-chat panel yet.
-- Gateway mode derives presence from gateway snapshots rather than a real remote VN AI Agent Office layout.
-- Browser-based gateway mode depends on the remote gateway allowing the connection from your Control UI origin.
-- This feature is still evolving and should be treated as beta, not final production-grade multi-tenant collaboration.
+- Văn phòng thứ hai là read-only.
+- Remote reply chưa được mirror vào local remote-chat panel.
+- Chế độ gateway dẫn xuất presence từ gateway snapshot thay vì remote VN AI Agent Office layout thực sự.
+- Chế độ gateway dựa trên trình duyệt phụ thuộc vào remote gateway cho phép kết nối từ Control UI origin của bạn.
+- Tính năng này vẫn đang phát triển và nên được xử lý như beta, không phải cộng tác multi-tenant production-grade cuối cùng.
 
-## Summary
+## Tóm tắt
 
-Use `Remote VN AI Agent Office presence endpoint` when the other side runs VN AI Agent Office and you want the most complete office visualization.
+Dùng `Remote VN AI Agent Office presence endpoint` khi phía kia chạy VN AI Agent Office và bạn muốn hiển thị văn phòng đầy đủ nhất.
 
-Use `Remote OpenClaw gateway` when the other side only runs OpenClaw and you mainly want remote agent presence plus lightweight text messaging.
+Dùng `Remote OpenClaw gateway` khi phía kia chỉ chạy OpenClaw và bạn chủ yếu muốn remote agent presence cộng với nhắn tin văn bản nhẹ.

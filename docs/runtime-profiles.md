@@ -1,8 +1,8 @@
 # Runtime Profiles
 
-VN AI Agent Office now treats runtime backends as named saved profiles instead of one global URL/token pair.
+VN AI Agent Office hiện xử lý các runtime backend như các named saved profile thay vì một cặp URL/token toàn cục duy nhất.
 
-## Current Profiles
+## Các profile hiện tại
 
 - `openclaw`
 - `hermes`
@@ -11,17 +11,17 @@ VN AI Agent Office now treats runtime backends as named saved profiles instead o
 - `claw3d`
 - `custom`
 
-Each profile keeps its own saved URL and token in Studio settings.
+Mỗi profile lưu URL và token riêng của nó trong Studio settings.
 
-## What Each Profile Means
+## Ý nghĩa của từng profile
 
 ### `openclaw`
 
-The normal OpenClaw gateway flow over Studio's WebSocket bridge.
+Luồng OpenClaw gateway bình thường qua Studio's WebSocket bridge.
 
-This is the provider-rich path. OpenClaw already knows how to sit in front of many upstream model providers, so VN AI Agent Office should treat it as a first-class gateway adapter rather than flattening it into `custom`.
+Đây là path giàu nhà cung cấp nhất. OpenClaw đã biết cách ngồi trước nhiều upstream model provider, vì vậy VN AI Agent Office nên xử lý nó như một gateway adapter first-class thay vì làm phẳng nó thành `custom`.
 
-Typical URL:
+URL điển hình:
 
 ```text
 ws://localhost:18789
@@ -29,11 +29,11 @@ ws://localhost:18789
 
 ### `hermes`
 
-The bundled Hermes adapter over the same gateway-shaped WebSocket flow.
+Hermes adapter tích hợp sẵn qua cùng gateway-shaped WebSocket flow.
 
-This is also a provider-aware runtime path. Hermes can own its own provider/account setup behind the gateway boundary.
+Đây cũng là một runtime path nhận thức nhà cung cấp. Hermes có thể sở hữu cài đặt provider/account của riêng nó sau ranh giới gateway.
 
-Typical URL:
+URL điển hình:
 
 ```text
 ws://localhost:18789
@@ -41,11 +41,11 @@ ws://localhost:18789
 
 ### `demo`
 
-The built-in demo gateway for a no-framework office.
+Demo gateway tích hợp sẵn cho văn phòng không cần framework.
 
-If that gateway is not available, the office can still fall back to a seeded local `main` agent so the scene is explorable instead of dead-ending on the connect overlay.
+Nếu gateway đó không khả dụng, văn phòng vẫn có thể fallback về agent `main` cục bộ đã được seed để cảnh có thể khám phá thay vì kết thúc trong connect overlay.
 
-Typical URL:
+URL điển hình:
 
 ```text
 ws://localhost:18789
@@ -53,9 +53,9 @@ ws://localhost:18789
 
 ### `local`
 
-A direct HTTP runtime boundary for local orchestrators or local model routers.
+Ranh giới runtime HTTP trực tiếp cho local orchestrator hoặc local model router.
 
-Typical URL:
+URL điển hình:
 
 ```text
 http://localhost:7770
@@ -63,9 +63,9 @@ http://localhost:7770
 
 ### `claw3d`
 
-A VN AI Agent Office-shaped HTTP runtime profile for stacks that want to keep VN AI Agent Office transcript and chat conventions while still using the direct runtime seam.
+Profile runtime HTTP theo kiểu VN AI Agent Office cho các stack muốn giữ các quy ước transcript và chat của VN AI Agent Office trong khi vẫn sử dụng direct runtime seam.
 
-Typical URL:
+URL điển hình:
 
 ```text
 http://localhost:3000/api/runtime/custom
@@ -73,73 +73,73 @@ http://localhost:3000/api/runtime/custom
 
 ### `custom`
 
-The generic HTTP runtime seam when you want to point VN AI Agent Office at any compatible orchestrator boundary.
+HTTP runtime seam chung khi bạn muốn trỏ VN AI Agent Office tới bất kỳ orchestrator boundary tương thích nào.
 
-Typical URL:
+URL điển hình:
 
 ```text
 http://localhost:7770
 ```
 
-## Current Runtime Contract
+## Hợp đồng runtime hiện tại
 
-The direct runtime seam currently probes for:
+Direct runtime seam hiện tại kiểm tra:
 
 - `GET /health`
 - `GET /state`
 - `GET /registry`
 - `POST /v1/chat/completions`
 
-That means `local`, `claw3d`, and `custom` are first-class saved profiles today.
+Điều đó có nghĩa là `local`, `claw3d` và `custom` là các saved profile first-class ngày nay.
 
-On top of the normal chat/session calls, runtime providers now expose a shared multi-agent message seam:
+Ngoài các cuộc gọi chat/session thông thường, runtime provider hiện expose một multi-agent message seam chung:
 
 - `agents.message`
 - `agents.handoff`
 
-These methods currently route through the existing gateway/runtime session model rather than inventing a second transcript transport.
+Các method này hiện định tuyến qua mô hình gateway/runtime session hiện có thay vì phát minh transport transcript thứ hai.
 
-## Multi-Agent Message Contract
+## Hợp đồng Multi-Agent Message
 
-`agents.message` supports:
+`agents.message` hỗ trợ:
 
 - `targetAgentId`
 - `message`
 - `mode: "direct" | "interval"`
-- optional `sourceAgentId`
-- optional `sourceLabel`
-- optional `cadenceHint`
+- `sourceAgentId` tùy chọn
+- `sourceLabel` tùy chọn
+- `cadenceHint` tùy chọn
 
-`agents.handoff` supports:
+`agents.handoff` hỗ trợ:
 
 - `targetAgentId`
 - `task`
-- optional `context`
-- optional `deliverables`
-- optional `acceptanceCriteria`
-- optional `sourceAgentId`
-- optional `sourceLabel`
+- `context` tùy chọn
+- `deliverables` tùy chọn
+- `acceptanceCriteria` tùy chọn
+- `sourceAgentId` tùy chọn
+- `sourceLabel` tùy chọn
 
-The intent is to keep one stable message/handoff contract while different runtime adapters decide how to deliver it.
+Mục đích là giữ một hợp đồng message/handoff ổn định trong khi các runtime adapter khác nhau quyết định cách deliver nó.
 
-## What Is Not Wired Yet
+## Những gì chưa được kết nối
 
-These are not first-class connection profiles yet in this branch:
+Đây chưa phải là connection profile first-class trong branch này:
 
 - Anthropic
 - Claude Code
 - OpenRouter
-- other provider-native transports
+- các transport gốc provider khác
 
-Those should land as real adapters, not as buttons that pretend the HTTP runtime seam already understands provider-specific auth and event semantics.
+Các provider đó nên được triển khai như các adapter thực sự, không phải như các nút giả vờ HTTP runtime seam đã hiểu auth gốc provider và event semantics.
 
-The current provider review path should borrow from existing Hermes/OpenClaw wizard flows where possible, but land as VN AI Agent Office-native adapters instead of hard-coupling VN AI Agent Office UI state to another project's connector code.
+Con đường review provider hiện tại nên mượn từ Hermes/OpenClaw wizard flow hiện có khi có thể, nhưng triển khai như VN AI Agent Office-native adapter thay vì hard-coupling trạng thái UI VN AI Agent Office với code connector của dự án khác.
 
-## Why This Matters For Multi-Agent Work
+## Tại sao điều này quan trọng cho công việc Multi-Agent
 
-The profile split is the first step toward:
+Việc chia tách profile là bước đầu tiên hướng tới:
 
-- separate per-runtime saved connection state
-- agent-to-agent chat and handoff across backends
-- shared-floor and coworking flows without flattening every runtime into one transport
-- future provider adapters that do not require rewriting Studio UI state
+- trạng thái kết nối đã lưu riêng biệt cho từng runtime
+- chat và handoff agent-to-agent qua các backend
+- các luồng shared-floor và coworking mà không làm phẳng mọi runtime thành một transport
+- các provider adapter tương lai không yêu cầu viết lại trạng thái Studio UI
