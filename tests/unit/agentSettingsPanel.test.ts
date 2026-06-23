@@ -211,14 +211,14 @@ describe("AgentSettingsPanel", () => {
     );
 
     expect(screen.queryByText("Capabilities")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Run commands off" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Run commands ask" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Run commands auto" })).toBeInTheDocument();
-    expect(screen.getByRole("switch", { name: "Web access" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Chạy lệnh tắt" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Chạy lệnh hỏi" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Chạy lệnh tự động" })).toBeInTheDocument();
+    expect(screen.getByRole("switch", { name: "Truy cập web" })).toHaveAttribute(
       "aria-checked",
       "false"
     );
-    expect(screen.getByRole("switch", { name: "File tools" })).toHaveAttribute(
+    expect(screen.getByRole("switch", { name: "Công cụ file" })).toHaveAttribute(
       "aria-checked",
       "false"
     );
@@ -242,7 +242,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    const webSwitch = screen.getByRole("switch", { name: "Web access" });
+    const webSwitch = screen.getByRole("switch", { name: "Truy cập web" });
     fireEvent.click(webSwitch);
     expect(webSwitch).toHaveAttribute("aria-checked", "true");
   });
@@ -272,9 +272,9 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Run commands auto" }));
-    fireEvent.click(screen.getByRole("switch", { name: "Web access" }));
-    fireEvent.click(screen.getByRole("switch", { name: "File tools" }));
+    fireEvent.click(screen.getByRole("button", { name: "Chạy lệnh tự động" }));
+    fireEvent.click(screen.getByRole("switch", { name: "Truy cập web" }));
+    fireEvent.click(screen.getByRole("switch", { name: "Công cụ file" }));
 
     await waitFor(
       () => {
@@ -318,9 +318,9 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Run commands auto" }));
-    fireEvent.click(screen.getByRole("switch", { name: "Web access" }));
-    fireEvent.click(screen.getByRole("switch", { name: "File tools" }));
+    fireEvent.click(screen.getByRole("button", { name: "Chạy lệnh tự động" }));
+    fireEvent.click(screen.getByRole("switch", { name: "Truy cập web" }));
+    fireEvent.click(screen.getByRole("switch", { name: "Công cụ file" }));
 
     rerender(
       createElement(AgentSettingsPanel, {
@@ -333,11 +333,11 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    expect(screen.getByRole("switch", { name: "Web access" })).toHaveAttribute(
+    expect(screen.getByRole("switch", { name: "Truy cập web" })).toHaveAttribute(
       "aria-checked",
       "true"
     );
-    expect(screen.getByRole("switch", { name: "File tools" })).toHaveAttribute(
+    expect(screen.getByRole("switch", { name: "Công cụ file" })).toHaveAttribute(
       "aria-checked",
       "true"
     );
@@ -411,7 +411,7 @@ describe("AgentSettingsPanel", () => {
     );
 
     expect(screen.getByTestId("agent-settings-skills")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Open System Setup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Mở thiết lập hệ thống" }));
     expect(onOpenSystemSetup).toHaveBeenCalledWith("browser");
   });
 
@@ -436,7 +436,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    expect(screen.getByText("This agent is using selected skills only.")).toBeInTheDocument();
+    expect(screen.getByText("Tác nhân này chỉ dùng các kỹ năng được chọn.")).toBeInTheDocument();
   });
 
   it("filters_skills_list_from_search_input", () => {
@@ -459,7 +459,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.change(screen.getByLabelText("Search skills"), {
+    fireEvent.change(screen.getByLabelText("Tìm kiếm kỹ năng"), {
       target: { value: "browse" },
     });
 
@@ -530,18 +530,18 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.change(screen.getByLabelText("Search skills"), {
+    fireEvent.change(screen.getByLabelText("Tìm kiếm kỹ năng"), {
       target: { value: "browse" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Configure" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cấu hình" }));
     expect(screen.getByRole("dialog", { name: "Setup browser" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Install playwright" }));
-    fireEvent.click(screen.getByRole("button", { name: "Enable globally" }));
+    fireEvent.click(screen.getByRole("button", { name: "Bật toàn cục" }));
     fireEvent.change(screen.getByLabelText("API key for browser"), {
       target: { value: "test-key" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Save BROWSER_API_KEY" }));
+    fireEvent.click(screen.getByRole("button", { name: "Lưu BROWSER_API_KEY" }));
 
     expect(onInstallSkill).toHaveBeenCalledWith("browser", "browser", "install-playwright");
     expect(onSetSkillGlobalEnabled).toHaveBeenCalledWith("browser", true);
@@ -580,7 +580,7 @@ describe("AgentSettingsPanel", () => {
 
     const dialog = screen.getByRole("dialog", { name: "Setup browser" });
     expect(onSystemInitialSkillHandled).not.toHaveBeenCalled();
-    fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "Đóng" }));
 
     await waitFor(() => {
       expect(onSystemInitialSkillHandled).toHaveBeenCalledTimes(1);
@@ -611,11 +611,11 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.change(screen.getByLabelText("Search skills"), {
+    fireEvent.change(screen.getByLabelText("Tìm kiếm kỹ năng"), {
       target: { value: "git" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Configure" }));
-    fireEvent.click(screen.getByRole("button", { name: "Remove for all agents" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cấu hình" }));
+    fireEvent.click(screen.getByRole("button", { name: "Xoá cho tất cả tác nhân" }));
 
     expect(onRemoveSkill).toHaveBeenCalledWith({
       skillKey: "github",
@@ -644,12 +644,12 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.change(screen.getByLabelText("Search skills"), {
+    fireEvent.change(screen.getByLabelText("Tìm kiếm kỹ năng"), {
       target: { value: "browse" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Configure" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cấu hình" }));
 
-    expect(screen.getByRole("button", { name: "Save BROWSER_API_KEY" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Lưu BROWSER_API_KEY" })).toBeDisabled();
   });
 
   it("shows_enabled_count_based_on_visible_skills_not_raw_allowlist_size", () => {
@@ -706,8 +706,8 @@ describe("AgentSettingsPanel", () => {
 
     expect(screen.getByRole("switch", { name: "Skill browser" })).toBeDisabled();
     expect(screen.getByText("2/2")).toBeInTheDocument();
-    expect(screen.getByText("Not supported")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Open System Setup" })).not.toBeInTheDocument();
+    expect(screen.getByText("Không khả dụng")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Mở thiết lập hệ thống" })).not.toBeInTheDocument();
   });
 
   it("shows_skills_loading_and_error_states", () => {
@@ -730,7 +730,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    expect(screen.getByText("Loading skills...")).toBeInTheDocument();
+    expect(screen.getByText("Đang tải kỹ năng...")).toBeInTheDocument();
 
     rerender(
       createElement(AgentSettingsPanel, {
@@ -800,7 +800,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Run timed automation Job job-1 now" }));
+    fireEvent.click(screen.getByRole("button", { name: "Chạy ngay tự động hoá Job job-1" }));
     expect(onRunCronJob).toHaveBeenCalledWith("job-1");
 
     rerender(
@@ -821,7 +821,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    expect(screen.getByRole("button", { name: "Run timed automation Job job-1 now" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Chạy ngay tự động hoá Job job-1" })).toBeDisabled();
   });
 
   it("invokes_delete_and_disables_trash_while_pending", () => {
@@ -845,7 +845,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Delete timed automation Job job-1" }));
+    fireEvent.click(screen.getByRole("button", { name: "Xoá tự động hoá Job job-1" }));
     expect(onDeleteCronJob).toHaveBeenCalledWith("job-1");
 
     rerender(
@@ -866,7 +866,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    expect(screen.getByRole("button", { name: "Delete timed automation Job job-1" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Xoá tự động hoá Job job-1" })).toBeDisabled();
   });
 
   it("shows_empty_cron_state_when_agent_has_no_jobs", () => {
@@ -888,7 +888,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    expect(screen.getByText("No timed automations for this agent.")).toBeInTheDocument();
+    expect(screen.getByText("Chưa có tự động hoá theo lịch cho tác nhân này.")).toBeInTheDocument();
     expect(screen.getByTestId("cron-empty-icon")).toBeInTheDocument();
   });
 
@@ -911,7 +911,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Tạo mới" })).toBeInTheDocument();
   });
 
   it("opens_cron_create_modal_from_empty_state_button", () => {
@@ -933,8 +933,8 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Create" }));
-    expect(screen.getByRole("dialog", { name: "Create automation" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Tạo mới" }));
+    expect(screen.getByRole("dialog", { name: "Tạo tự động hoá" })).toBeInTheDocument();
   });
 
   it("updates_template_defaults_when_switching_templates", () => {
@@ -956,15 +956,15 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Create" }));
-    fireEvent.click(screen.getByRole("button", { name: "Weekly Review" }));
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
-    expect(screen.getByLabelText("Automation name")).toHaveValue("Weekly review");
+    fireEvent.click(screen.getByRole("button", { name: "Tạo mới" }));
+    fireEvent.click(screen.getByRole("button", { name: "Đánh giá hàng tuần" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tiếp theo" }));
+    expect(screen.getByLabelText("Tên tự động hoá")).toHaveValue("Weekly review");
 
-    fireEvent.click(screen.getByRole("button", { name: "Back" }));
-    fireEvent.click(screen.getByRole("button", { name: "Morning Brief" }));
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
-    expect(screen.getByLabelText("Automation name")).toHaveValue("Morning brief");
+    fireEvent.click(screen.getByRole("button", { name: "Quay lại" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tóm tắt buổi sáng" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tiếp theo" }));
+    expect(screen.getByLabelText("Tên tự động hoá")).toHaveValue("Morning brief");
   });
 
   it("submits_modal_with_agent_scoped_draft", async () => {
@@ -988,24 +988,24 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Create" }));
-    fireEvent.click(screen.getByRole("button", { name: "Custom" }));
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
-    fireEvent.change(screen.getByLabelText("Automation name"), {
+    fireEvent.click(screen.getByRole("button", { name: "Tạo mới" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tuỳ chỉnh" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tiếp theo" }));
+    fireEvent.change(screen.getByLabelText("Tên tự động hoá"), {
       target: { value: "Nightly sync" },
     });
-    fireEvent.change(screen.getByLabelText("Task"), {
+    fireEvent.change(screen.getByLabelText("Nhiệm vụ"), {
       target: { value: "Sync project status and report blockers." },
     });
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Next" })).not.toBeDisabled();
+      expect(screen.getByRole("button", { name: "Tiếp theo" })).not.toBeDisabled();
     });
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tiếp theo" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tiếp theo" }));
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Create automation" })).not.toBeDisabled();
+      expect(screen.getByRole("button", { name: "Tạo tự động hoá" })).not.toBeDisabled();
     });
-    fireEvent.click(screen.getByRole("button", { name: "Create automation" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tạo tự động hoá" }));
 
     await waitFor(() => {
       expect(onCreateCronJob).toHaveBeenCalledWith({
@@ -1041,9 +1041,9 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Create" }));
-    expect(screen.queryByRole("button", { name: "Create automation" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Tạo mới" }));
+    expect(screen.queryByRole("button", { name: "Tạo tự động hoá" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Tiếp theo" })).toBeDisabled();
   });
 
   it("keeps_modal_open_and_shows_error_when_create_fails", async () => {
@@ -1069,29 +1069,29 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Create" }));
-    fireEvent.click(screen.getByRole("button", { name: "Custom" }));
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
-    fireEvent.change(screen.getByLabelText("Automation name"), {
+    fireEvent.click(screen.getByRole("button", { name: "Tạo mới" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tuỳ chỉnh" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tiếp theo" }));
+    fireEvent.change(screen.getByLabelText("Tên tự động hoá"), {
       target: { value: "Nightly sync" },
     });
-    fireEvent.change(screen.getByLabelText("Task"), {
+    fireEvent.change(screen.getByLabelText("Nhiệm vụ"), {
       target: { value: "Sync project status and report blockers." },
     });
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Next" })).not.toBeDisabled();
+      expect(screen.getByRole("button", { name: "Tiếp theo" })).not.toBeDisabled();
     });
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tiếp theo" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tiếp theo" }));
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Create automation" })).not.toBeDisabled();
+      expect(screen.getByRole("button", { name: "Tạo tự động hoá" })).not.toBeDisabled();
     });
-    fireEvent.click(screen.getByRole("button", { name: "Create automation" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tạo tự động hoá" }));
 
     await waitFor(() => {
       expect(screen.getByText("Gateway exploded")).toBeInTheDocument();
     });
-    expect(screen.getByRole("dialog", { name: "Create automation" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Tạo tự động hoá" })).toBeInTheDocument();
   });
 
   it("shows_heartbeat_coming_soon_in_automations_mode", () => {
@@ -1115,7 +1115,7 @@ describe("AgentSettingsPanel", () => {
     );
 
     expect(screen.getByTestId("agent-settings-heartbeat-coming-soon")).toBeInTheDocument();
-    expect(screen.getByText("Heartbeat automation controls are coming soon.")).toBeInTheDocument();
+    expect(screen.getByText("Điều khiển tự động hoá nhịp chạy sắp ra mắt.")).toBeInTheDocument();
   });
 
   it("hides_heartbeat_coming_soon_for_hermes", () => {
@@ -1162,7 +1162,7 @@ describe("AgentSettingsPanel", () => {
     );
 
     expect(screen.getByTestId("agent-settings-control-ui")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Open Full Control UI" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Mở giao diện điều khiển đầy đủ" })).toBeDisabled();
   });
 
   it("hides_control_ui_section_for_hermes", () => {
@@ -1186,7 +1186,7 @@ describe("AgentSettingsPanel", () => {
     );
 
     expect(screen.queryByTestId("agent-settings-control-ui")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Open Full Control UI" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Mở giao diện điều khiển đầy đủ" })).not.toBeInTheDocument();
   });
 
   it("keeps_delete_agent_action_for_hermes_in_advanced_mode", () => {
@@ -1209,7 +1209,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    expect(screen.getByRole("button", { name: "Delete agent" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Xoá tác nhân" })).toBeInTheDocument();
   });
 
   it("renders_enabled_control_ui_link_when_available", () => {
@@ -1232,7 +1232,7 @@ describe("AgentSettingsPanel", () => {
       })
     );
 
-    const link = screen.getByRole("link", { name: "Open Full Control UI" });
+    const link = screen.getByRole("link", { name: "Mở giao diện điều khiển đầy đủ" });
     expect(link).toHaveAttribute("href", "http://localhost:3000/control");
   });
 });

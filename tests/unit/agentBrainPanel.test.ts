@@ -119,13 +119,13 @@ describe("AgentBrainPanel", () => {
     expect(screen.getByRole("heading", { name: "AGENTS.md" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "USER.md" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "IDENTITY.md" })).toBeInTheDocument();
-    expect(screen.getAllByText("Workspace:").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Không gian làm việc:").length).toBeGreaterThan(0);
     expect(screen.getAllByText("/workspace/agent-1").length).toBeGreaterThan(0);
     expect(screen.getByLabelText("AGENTS.md")).toHaveValue("alpha agents");
     expect(screen.getByLabelText("SOUL.md")).toHaveValue(
       "# SOUL.md - Who You Are\n\n## Core Truths\n\nBe useful."
     );
-    expect(screen.getByLabelText("Name")).toHaveValue("Alpha");
+    expect(screen.getByLabelText("Tên")).toHaveValue("Alpha");
   });
 
   it("shows_actionable_message_when_session_key_missing", async () => {
@@ -165,7 +165,7 @@ describe("AgentBrainPanel", () => {
       target: { value: "alpha directives updated" },
     });
 
-    const saveButton = screen.getByRole("button", { name: "Save" });
+    const saveButton = screen.getByRole("button", { name: "Lưu" });
     expect(saveButton).not.toBeDisabled();
     fireEvent.click(saveButton);
 
@@ -190,15 +190,15 @@ describe("AgentBrainPanel", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Name")).toBeInTheDocument();
+      expect(screen.getByLabelText("Tên")).toBeInTheDocument();
     });
 
-    fireEvent.change(screen.getByLabelText("Name"), {
+    fireEvent.change(screen.getByLabelText("Tên"), {
       target: { value: "Alpha Prime" },
     });
-    expect(screen.getByLabelText("Name")).toHaveValue("Alpha Prime");
+    expect(screen.getByLabelText("Tên")).toHaveValue("Alpha Prime");
 
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.click(screen.getByRole("button", { name: "Huỷ" }));
     expect(onCancel).toHaveBeenCalledTimes(1);
     expect(calls.some((entry) => entry.method === "agents.files.set")).toBe(false);
   });
@@ -236,11 +236,11 @@ describe("AgentBrainPanel", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("This agent does not have a custom SOUL.md yet. Saving here will create the real workspace file.")).toBeInTheDocument();
+      expect(screen.getByText("Tác nhân này chưa có SOUL.md tùy chỉnh. Lưu ở đây sẽ tạo file thực trong không gian làm việc.")).toBeInTheDocument();
     });
 
     expect(screen.getByLabelText("SOUL.md")).toHaveValue("");
-    expect(screen.getByLabelText("SOUL.md")).toHaveAttribute("placeholder", "No SOUL.md yet.");
+    expect(screen.getByLabelText("SOUL.md")).toHaveAttribute("placeholder", "Chưa có SOUL.md.");
     expect(screen.getByText("/workspace/agent-2/SOUL.md")).toBeInTheDocument();
   });
 
@@ -257,10 +257,10 @@ describe("AgentBrainPanel", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Initialize missing files" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Khởi tạo file còn thiếu" })).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Initialize missing files" }));
+    fireEvent.click(screen.getByRole("button", { name: "Khởi tạo file còn thiếu" }));
 
     await waitFor(() => {
       expect(filesByAgent["agent-2"]["SOUL.md"]).toContain("# SOUL.md - Who You Are");
