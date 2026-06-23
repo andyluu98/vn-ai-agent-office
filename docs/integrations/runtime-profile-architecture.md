@@ -1,10 +1,10 @@
 # Runtime Profile Architecture
 
-> Forward-looking runtime model for Claw3D after the OpenClaw + Hermes adapter work landed on `main`.
+> Forward-looking runtime model for VN AI Agent Office after the OpenClaw + Hermes adapter work landed on `main`.
 
 ## Goal
 
-Claw3D should treat runtime connection targets as profiles, not as ad hoc
+VN AI Agent Office should treat runtime connection targets as profiles, not as ad hoc
 gateway URLs tied to one backend assumption.
 
 That means the app should model:
@@ -35,7 +35,7 @@ Optional paths:
 
 The important rule is:
 
-- the UI keeps speaking one Claw3D gateway contract
+- the UI keeps speaking one VN AI Agent Office gateway contract
 - the backend behind that contract may be native OpenClaw, Hermes through
   the adapter, or a custom runtime/provider
 
@@ -89,7 +89,7 @@ export type RuntimeProfile = {
 
 Runtime profile answers:
 
-- where does Claw3D connect?
+- where does VN AI Agent Office connect?
 - what provider is behind this connection?
 - which auth/token should be used?
 - which profile should be the default?
@@ -149,7 +149,7 @@ Examples:
 
 Initial default behavior should be:
 
-- if nothing else is configured, Claw3D prefers `OpenClaw`
+- if nothing else is configured, VN AI Agent Office prefers `OpenClaw`
 - Hermes remains optional and adapter-backed
 - custom runtimes remain optional and profile-driven
 
@@ -186,7 +186,7 @@ Custom runtimes should fit the same profile model:
 - one or more named profiles
 - floor binding selects which profile powers which floor
 
-This avoids making the "Custom Floor" logic one-off and lets Claw3D grow
+This avoids making the "Custom Floor" logic one-off and lets VN AI Agent Office grow
 to multiple custom environments without another architecture pass.
 
 ## One Gateway Contract, Different Backends
@@ -195,7 +195,7 @@ The UI should not branch everywhere on backend family.
 
 Instead:
 
-- the browser talks one Claw3D gateway contract
+- the browser talks one VN AI Agent Office gateway contract
 - Studio/settings select the runtime profile
 - profile/provider metadata informs capability checks and defaults
 
@@ -273,7 +273,7 @@ Define:
 
 First pass should check:
 
-- Claw3D settings/env
+- VN AI Agent Office settings/env
 - gateway reachability
 - OpenClaw version
 - Hermes adapter/API availability
@@ -309,7 +309,7 @@ against moving assumptions.
 
 ## Summary
 
-Claw3D should move to a runtime profile model where:
+VN AI Agent Office should move to a runtime profile model where:
 
 - providers describe the backend family
 - profiles describe named connection targets

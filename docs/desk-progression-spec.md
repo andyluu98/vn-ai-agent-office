@@ -1,6 +1,6 @@
 # Desk Progression Spec
 
-> Fifth concrete office-system feature for Claw3D, connecting visible office presence to role maturity, permissions, and capability growth.
+> Fifth concrete office-system feature for VN AI Agent Office, connecting visible office presence to role maturity, permissions, and capability growth.
 
 ## Goal
 
@@ -207,11 +207,11 @@ Examples:
 
 ## Relationship To Existing Systems
 
-Desk progression should integrate with real Claw3D systems rather than sit beside them.
+Desk progression should integrate with real VN AI Agent Office systems rather than sit beside them.
 
 ### Permissions
 
-Claw3D already has permission and approval surfaces.
+VN AI Agent Office already has permission and approval surfaces.
 
 Desk progression should act as a higher-level office policy layer that influences:
 

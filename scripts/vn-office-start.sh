@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# clawd3d-start — Start all Clawd3D services, auto-resolving port conflicts.
+# vn-office-start — Start all VN AI Agent Office services, auto-resolving port conflicts.
 #
 # Setup (once):
-#   echo 'alias clawd3d="/absolute/path/to/Claw3D/scripts/clawd3d-start.sh"' >> ~/.zshrc
+#   echo 'alias vn-office="/absolute/path/to/kanban-AI/scripts/vn-office-start.sh"' >> ~/.zshrc
 #   source ~/.zshrc
 #
-# Then just run:  clawd3d
+# Then just run:  vn-office
 
 set -euo pipefail
 

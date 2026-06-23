@@ -1,6 +1,6 @@
 # Runtime Profiles
 
-Claw3D now treats runtime backends as named saved profiles instead of one global URL/token pair.
+VN AI Agent Office now treats runtime backends as named saved profiles instead of one global URL/token pair.
 
 ## Current Profiles
 
@@ -19,7 +19,7 @@ Each profile keeps its own saved URL and token in Studio settings.
 
 The normal OpenClaw gateway flow over Studio's WebSocket bridge.
 
-This is the provider-rich path. OpenClaw already knows how to sit in front of many upstream model providers, so Claw3D should treat it as a first-class gateway adapter rather than flattening it into `custom`.
+This is the provider-rich path. OpenClaw already knows how to sit in front of many upstream model providers, so VN AI Agent Office should treat it as a first-class gateway adapter rather than flattening it into `custom`.
 
 Typical URL:
 
@@ -63,7 +63,7 @@ http://localhost:7770
 
 ### `claw3d`
 
-A Claw3D-shaped HTTP runtime profile for stacks that want to keep Claw3D transcript and chat conventions while still using the direct runtime seam.
+A VN AI Agent Office-shaped HTTP runtime profile for stacks that want to keep VN AI Agent Office transcript and chat conventions while still using the direct runtime seam.
 
 Typical URL:
 
@@ -73,7 +73,7 @@ http://localhost:3000/api/runtime/custom
 
 ### `custom`
 
-The generic HTTP runtime seam when you want to point Claw3D at any compatible orchestrator boundary.
+The generic HTTP runtime seam when you want to point VN AI Agent Office at any compatible orchestrator boundary.
 
 Typical URL:
 
@@ -133,7 +133,7 @@ These are not first-class connection profiles yet in this branch:
 
 Those should land as real adapters, not as buttons that pretend the HTTP runtime seam already understands provider-specific auth and event semantics.
 
-The current provider review path should borrow from existing Hermes/OpenClaw wizard flows where possible, but land as Claw3D-native adapters instead of hard-coupling Claw3D UI state to another project's connector code.
+The current provider review path should borrow from existing Hermes/OpenClaw wizard flows where possible, but land as VN AI Agent Office-native adapters instead of hard-coupling VN AI Agent Office UI state to another project's connector code.
 
 ## Why This Matters For Multi-Agent Work
 

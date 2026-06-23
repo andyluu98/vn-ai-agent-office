@@ -284,7 +284,7 @@ const SETTINGS_VERSION = 1 as const;
 const DEFAULT_OPENCLAW_GATEWAY_URL = "ws://localhost:18789";
 const DEFAULT_LOCAL_ADAPTER_GATEWAY_URL = "ws://localhost:18789";
 const DEFAULT_LOCAL_RUNTIME_URL = "http://localhost:7770";
-const DEFAULT_CLAW3D_RUNTIME_URL = "http://localhost:3000/api/runtime/custom";
+const DEFAULT_VN_OFFICE_RUNTIME_URL = "http://localhost:3000/api/runtime/custom";
 const DEFAULT_CUSTOM_RUNTIME_URL = "http://localhost:7770";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -969,7 +969,7 @@ export const resolveDefaultStudioGatewayProfile = (
 
   switch (adapterType) {
     case "claw3d":
-      return { url: DEFAULT_CLAW3D_RUNTIME_URL, token: "" };
+      return { url: DEFAULT_VN_OFFICE_RUNTIME_URL, token: "" };
     case "local":
       return { url: DEFAULT_LOCAL_RUNTIME_URL, token: "" };
     case "custom":

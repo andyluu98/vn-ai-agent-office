@@ -1,6 +1,6 @@
 # Bulletin Board Spec
 
-> First concrete office-system feature for Claw3D.
+> First concrete office-system feature for VN AI Agent Office.
 
 ## Goal
 
@@ -13,7 +13,7 @@ Add a shared bulletin board inside the office that acts as the visible coordinat
 - standup outcomes
 - lightweight task cards
 
-This should be the first step toward making Claw3D a real agent operations environment instead of only a gateway visualizer.
+This should be the first step toward making VN AI Agent Office a real agent operations environment instead of only a gateway visualizer.
 
 ## Product Position
 
@@ -192,7 +192,7 @@ Recommended layout:
 
 ## Integration Points
 
-The feature should hook into systems Claw3D already has.
+The feature should hook into systems VN AI Agent Office already has.
 
 ### Task Board / Kanban
 
@@ -230,7 +230,7 @@ The board must not depend on OpenClaw-specific methods.
 
 It should operate off:
 
-- Claw3D state
+- VN AI Agent Office state
 - local persisted office data
 - optional provider metadata when available
 
@@ -388,6 +388,6 @@ Once V1 is stable, this can grow into:
 
 ## Summary
 
-The bulletin board should become the first shared memory surface inside Claw3D.
+The bulletin board should become the first shared memory surface inside VN AI Agent Office.
 
 It is the clearest next step toward making the office itself the product.

@@ -1,6 +1,6 @@
 # Security Hardening
 
-Changes applied to the upstream Claw3D codebase for production use.
+Changes applied to the upstream VN AI Agent Office codebase for production use.
 
 ## Critical Fixes
 

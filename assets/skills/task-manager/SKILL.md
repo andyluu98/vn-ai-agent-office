@@ -36,8 +36,8 @@ Also use this skill even when those exact phrases are absent if the latest user 
 
 The authoritative task file is:
 
-- `${OPENCLAW_STATE_DIR}/claw3d/task-manager/tasks.json` when `OPENCLAW_STATE_DIR` is set.
-- `~/.openclaw/claw3d/task-manager/tasks.json` otherwise.
+- `${OPENCLAW_STATE_DIR}/vn-ai-agent-office/task-manager/tasks.json` when `OPENCLAW_STATE_DIR` is set.
+- `~/.openclaw/vn-ai-agent-office/task-manager/tasks.json` otherwise.
 
 Always treat that file as the shared source of truth for the Kanban board.
 

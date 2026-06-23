@@ -1,6 +1,6 @@
 # PI + Chat Streaming (Studio Side)
 
-This document exists to onboard coding agents quickly when debugging chat issues in Claw3D.
+This document exists to onboard coding agents quickly when debugging chat issues in VN AI Agent Office.
 
 Scope:
 - Describes how Studio connects to the OpenClaw Gateway, how runtime streaming arrives over WebSockets, and how the UI renders it.

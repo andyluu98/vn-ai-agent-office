@@ -4,7 +4,7 @@
 
 ## Goal
 
-Provide a single diagnostics surface for the common "Claw3D cannot connect"
+Provide a single diagnostics surface for the common "VN AI Agent Office cannot connect"
 or "runtime support looks broken" cases.
 
 The intent is similar to:
@@ -12,7 +12,7 @@ The intent is similar to:
 - `openclaw doctor`
 - `hermes doctor`
 
-but focused on Claw3D's integration points across providers.
+but focused on VN AI Agent Office's integration points across providers.
 
 ## Primary Outcomes
 
@@ -26,7 +26,7 @@ but focused on Claw3D's integration points across providers.
 
 ## First-Pass Scope
 
-### Claw3D Settings / Environment
+### VN AI Agent Office Settings / Environment
 
 Checks:
 
@@ -48,7 +48,7 @@ Checks:
 
 - can the configured gateway URL be reached?
 - can Studio proxy the selected gateway?
-- does the endpoint respond like a Claw3D-compatible gateway?
+- does the endpoint respond like a VN AI Agent Office-compatible gateway?
 
 Outputs:
 

@@ -1,19 +1,19 @@
 # Office Systems Roadmap
 
-> Product roadmap for turning Claw3D from a gateway visualizer into a living agent operations environment.
+> Product roadmap for turning VN AI Agent Office from a gateway visualizer into a living agent operations environment.
 
 ## Core Direction
 
-Claw3D should keep users inside the office.
+VN AI Agent Office should keep users inside the office.
 
 That means companion tools should be brought into the space as rooms, surfaces, devices, and shared systems instead of pulling users out into separate interfaces.
 
 The guiding principle is:
 
-- do not spawn Claw3D inside another tool
-- bring the other tool into Claw3D
+- do not spawn VN AI Agent Office inside another tool
+- bring the other tool into VN AI Agent Office
 
-This is especially relevant for ideas like Moltbook. The better version is not "leave Claw3D to use Moltbook". The better version is:
+This is especially relevant for ideas like Moltbook. The better version is not "leave VN AI Agent Office to use Moltbook". The better version is:
 
 - a bulletin board in the office
 - a whiteboard in meeting rooms
@@ -23,7 +23,7 @@ This is especially relevant for ideas like Moltbook. The better version is not "
 
 ## Product Goal
 
-Claw3D should evolve into an agent operations environment with:
+VN AI Agent Office should evolve into an agent operations environment with:
 
 - visual presence
 - planning and task coordination
@@ -119,7 +119,7 @@ Enterprise deployments will often sit behind:
 - reverse proxies
 - HTTPS termination
 
-That means Claw3D should continue improving:
+That means VN AI Agent Office should continue improving:
 
 - documented auth integration patterns
 - public-host hardening
@@ -378,7 +378,7 @@ Why it matters:
 
 ## Moltbook Integration Direction
 
-Moltbook should be integrated into Claw3D, not the other way around.
+Moltbook should be integrated into VN AI Agent Office, not the other way around.
 
 Best forms:
 
@@ -390,7 +390,7 @@ Best forms:
 
 Bad form:
 
-- forcing users to leave Claw3D for core team coordination workflows
+- forcing users to leave VN AI Agent Office for core team coordination workflows
 
 The office should remain the primary interaction layer.
 
@@ -482,6 +482,6 @@ operator-focused work.
 
 ## Summary
 
-Claw3D gets stronger when the office becomes the place where work actually happens.
+VN AI Agent Office gets stronger when the office becomes the place where work actually happens.
 
 The best next step is not expanding external tooling around the office. It is bringing planning, meetings, reviews, and shared memory into the office itself.

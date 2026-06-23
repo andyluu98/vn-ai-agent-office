@@ -99,8 +99,8 @@ Prerequisite:
 Run from source:
 
 ```bash
-git clone <your-public-repo-url> claw3d
-cd claw3d
+git clone <your-public-repo-url> vn-ai-agent-office
+cd vn-ai-agent-office
 npm install
 cp .env.example .env
 npm run dev
@@ -244,7 +244,7 @@ openclaw devices approve --latest
 Important runtime paths:
 
 - OpenClaw config: `~/.openclaw/openclaw.json`
-- Studio settings: `~/.openclaw/claw3d/settings.json`
+- Studio settings: `~/.openclaw/vn-ai-agent-office/settings.json`
 
 Common environment variables:
 
@@ -254,7 +254,7 @@ Common environment variables:
 - `CUSTOM_RUNTIME_ALLOWLIST` restricts which hosts `/api/runtime/custom` may fetch. If unset, it falls back to `UPSTREAM_ALLOWLIST`.
 - `NEXT_PUBLIC_GATEWAY_URL` provides the default upstream gateway URL when Studio settings are empty. **Note:** this is a build-time variable — changes require `npm run build` to take effect.
 - `CLAW3D_GATEWAY_URL` and `CLAW3D_GATEWAY_TOKEN` provide a runtime alternative to `NEXT_PUBLIC_GATEWAY_URL` that takes effect on server restart without a rebuild.
-- `CLAW3D_GATEWAY_ADAPTER_TYPE` can pair with `CLAW3D_GATEWAY_URL` to mark those runtime defaults as `openclaw`, `hermes`, `demo`, `local`, `claw3d`, or `custom`.
+- `CLAW3D_GATEWAY_ADAPTER_TYPE` can pair with `CLAW3D_GATEWAY_URL` to mark those runtime defaults as `openclaw`, `hermes`, `demo`, `local`, `vn-office`, or `custom`.
 - If `CLAW3D_GATEWAY_URL` is not set, Studio can still surface local Hermes or demo adapter defaults from `HERMES_ADAPTER_PORT` / `DEMO_ADAPTER_PORT`.
 - OpenClaw file defaults still come from `~/.openclaw/openclaw.json` when present.
 - `OPENCLAW_STATE_DIR` and `OPENCLAW_CONFIG_PATH` override the default OpenClaw paths.
@@ -345,7 +345,7 @@ Keep pull requests focused, run `npm run lint`, `npm run typecheck`, and `npm ru
 
 ## AI Editing Guardrails
 
-If you use Cursor or another AI-assisted workflow, review the committed project guardrails in [`.cursor/rules/claw3d-project-guardrails.mdc`](.cursor/rules/claw3d-project-guardrails.mdc).
+If you use Cursor or another AI-assisted workflow, review the committed project guardrails in [`.cursor/rules/vn-office-project-guardrails.mdc`](.cursor/rules/vn-office-project-guardrails.mdc).
 
 That rule file captures the shared editing expectations for this repository, including the VN AI Agent Office vs OpenClaw boundary, code placement conventions, office-stack distinctions, and documentation/test update expectations.
 
