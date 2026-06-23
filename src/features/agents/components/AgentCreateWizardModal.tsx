@@ -58,42 +58,42 @@ type WizardStepId =
 const wizardSteps: Array<{ id: WizardStepId; label: string; hint: string }> = [
   {
     id: "identity",
-    label: "Identity",
-    hint: "Create the live agent first, then fill in the rest step by step.",
+    label: "Danh tính",
+    hint: "Tạo tác nhân trực tiếp trước, sau đó điền các bước còn lại.",
   },
   {
     id: "avatar",
-    label: "Avatar",
-    hint: "Customize the office appearance before writing the rest of the profile.",
+    label: "Hình đại diện",
+    hint: "Tuỳ chỉnh hình ảnh văn phòng trước khi viết phần còn lại của hồ sơ.",
   },
   {
     id: "SOUL.md",
-    label: "Soul",
+    label: "Tính cách",
     hint: AGENT_FILE_META["SOUL.md"].hint,
   },
   {
     id: "AGENTS.md",
-    label: "Agents",
+    label: "Tác nhân",
     hint: AGENT_FILE_META["AGENTS.md"].hint,
   },
   {
     id: "USER.md",
-    label: "User",
+    label: "Người dùng",
     hint: AGENT_FILE_META["USER.md"].hint,
   },
   {
     id: "TOOLS.md",
-    label: "Tools",
+    label: "Công cụ",
     hint: AGENT_FILE_META["TOOLS.md"].hint,
   },
   {
     id: "MEMORY.md",
-    label: "Memory",
+    label: "Bộ nhớ",
     hint: AGENT_FILE_META["MEMORY.md"].hint,
   },
   {
     id: "HEARTBEAT.md",
-    label: "Heartbeat",
+    label: "Nhịp chạy",
     hint: AGENT_FILE_META["HEARTBEAT.md"].hint,
   },
 ];
@@ -186,7 +186,7 @@ export function AgentCreateWizardModal({
   const activeStep = wizardSteps[activeStepIndex] ?? wizardSteps[0];
   const isWorking = busy || finishing;
   const isFinalStep = step === "HEARTBEAT.md";
-  const statusCopy = finishing ? "Saving the agent files and avatar." : statusLine;
+  const statusCopy = finishing ? "Đang lưu file và hình đại diện của tác nhân." : statusLine;
 
   const updateDraft = <K extends keyof PersonalityBuilderDraft>(
     key: K,
@@ -237,13 +237,13 @@ export function AgentCreateWizardModal({
   const stepActionLabel =
     step === "identity" && !createdAgentId
       ? busy
-        ? "Creating..."
-        : "Create and continue"
+        ? "Đang tạo..."
+        : "Tạo và tiếp tục"
       : isFinalStep
         ? isWorking
-          ? "Saving..."
-          : "Finish wizard"
-        : "Next";
+          ? "Đang lưu..."
+          : "Hoàn thành"
+        : "Tiếp theo";
 
   if (!open) return null;
 
@@ -252,7 +252,7 @@ export function AgentCreateWizardModal({
       className="fixed inset-0 z-[140] flex items-center justify-center bg-background/84 p-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Create agent wizard"
+      aria-label="Trình tạo tác nhân mới"
       onClick={() => {
         if (!isWorking) {
           onClose(createdAgentId);
@@ -267,13 +267,13 @@ export function AgentCreateWizardModal({
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="font-mono text-[11px] font-semibold tracking-[0.06em] text-muted-foreground">
-                New agent wizard
+                Trình tạo tác nhân mới
               </div>
               <div className="mt-1 text-lg font-semibold text-foreground">
-                Create an agent step by step
+                Tạo tác nhân từng bước
               </div>
               <div className="mt-1 text-sm text-muted-foreground">
-                Start with identity, then build the rest of the profile before finishing.
+                Bắt đầu với danh tính, sau đó hoàn thiện hồ sơ trước khi kết thúc.
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -285,7 +285,7 @@ export function AgentCreateWizardModal({
                   onClose(createdAgentId);
                 }}
               >
-                Close
+                Đóng
               </button>
               {activeStepIndex > 0 ? (
                 <button
@@ -299,7 +299,7 @@ export function AgentCreateWizardModal({
                     }
                   }}
                 >
-                  Back
+                  Quay lại
                 </button>
               ) : null}
               <button
@@ -351,9 +351,9 @@ export function AgentCreateWizardModal({
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 py-6">
             <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col">
               <section className="space-y-3">
-                <h3 className="text-sm font-medium text-foreground">Identity</h3>
+                <h3 className="text-sm font-medium text-foreground">Danh tính</h3>
                 <div className="text-xs text-muted-foreground">
-                  Confirm the live agent name first, then fill in the rest of `IDENTITY.md`.
+                  Xác nhận tên tác nhân trước, sau đó điền phần còn lại của `IDENTITY.md`.
                 </div>
                 <AgentIdentityFields
                   values={draft.identity}
@@ -368,8 +368,7 @@ export function AgentCreateWizardModal({
               </section>
 
               <div className="mt-6 rounded-xl border border-border/45 bg-muted/20 p-4 text-sm text-muted-foreground">
-                Creating the agent in this step makes it available in OpenClaw immediately so the
-                wizard can save the full profile through the gateway in later steps.
+                Tạo tác nhân ở bước này giúp nó khả dụng ngay trên OpenClaw để trình tạo có thể lưu hồ sơ đầy đủ qua cổng kết nối ở các bước sau.
               </div>
             </div>
           </div>
@@ -392,12 +391,12 @@ export function AgentCreateWizardModal({
               <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 py-6">
                 <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 pb-8">
                   <section className="space-y-3">
-                    <h3 className="text-sm font-medium text-foreground">Soul</h3>
+                    <h3 className="text-sm font-medium text-foreground">Tính cách</h3>
                     <div className="grid gap-4">
                       <WizardTextAreaField
-                        label="Core truths"
+                        label="Nguyên tắc cốt lõi"
                         value={draft.soul.coreTruths}
-                        placeholder="e.g. Protect the user's time. Prefer clarity over theatrics."
+                        placeholder="vd: Bảo vệ thời gian của người dùng. Ưu tiên sự rõ ràng."
                         disabled={isWorking}
                         rows={5}
                         onChange={(value) => {
@@ -405,9 +404,9 @@ export function AgentCreateWizardModal({
                         }}
                       />
                       <WizardTextAreaField
-                        label="Boundaries"
+                        label="Giới hạn"
                         value={draft.soul.boundaries}
-                        placeholder="e.g. Do not bluff. Say when something is uncertain."
+                        placeholder="vd: Không phỏng đoán. Nói rõ khi điều gì đó chưa chắc chắn."
                         disabled={isWorking}
                         rows={5}
                         onChange={(value) => {
@@ -415,9 +414,9 @@ export function AgentCreateWizardModal({
                         }}
                       />
                       <WizardTextAreaField
-                        label="Vibe"
+                        label="Phong cách"
                         value={draft.soul.vibe}
-                        placeholder="e.g. Friendly, direct, and lightly playful."
+                        placeholder="vd: Thân thiện, trực tiếp và nhẹ nhàng vui vẻ."
                         disabled={isWorking}
                         rows={4}
                         onChange={(value) => {
@@ -425,9 +424,9 @@ export function AgentCreateWizardModal({
                         }}
                       />
                       <WizardTextAreaField
-                        label="Continuity"
+                        label="Nhất quán"
                         value={draft.soul.continuity}
-                        placeholder="e.g. Keep naming, preferences, and previous decisions consistent."
+                        placeholder="vd: Giữ nhất quán về tên gọi, tuỳ chọn và các quyết định trước đó."
                         disabled={isWorking}
                         rows={4}
                         onChange={(value) => {
@@ -442,39 +441,39 @@ export function AgentCreateWizardModal({
               <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 py-6">
                 <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 pb-8">
                   <section className="space-y-3">
-                    <h3 className="text-sm font-medium text-foreground">User</h3>
+                    <h3 className="text-sm font-medium text-foreground">Người dùng</h3>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <WizardField
-                        label="Name"
+                        label="Tên"
                         value={draft.user.name}
-                        placeholder="e.g. Luke"
+                        placeholder="vd: Luke"
                         disabled={isWorking}
                         onChange={(value) => {
                           updateDraft("user", { ...draft.user, name: value });
                         }}
                       />
                       <WizardField
-                        label="What to call them"
+                        label="Cách gọi"
                         value={draft.user.callThem}
-                        placeholder="e.g. Luke"
+                        placeholder="vd: Luke"
                         disabled={isWorking}
                         onChange={(value) => {
                           updateDraft("user", { ...draft.user, callThem: value });
                         }}
                       />
                       <WizardField
-                        label="Pronouns"
+                        label="Đại từ"
                         value={draft.user.pronouns}
-                        placeholder="e.g. he/him"
+                        placeholder="vd: anh/ấy"
                         disabled={isWorking}
                         onChange={(value) => {
                           updateDraft("user", { ...draft.user, pronouns: value });
                         }}
                       />
                       <WizardField
-                        label="Timezone"
+                        label="Múi giờ"
                         value={draft.user.timezone}
-                        placeholder="e.g. America/Chicago"
+                        placeholder="vd: Asia/Ho_Chi_Minh"
                         disabled={isWorking}
                         onChange={(value) => {
                           updateDraft("user", { ...draft.user, timezone: value });
@@ -482,9 +481,9 @@ export function AgentCreateWizardModal({
                       />
                       <div className="sm:col-span-2">
                         <WizardField
-                          label="Notes"
+                          label="Ghi chú"
                           value={draft.user.notes}
-                          placeholder="e.g. Prefers concise answers and fast iteration."
+                          placeholder="vd: Thích câu trả lời ngắn gọn và vòng lặp nhanh."
                           disabled={isWorking}
                           onChange={(value) => {
                             updateDraft("user", { ...draft.user, notes: value });
@@ -493,9 +492,9 @@ export function AgentCreateWizardModal({
                       </div>
                       <div className="sm:col-span-2">
                         <WizardTextAreaField
-                          label="Context"
+                          label="Bối cảnh"
                           value={draft.user.context}
-                          placeholder="e.g. Building VN AI Agent Office, likes practical UI improvements, and wants direct feedback."
+                          placeholder="vd: Đang xây dựng VN AI Agent Office, thích cải tiến UI thực tế và muốn phản hồi trực tiếp."
                           disabled={isWorking}
                           rows={7}
                           onChange={(value) => {

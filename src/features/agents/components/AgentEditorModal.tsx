@@ -50,49 +50,49 @@ const editorSections: Array<{
 }> = [
   {
     id: "IDENTITY.md",
-    label: "Identity",
+    label: "Danh tính",
     hint: AGENT_FILE_META["IDENTITY.md"].hint,
     icon: FileText,
   },
   {
     id: "avatar",
-    label: "Avatar",
-    hint: "Office appearance.",
+    label: "Hình đại diện",
+    hint: "Hình ảnh trong văn phòng.",
     icon: Palette,
   },
   {
     id: "SOUL.md",
-    label: "Soul",
+    label: "Tính cách",
     hint: AGENT_FILE_META["SOUL.md"].hint,
     icon: Brain,
   },
   {
     id: "AGENTS.md",
-    label: "Agents",
+    label: "Tác nhân",
     hint: AGENT_FILE_META["AGENTS.md"].hint,
     icon: Shield,
   },
   {
     id: "USER.md",
-    label: "User",
+    label: "Người dùng",
     hint: AGENT_FILE_META["USER.md"].hint,
     icon: UserRound,
   },
   {
     id: "TOOLS.md",
-    label: "Tools",
+    label: "Công cụ",
     hint: AGENT_FILE_META["TOOLS.md"].hint,
     icon: Wrench,
   },
   {
     id: "MEMORY.md",
-    label: "Memory",
+    label: "Bộ nhớ",
     hint: AGENT_FILE_META["MEMORY.md"].hint,
     icon: Database,
   },
   {
     id: "HEARTBEAT.md",
-    label: "Heartbeat",
+    label: "Nhịp chạy",
     hint: AGENT_FILE_META["HEARTBEAT.md"].hint,
     icon: HeartPulse,
   },
@@ -137,7 +137,7 @@ export const AgentEditorModal = ({
           type="button"
           onClick={onClose}
           className="absolute -right-3 -top-3 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-background/92 text-muted-foreground shadow-lg transition-colors hover:text-foreground"
-          aria-label="Close agent editor"
+          aria-label="Đóng trình chỉnh sửa tác nhân"
         >
           <X className="h-4 w-4" />
         </button>
@@ -145,13 +145,13 @@ export const AgentEditorModal = ({
           <aside className="flex w-[240px] shrink-0 flex-col border-r border-border/50 bg-muted/20">
             <div className="border-b border-border/40 px-5 py-4">
               <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                Agent editor
+                Chỉnh sửa tác nhân
               </div>
               <div className="mt-1 truncate text-lg font-semibold text-foreground">
                 {agent.name}
               </div>
               <div className="mt-1 text-xs text-muted-foreground">
-                Edit avatar and agent brain settings from the office.
+                Chỉnh sửa hình đại diện và cài đặt tác nhân từ văn phòng.
               </div>
               {onNavigateAgent ? (
                 <div className="mt-4 flex items-center gap-2">
@@ -165,7 +165,7 @@ export const AgentEditorModal = ({
                     className="inline-flex items-center gap-1 rounded-md border border-border/50 bg-background/40 px-2.5 py-1.5 text-xs text-foreground transition-colors hover:border-border hover:bg-background/70 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <ChevronLeft className="h-3.5 w-3.5" />
-                    <span>Previous</span>
+                    <span>Trước</span>
                   </button>
                   <button
                     type="button"
@@ -176,7 +176,7 @@ export const AgentEditorModal = ({
                     disabled={!nextAgent}
                     className="inline-flex items-center gap-1 rounded-md border border-border/50 bg-background/40 px-2.5 py-1.5 text-xs text-foreground transition-colors hover:border-border hover:bg-background/70 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    <span>Next</span>
+                    <span>Tiếp</span>
                     <ChevronRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -217,9 +217,9 @@ export const AgentEditorModal = ({
                 >
                   <Trash2 className="h-4 w-4" />
                   <div>
-                    <div className="text-sm font-semibold text-inherit">Delete Agent</div>
+                    <div className="text-sm font-semibold text-inherit">Xoá tác nhân</div>
                     <div className="text-xs text-red-100/85">
-                      Remove this agent from VN AI Agent Office and OpenClaw.
+                      Xoá tác nhân này khỏi VN AI Agent Office và OpenClaw.
                     </div>
                   </div>
                 </button>
@@ -240,10 +240,10 @@ export const AgentEditorModal = ({
               <div className="flex min-h-0 flex-1 flex-col">
                 <div className="border-b border-border/40 px-6 py-4">
                   <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                    Agent file editor
+                    Trình chỉnh sửa file tác nhân
                   </div>
                   <div className="mt-1 text-sm text-muted-foreground">
-                    Edit one agent file at a time and save it through the gateway.
+                    Chỉnh sửa từng file tác nhân và lưu qua cổng kết nối.
                   </div>
                 </div>
                 <div className="min-h-0 flex-1">
@@ -270,7 +270,7 @@ export const AgentEditorModal = ({
               </div>
             ) : (
               <div className="flex h-full items-center justify-center p-8 text-sm text-muted-foreground">
-                Connect to a gateway to edit brain files.
+                Kết nối tới cổng kết nối để chỉnh sửa file tác nhân.
               </div>
             )}
           </section>

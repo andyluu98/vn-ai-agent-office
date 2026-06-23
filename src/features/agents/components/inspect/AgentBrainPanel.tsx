@@ -52,7 +52,7 @@ const AgentFileProvenance = ({
     <div className="rounded-md border border-border/50 bg-black/20 px-3 py-2 text-[11px] text-muted-foreground">
       {workspace ? (
         <div>
-          Workspace: <span className="font-mono text-foreground">{workspace}</span>
+          Không gian làm việc: <span className="font-mono text-foreground">{workspace}</span>
         </div>
       ) : null}
       {path ? (
@@ -122,7 +122,7 @@ export const AgentBrainPanel = ({
     }
     const renamed = await onRename(selectedAgent.agentId, nextName);
     if (!renamed) {
-      setSaveError("Saved IDENTITY.md, but could not rename the live agent.");
+      setSaveError("Đã lưu IDENTITY.md, nhưng không thể đổi tên tác nhân đang chạy.");
     }
   }, [
     agentFilesDirty,
@@ -162,9 +162,9 @@ export const AgentBrainPanel = ({
       const file = agentFiles[name];
       const trimmedContent = file.content.trim();
       const statusCopy = !file.exists
-        ? `This agent does not have a custom ${name} yet. Saving here will create the real workspace file.`
+        ? `Tác nhân này chưa có ${name} tùy chỉnh. Lưu ở đây sẽ tạo file thực trong không gian làm việc.`
         : !trimmedContent
-          ? `This agent's ${name} exists, but it is currently empty.`
+          ? `File ${name} của tác nhân tồn tại nhưng hiện đang trống.`
           : null;
       return (
         <AgentBrainPanelSection title={AGENT_FILE_META[name].title}>
@@ -179,7 +179,7 @@ export const AgentBrainPanel = ({
             aria-label={AGENT_FILE_META[name].title}
             className="h-[min(56vh,480px)] w-full resize-y rounded-md border border-border/80 bg-background px-4 py-3 font-mono text-sm leading-6 text-foreground outline-none"
             value={file.content}
-            placeholder={!file.exists ? `No ${name} yet.` : ""}
+            placeholder={!file.exists ? `Chưa có ${name}.` : ""}
             disabled={agentFilesLoading || agentFilesSaving}
             onChange={(event) => {
               setAgentFileContent(name, event.target.value);
@@ -199,8 +199,7 @@ export const AgentBrainPanel = ({
           {AGENT_FILE_META["IDENTITY.md"].hint}
         </div>
         <div className="text-xs text-muted-foreground">
-          Changing <span className="font-medium text-foreground">Name</span> here also renames the live agent
-          when you save.
+          Thay đổi <span className="font-medium text-foreground">Tên</span> ở đây cũng đổi tên tác nhân đang chạy khi lưu.
         </div>
         <AgentFileProvenance
           path={agentFiles["IDENTITY.md"].path}
@@ -265,7 +264,7 @@ export const AgentBrainPanel = ({
                   void handleInitializeMissingFiles();
                 }}
               >
-                Initialize missing files
+                Khởi tạo file còn thiếu
               </button>
             ) : null}
             <button
@@ -274,7 +273,7 @@ export const AgentBrainPanel = ({
               disabled={agentFilesLoading || agentFilesSaving}
               onClick={onCancel}
             >
-              Cancel
+              Huỷ
             </button>
             <button
               type="button"
@@ -284,7 +283,7 @@ export const AgentBrainPanel = ({
                 void handleSave();
               }}
             >
-              Save
+              Lưu
             </button>
           </div>
 

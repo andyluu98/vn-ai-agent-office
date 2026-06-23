@@ -73,14 +73,14 @@ export type AgentSettingsPanelProps = {
 
 const formatCronStateLine = (job: CronJobSummary): string | null => {
   if (typeof job.state.runningAtMs === "number" && Number.isFinite(job.state.runningAtMs)) {
-    return "Running now";
+    return "Đang chạy";
   }
   if (typeof job.state.nextRunAtMs === "number" && Number.isFinite(job.state.nextRunAtMs)) {
-    return `Next: ${new Date(job.state.nextRunAtMs).toLocaleString()}`;
+    return `Tiếp theo: ${new Date(job.state.nextRunAtMs).toLocaleString()}`;
   }
   if (typeof job.state.lastRunAtMs === "number" && Number.isFinite(job.state.lastRunAtMs)) {
     const status = job.state.lastStatus ? `${job.state.lastStatus} ` : "";
-    return `Last: ${status}${new Date(job.state.lastRunAtMs).toLocaleString()}`.trim();
+    return `Lần trước: ${status}${new Date(job.state.lastRunAtMs).toLocaleString()}`.trim();
   }
   return null;
 };
@@ -106,41 +106,41 @@ type CronTemplateOption = {
 const CRON_TEMPLATE_OPTIONS: CronTemplateOption[] = [
   {
     id: "morning-brief",
-    title: "Morning Brief",
-    description: "Daily status summary with overnight updates.",
+    title: "Tóm tắt buổi sáng",
+    description: "Tóm tắt trạng thái hằng ngày với cập nhật qua đêm.",
     icon: Sun,
   },
   {
     id: "reminder",
-    title: "Reminder",
-    description: "A timed nudge for a specific event or task.",
+    title: "Nhắc nhở",
+    description: "Nhắc nhở theo thời gian cho sự kiện hoặc nhiệm vụ cụ thể.",
     icon: Bell,
   },
   {
     id: "weekly-review",
-    title: "Weekly Review",
-    description: "Recurring synthesis across a longer time window.",
+    title: "Đánh giá hàng tuần",
+    description: "Tổng hợp định kỳ trong khoảng thời gian dài hơn.",
     icon: CalendarDays,
   },
   {
     id: "inbox-triage",
-    title: "Inbox Triage",
-    description: "Regular sorting and summarizing of incoming updates.",
+    title: "Phân loại hộp thư",
+    description: "Sắp xếp và tóm tắt định kỳ các cập nhật đến.",
     icon: ListChecks,
   },
   {
     id: "custom",
-    title: "Custom",
-    description: "Start from a blank flow and choose each setting.",
+    title: "Tuỳ chỉnh",
+    description: "Bắt đầu từ luồng trống và chọn từng cài đặt.",
     icon: ListChecks,
   },
 ];
 
 const TIMED_AUTOMATION_STEP_META: Array<{ title: string; indicator: string }> = [
-  { title: "Choose type", indicator: "Type" },
-  { title: "Define function", indicator: "Function" },
-  { title: "Set timing", indicator: "Timing" },
-  { title: "Review and create", indicator: "Review" },
+  { title: "Chọn loại", indicator: "Loại" },
+  { title: "Định nghĩa chức năng", indicator: "Chức năng" },
+  { title: "Đặt thời gian", indicator: "Thời gian" },
+  { title: "Xem lại và tạo", indicator: "Xem lại" },
 ];
 
 const resolveLocalTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
@@ -448,11 +448,11 @@ export const AgentSettingsPanel = ({
 
   const panelLabel =
     mode === "advanced"
-      ? "Advanced"
+      ? "Nâng cao"
       : mode === "skills"
-        ? "Skills"
+        ? "Kỹ năng"
         : mode === "system"
-          ? "System setup"
+          ? "Cài đặt hệ thống"
           : "";
   const canOpenControlUi = typeof controlUiUrl === "string" && controlUiUrl.trim().length > 0;
   const timedAutomationStepMeta =
@@ -480,17 +480,17 @@ export const AgentSettingsPanel = ({
             <div className="mt-2 flex flex-col gap-8">
               <div className="px-1 py-1">
                 <div className="sidebar-copy flex flex-col gap-1 text-[11px] text-muted-foreground">
-                  <span className="font-medium text-foreground/88">Run commands</span>
+                  <span className="font-medium text-foreground/88">Chạy lệnh</span>
                   <div
                     className="ui-segment ui-segment-command-mode mt-2 grid-cols-3"
                     role="group"
-                    aria-label="Run commands"
+                    aria-label="Chạy lệnh"
                   >
                     {(
                       [
-                        { id: "off", label: "Off" },
-                        { id: "ask", label: "Ask" },
-                        { id: "auto", label: "Auto" },
+                        { id: "off", label: "Tắt" },
+                        { id: "ask", label: "Hỏi" },
+                        { id: "auto", label: "Tự động" },
                       ] as const
                     ).map((option) => {
                       const selected = permissionsDraftValue.commandMode === option.id;
@@ -498,7 +498,7 @@ export const AgentSettingsPanel = ({
                         <button
                           key={option.id}
                           type="button"
-                          aria-label={`Run commands ${option.label.toLowerCase()}`}
+                          aria-label={`Chạy lệnh ${option.label.toLowerCase()}`}
                           aria-pressed={selected}
                           className="ui-segment-item px-3 py-2.5 text-center font-mono text-[11px] font-semibold tracking-[0.04em]"
                           data-active={selected ? "true" : "false"}
@@ -521,7 +521,7 @@ export const AgentSettingsPanel = ({
                   <button
                     type="button"
                     role="switch"
-                    aria-label="Web access"
+                    aria-label="Truy cập web"
                     aria-checked={permissionsDraftValue.webAccess}
                     className={`ui-switch self-center ${permissionsDraftValue.webAccess ? "ui-switch--on" : ""}`}
                     onClick={() =>
@@ -534,9 +534,9 @@ export const AgentSettingsPanel = ({
                     <span className="ui-switch-thumb" />
                   </button>
                   <div className="sidebar-copy flex flex-col">
-                    <span className="text-[11px] font-medium text-foreground/88">Web access</span>
+                    <span className="text-[11px] font-medium text-foreground/88">Truy cập web</span>
                     <span className="text-[10px] text-muted-foreground/70">
-                      Allows this agent to fetch live web results.
+                      Cho phép tác nhân này tìm kết quả web trực tiếp.
                     </span>
                   </div>
                 </div>
@@ -547,7 +547,7 @@ export const AgentSettingsPanel = ({
                   <button
                     type="button"
                     role="switch"
-                    aria-label="File tools"
+                    aria-label="Công cụ file"
                     aria-checked={permissionsDraftValue.fileTools}
                     className={`ui-switch self-center ${permissionsDraftValue.fileTools ? "ui-switch--on" : ""}`}
                     onClick={() =>
@@ -560,9 +560,9 @@ export const AgentSettingsPanel = ({
                     <span className="ui-switch-thumb" />
                   </button>
                   <div className="sidebar-copy flex flex-col">
-                    <span className="text-[11px] font-medium text-foreground/88">File tools</span>
+                    <span className="text-[11px] font-medium text-foreground/88">Công cụ file</span>
                     <span className="text-[10px] text-muted-foreground/70">
-                      Lets this agent read and edit files in its workspace.
+                      Cho phép tác nhân đọc và chỉnh sửa file trong không gian làm việc của nó.
                     </span>
                   </div>
                 </div>
@@ -573,7 +573,7 @@ export const AgentSettingsPanel = ({
                   <button
                     type="button"
                     role="switch"
-                    aria-label="Browser automation"
+                    aria-label="Tự động hoá trình duyệt"
                     aria-checked="false"
                     className="ui-switch self-center"
                     disabled
@@ -581,19 +581,19 @@ export const AgentSettingsPanel = ({
                     <span className="ui-switch-thumb" />
                   </button>
                   <div className="sidebar-copy flex flex-col">
-                    <span className="text-[11px] font-medium text-foreground/88">Browser automation</span>
-                    <span className="text-[10px] text-muted-foreground/70">Coming soon</span>
+                    <span className="text-[11px] font-medium text-foreground/88">Tự động hoá trình duyệt</span>
+                    <span className="text-[10px] text-muted-foreground/70">Sắp ra mắt</span>
                   </div>
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground/55" aria-hidden="true" />
               </div>
             </div>
             <div className="sidebar-copy mt-3 text-[11px] text-muted-foreground">
-              {permissionsSaveState === "saving" ? "Saving..." : null}
-              {permissionsSaveState === "saved" ? "Saved." : null}
+              {permissionsSaveState === "saving" ? "Đang lưu..." : null}
+              {permissionsSaveState === "saved" ? "Đã lưu." : null}
               {permissionsSaveState === "error" && permissionsSaveError ? (
                 <span>
-                  Couldn&apos;t save. {permissionsSaveError}{" "}
+                  Không thể lưu. {permissionsSaveError}{" "}
                   <button
                     type="button"
                     className="underline underline-offset-2"
@@ -601,14 +601,14 @@ export const AgentSettingsPanel = ({
                       void runPermissionsSave(permissionsDraftValue);
                     }}
                   >
-                    Retry
+                    Thử lại
                   </button>
                 </span>
               ) : null}
             </div>
             {permissionsSaveState === "error" && !permissionsSaveError ? (
               <div className="ui-alert-danger mt-3 rounded-md px-3 py-2 text-xs">
-                Couldn&apos;t save permissions.
+                Không thể lưu quyền hạn.
               </div>
             ) : null}
           </section>
@@ -650,19 +650,19 @@ export const AgentSettingsPanel = ({
         {mode === "automations" ? (
           <section className="sidebar-section" data-testid="agent-settings-cron">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="sidebar-section-title">Timed automations</h3>
+              <h3 className="sidebar-section-title">Tự động hoá theo lịch</h3>
               {!cronLoading && !cronError && cronJobs.length > 0 ? (
                 <button
                   className="sidebar-btn-ghost px-2.5 py-1.5 font-mono text-[10px] font-semibold tracking-[0.06em] disabled:cursor-not-allowed disabled:opacity-60"
                   type="button"
                   onClick={openCronCreate}
                 >
-                  Create
+                  Tạo mới
                 </button>
               ) : null}
             </div>
             {cronLoading ? (
-              <div className="mt-3 text-[11px] text-muted-foreground">Loading timed automations...</div>
+              <div className="mt-3 text-[11px] text-muted-foreground">Đang tải tự động hoá theo lịch...</div>
             ) : null}
             {!cronLoading && cronError ? (
               <div className="ui-alert-danger mt-3 rounded-md px-3 py-2 text-xs">
@@ -677,14 +677,14 @@ export const AgentSettingsPanel = ({
                   data-testid="cron-empty-icon"
                 />
                 <div className="sidebar-copy text-[11px] text-muted-foreground/82">
-                  No timed automations for this agent.
+                  Chưa có tự động hoá theo lịch cho tác nhân này.
                 </div>
                 <button
                   className="sidebar-btn-primary mt-2 w-auto min-w-[116px] self-center px-4 py-2 font-mono text-[10px] font-semibold tracking-[0.06em] disabled:cursor-not-allowed disabled:opacity-60"
                   type="button"
                   onClick={openCronCreate}
                 >
-                  Create
+                  Tạo mới
                 </button>
               </div>
             ) : null}
@@ -719,7 +719,7 @@ export const AgentSettingsPanel = ({
                         </div>
                         <div className="mt-1 text-[11px] text-muted-foreground">
                           <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                            Frequency
+                            Tần suất
                           </span>
                           <div className="break-words">{scheduleText}</div>
                         </div>
@@ -732,7 +732,7 @@ export const AgentSettingsPanel = ({
                           <div className="mt-1 text-[11px] text-muted-foreground">
                             <div className="flex items-center justify-between gap-2">
                               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                                Task
+                                Nhiệm vụ
                               </span>
                               {payloadExpandable ? (
                                 <button
@@ -750,7 +750,7 @@ export const AgentSettingsPanel = ({
                                     });
                                   }}
                                 >
-                                  {expanded ? "Less" : "More"}
+                                  {expanded ? "Thu gọn" : "Xem thêm"}
                                 </button>
                               ) : null}
                             </div>
@@ -764,7 +764,7 @@ export const AgentSettingsPanel = ({
                         <button
                           className="ui-btn-icon h-7 w-7 disabled:cursor-not-allowed disabled:opacity-60"
                           type="button"
-                          aria-label={`Run timed automation ${job.name} now`}
+                          aria-label={`Chạy ngay tự động hoá ${job.name}`}
                           onClick={() => {
                             void onRunCronJob(job.id);
                           }}
@@ -775,7 +775,7 @@ export const AgentSettingsPanel = ({
                         <button
                           className="ui-btn-icon ui-btn-icon-danger h-7 w-7 bg-transparent disabled:cursor-not-allowed disabled:opacity-60"
                           type="button"
-                          aria-label={`Delete timed automation ${job.name}`}
+                          aria-label={`Xoá tự động hoá ${job.name}`}
                           onClick={() => {
                             void onDeleteCronJob(job.id);
                           }}
@@ -791,9 +791,9 @@ export const AgentSettingsPanel = ({
             ) : null}
             {isOpenClawRuntime ? (
               <section className="sidebar-section" data-testid="agent-settings-heartbeat-coming-soon">
-                <h3 className="sidebar-section-title">Heartbeats</h3>
+                <h3 className="sidebar-section-title">Nhịp chạy</h3>
                 <div className="mt-3 text-[11px] text-muted-foreground">
-                  Heartbeat automation controls are coming soon.
+                  Điều khiển tự động hoá nhịp chạy sắp ra mắt.
                 </div>
               </section>
             ) : null}
@@ -804,14 +804,14 @@ export const AgentSettingsPanel = ({
           <>
             {isOpenClawRuntime ? (
               <section className="sidebar-section mt-8" data-testid="agent-settings-control-ui">
-                <h3 className="sidebar-section-title ui-text-danger">Danger Zone</h3>
+                <h3 className="sidebar-section-title ui-text-danger">Vùng nguy hiểm</h3>
                 <div className="ui-alert-danger mt-3 rounded-md px-3 py-3 text-[11px]">
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                     <div className="space-y-1">
-                      <div className="font-medium">Advanced users only.</div>
-                      <div>Open the full OpenClaw Control UI outside Studio.</div>
-                      <div>Changes there can break agent behavior or put Studio out of sync.</div>
+                      <div className="font-medium">Chỉ dành cho người dùng nâng cao.</div>
+                      <div>Mở giao diện điều khiển OpenClaw đầy đủ bên ngoài Studio.</div>
+                      <div>Thay đổi ở đó có thể làm hỏng hành vi tác nhân hoặc khiến Studio mất đồng bộ.</div>
                     </div>
                   </div>
                 </div>
@@ -822,7 +822,7 @@ export const AgentSettingsPanel = ({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Open Full Control UI
+                    Mở giao diện điều khiển đầy đủ
                     <ExternalLink className="h-3 w-3" aria-hidden="true" />
                   </a>
                 ) : (
@@ -832,10 +832,10 @@ export const AgentSettingsPanel = ({
                       type="button"
                       disabled
                     >
-                      Open Full Control UI
+                      Mở giao diện điều khiển đầy đủ
                     </button>
                     <div className="mt-2 text-[10px] text-muted-foreground/70">
-                      Control UI link unavailable for this gateway.
+                      Liên kết giao diện điều khiển không khả dụng cho cổng kết nối này.
                     </div>
                   </>
                 )}
@@ -845,21 +845,21 @@ export const AgentSettingsPanel = ({
             {canDelete ? (
               <section className="sidebar-section mt-8">
                 <div className="text-[11px] text-muted-foreground/68">
-                  Removes the agent from the gateway config and deletes its scheduled automations.
+                  Xoá tác nhân khỏi cấu hình cổng kết nối và xoá các tự động hoá đã lên lịch của nó.
                 </div>
                 <button
                   className="sidebar-btn-ghost ui-btn-danger mt-3 inline-flex px-3 py-2 font-mono text-[10px] font-semibold tracking-[0.06em]"
                   type="button"
                   onClick={onDelete}
                 >
-                  Delete agent
+                  Xoá tác nhân
                 </button>
               </section>
             ) : (
               <section className="sidebar-section mt-8">
-                <h3 className="sidebar-section-title">System agent</h3>
+                <h3 className="sidebar-section-title">Tác nhân hệ thống</h3>
                 <div className="mt-3 text-[11px] text-muted-foreground">
-                  The main agent is reserved and cannot be deleted.
+                  Tác nhân chính được bảo lưu và không thể xoá.
                 </div>
               </section>
             )}
@@ -872,7 +872,7 @@ export const AgentSettingsPanel = ({
           className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-4"
           role="dialog"
           aria-modal="true"
-          aria-label="Create automation"
+          aria-label="Tạo tự động hoá"
           onClick={closeCronCreate}
         >
           <div
@@ -882,7 +882,7 @@ export const AgentSettingsPanel = ({
             <div className="flex items-start justify-between gap-3 px-6 py-5">
               <div className="min-w-0">
                 <div className="text-[11px] font-medium tracking-[0.01em] text-muted-foreground/80">
-                  Timed automation composer
+                  Trình tạo tự động hoá theo lịch
                 </div>
                 <div className="mt-1 text-base font-semibold text-foreground">
                   {timedAutomationStepMeta.title}
@@ -893,7 +893,7 @@ export const AgentSettingsPanel = ({
                 className="sidebar-btn-ghost px-3 font-mono text-[10px] font-semibold tracking-[0.06em]"
                 onClick={closeCronCreate}
               >
-                Close
+                Đóng
               </button>
             </div>
             <div className="space-y-4 px-5 py-5">
@@ -905,7 +905,7 @@ export const AgentSettingsPanel = ({
               {cronCreateStep === 0 ? (
                 <div className="space-y-3">
                   <div className="text-sm text-muted-foreground">
-                    Pick a template to start quickly, or choose Custom.
+                    Chọn mẫu để bắt đầu nhanh, hoặc chọn Tuỳ chỉnh.
                   </div>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {CRON_TEMPLATE_OPTIONS.map((option) => {
@@ -939,14 +939,14 @@ export const AgentSettingsPanel = ({
               {cronCreateStep === 1 ? (
                 <div className="space-y-3">
                   <div className="text-sm text-muted-foreground">
-                    Name this automation and describe what it should do.
+                    Đặt tên và mô tả những gì tự động hoá này nên làm.
                   </div>
                   <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                     <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                      Automation name
+                      Tên tự động hoá
                     </span>
                     <input
-                      aria-label="Automation name"
+                      aria-label="Tên tự động hoá"
                       className="h-10 rounded-md border border-border bg-surface-3 px-3 text-sm text-foreground outline-none"
                       value={cronDraft.name}
                       onChange={(event) => updateCronDraft({ name: event.target.value })}
@@ -954,10 +954,10 @@ export const AgentSettingsPanel = ({
                   </label>
                   <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                     <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                      Task
+                      Nhiệm vụ
                     </span>
                     <textarea
-                      aria-label="Task"
+                      aria-label="Nhiệm vụ"
                       className="min-h-28 rounded-md border border-border bg-surface-3 px-3 py-2 text-sm text-foreground outline-none"
                       value={cronDraft.taskText}
                       onChange={(event) => updateCronDraft({ taskText: event.target.value })}
@@ -967,10 +967,10 @@ export const AgentSettingsPanel = ({
               ) : null}
               {cronCreateStep === 2 ? (
                 <div className="space-y-3">
-                  <div className="text-sm text-muted-foreground">Choose when this should run.</div>
+                  <div className="text-sm text-muted-foreground">Chọn thời điểm chạy.</div>
                   <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                     <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                      Schedule type
+                      Loại lịch
                     </span>
                     <select
                       className="h-10 rounded-md border border-border bg-surface-3 px-3 text-sm text-foreground outline-none"
@@ -981,15 +981,15 @@ export const AgentSettingsPanel = ({
                         })
                       }
                     >
-                      <option value="every">Every</option>
-                      <option value="at">One time</option>
+                      <option value="every">Mỗi</option>
+                      <option value="at">Một lần</option>
                     </select>
                   </label>
                   {cronDraft.scheduleKind === "every" ? (
                     <div className="grid gap-2 sm:grid-cols-2">
                       <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                         <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                          Every
+                          Mỗi
                         </span>
                         <input
                           type="number"
@@ -1006,7 +1006,7 @@ export const AgentSettingsPanel = ({
                       </label>
                       <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                         <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                          Unit
+                          Đơn vị
                         </span>
                         <select
                           className="h-10 rounded-md border border-border bg-surface-3 px-3 text-sm text-foreground outline-none"
@@ -1017,16 +1017,16 @@ export const AgentSettingsPanel = ({
                             })
                           }
                         >
-                          <option value="minutes">Minutes</option>
-                          <option value="hours">Hours</option>
-                          <option value="days">Days</option>
+                          <option value="minutes">Phút</option>
+                          <option value="hours">Giờ</option>
+                          <option value="days">Ngày</option>
                         </select>
                       </label>
                       {cronDraft.everyUnit === "days" ? (
                         <>
                           <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                             <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                              Time of day
+                              Thời điểm trong ngày
                             </span>
                             <input
                               type="time"
@@ -1037,7 +1037,7 @@ export const AgentSettingsPanel = ({
                           </label>
                           <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                             <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                              Timezone
+                              Múi giờ
                             </span>
                             <input
                               className="h-10 rounded-md border border-border bg-surface-3 px-3 text-sm text-foreground outline-none"
@@ -1054,7 +1054,7 @@ export const AgentSettingsPanel = ({
                   {cronDraft.scheduleKind === "at" ? (
                     <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                       <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                        Run at
+                        Chạy lúc
                       </span>
                       <input
                         type="datetime-local"
@@ -1068,16 +1068,16 @@ export const AgentSettingsPanel = ({
               ) : null}
               {cronCreateStep === 3 ? (
                 <div className="space-y-3 text-sm text-muted-foreground">
-                  <div>Review details before creating this automation.</div>
+                  <div>Xem lại chi tiết trước khi tạo tự động hoá này.</div>
                   <div className="ui-card px-3 py-2">
                     <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-foreground">
-                      {cronDraft.name || "Untitled automation"}
+                      {cronDraft.name || "Tự động hoá chưa đặt tên"}
                     </div>
                     <div className="mt-1 text-[11px]">
-                      {cronDraft.taskText || "No task provided."}
+                      {cronDraft.taskText || "Chưa có nhiệm vụ."}
                     </div>
                     <div className="mt-2 text-[11px]">
-                      Schedule:{" "}
+                      Lịch:{" "}
                       {cronDraft.scheduleKind === "every"
                         ? `Every ${cronDraft.everyAmount ?? 0} ${cronDraft.everyUnit ?? "minutes"}${
                             cronDraft.everyUnit === "days"
@@ -1092,7 +1092,7 @@ export const AgentSettingsPanel = ({
             </div>
             <div className="flex items-center justify-between gap-2 border-t border-border/50 px-5 pb-4 pt-5">
               <div className="text-[11px] text-muted-foreground">
-                {timedAutomationStepMeta.indicator} · Step {cronCreateStep + 1} of 4
+                {timedAutomationStepMeta.indicator} · Bước {cronCreateStep + 1} / 4
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -1101,7 +1101,7 @@ export const AgentSettingsPanel = ({
                   onClick={moveCronCreateBack}
                   disabled={cronCreateStep === 0 || cronCreateBusy}
                 >
-                  Back
+                  Quay lại
                 </button>
                 {cronCreateStep < 3 ? (
                   <button
@@ -1114,7 +1114,7 @@ export const AgentSettingsPanel = ({
                       (cronCreateStep === 2 && !canMoveToReviewStep)
                     }
                   >
-                    Next
+                    Tiếp theo
                   </button>
                 ) : null}
                 {cronCreateStep === 3 ? (
@@ -1126,7 +1126,7 @@ export const AgentSettingsPanel = ({
                     }}
                     disabled={cronCreateBusy || !canSubmitCronCreate}
                   >
-                    Create automation
+                    Tạo tự động hoá
                   </button>
                 ) : null}
               </div>

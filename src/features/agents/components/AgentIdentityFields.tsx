@@ -24,11 +24,11 @@ export function AgentIdentityFields({
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <label className="flex flex-col gap-2 text-xs text-muted-foreground">
-        Name
+        Tên
         <input
           className={inputClassName}
           value={values.name}
-          placeholder="e.g. Luke"
+          placeholder="vd: Luke"
           disabled={disabled}
           onChange={(event) => {
             onChange("name", event.target.value);
@@ -36,11 +36,11 @@ export function AgentIdentityFields({
         />
       </label>
       <label className="flex flex-col gap-2 text-xs text-muted-foreground">
-        Role
+        Vai trò
         <input
           className={inputClassName}
           value={values.creature}
-          placeholder="e.g. Product Designer"
+          placeholder="vd: Nhà thiết kế sản phẩm"
           disabled={disabled}
           onChange={(event) => {
             onChange("creature", event.target.value);
@@ -48,11 +48,11 @@ export function AgentIdentityFields({
         />
       </label>
       <label className="flex flex-col gap-2 text-xs text-muted-foreground">
-        Vibe
+        Phong cách
         <input
           className={inputClassName}
           value={values.vibe}
-          placeholder="e.g. Calm, sharp, and helpful"
+          placeholder="vd: Bình tĩnh, sắc bén và hữu ích"
           disabled={disabled}
           onChange={(event) => {
             onChange("vibe", event.target.value);
@@ -64,7 +64,7 @@ export function AgentIdentityFields({
         <input
           className={inputClassName}
           value={values.emoji}
-          placeholder="e.g. ✨"
+          placeholder="vd: ✨"
           disabled={disabled}
           onChange={(event) => {
             onChange("emoji", event.target.value);
