@@ -26,16 +26,16 @@ type AgentSkillsPanelProps = {
 };
 
 const FILTERS: Array<{ id: SkillRowFilter; label: string }> = [
-  { id: "all", label: "All" },
-  { id: "ready", label: "Ready" },
-  { id: "setup-required", label: "Setup required" },
-  { id: "not-supported", label: "Not supported" },
+  { id: "all", label: "Tất cả" },
+  { id: "ready", label: "Sẵn sàng" },
+  { id: "setup-required", label: "Cần thiết lập" },
+  { id: "not-supported", label: "Không khả dụng" },
 ];
 
 const DISPLAY_LABELS: Record<AgentSkillDisplayState, string> = {
-  ready: "Ready",
-  "setup-required": "Setup required",
-  "not-supported": "Not supported",
+  ready: "Sẵn sàng",
+  "setup-required": "Cần thiết lập",
+  "not-supported": "Không khả dụng",
 };
 
 const DISPLAY_CLASSES: Record<AgentSkillDisplayState, string> = {
@@ -53,15 +53,15 @@ const resolveHint = (
   }
   if (displayState === "not-supported") {
     if (skill.blockedByAllowlist) {
-      return "Blocked by bundled skills policy.";
+      return "Bị chặn bởi chính sách kỹ năng tích hợp sẵn.";
     }
-    return buildSkillMissingDetails(skill).find((line) => line.startsWith("Requires OS:")) ?? "Not supported.";
+    return buildSkillMissingDetails(skill).find((line) => line.startsWith("Requires OS:")) ?? "Không khả dụng.";
   }
   const readiness = deriveSkillReadinessState(skill);
   if (readiness === "disabled-globally") {
-    return "Disabled globally. Enable it in System setup.";
+    return "Đã tắt toàn cục. Bật lại trong Thiết lập hệ thống.";
   }
-  return buildSkillMissingDetails(skill)[0] ?? "Requires setup in System setup.";
+  return buildSkillMissingDetails(skill)[0] ?? "Cần thiết lập trong Thiết lập hệ thống.";
 };
 
 export const AgentSkillsPanel = ({
@@ -142,24 +142,24 @@ export const AgentSkillsPanel = ({
   return (
     <section className="sidebar-section" data-testid="agent-settings-skills">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="sidebar-section-title">Skills</h3>
+        <h3 className="sidebar-section-title">Kỹ năng</h3>
         <div className="font-mono text-[10px] text-muted-foreground">
           {enabledCount}/{skillEntries.length}
         </div>
       </div>
-      <div className="mt-2 text-[11px] text-muted-foreground">Skill access controls apply to this agent.</div>
+      <div className="mt-2 text-[11px] text-muted-foreground">Kiểm soát truy cập kỹ năng áp dụng cho tác nhân này.</div>
       {accessMode === "selected" ? (
         <div className="mt-2 text-[10px] text-muted-foreground/80">
-          This agent is using selected skills only.
+          Tác nhân này chỉ dùng các kỹ năng được chọn.
         </div>
       ) : null}
       <div className="mt-3">
         <input
           value={skillsFilter}
           onChange={(event) => setSkillsFilter(event.target.value)}
-          placeholder="Search skills"
+          placeholder="Tìm kiếm kỹ năng"
           className="w-full rounded-md border border-border/60 bg-surface-1 px-3 py-2 text-[11px] text-foreground outline-none transition focus:border-border"
-          aria-label="Search skills"
+          aria-label="Tìm kiếm kỹ năng"
         />
       </div>
       <div className="mt-2 flex flex-wrap gap-1">
@@ -181,12 +181,12 @@ export const AgentSkillsPanel = ({
           );
         })}
       </div>
-      {skillsLoading ? <div className="mt-3 text-[11px] text-muted-foreground">Loading skills...</div> : null}
+      {skillsLoading ? <div className="mt-3 text-[11px] text-muted-foreground">Đang tải kỹ năng...</div> : null}
       {!skillsLoading && skillsError ? (
         <div className="ui-alert-danger mt-3 rounded-md px-3 py-2 text-xs">{skillsError}</div>
       ) : null}
       {!skillsLoading && !skillsError && filteredRows.length === 0 ? (
-        <div className="mt-3 text-[11px] text-muted-foreground">No matching skills.</div>
+        <div className="mt-3 text-[11px] text-muted-foreground">Không tìm thấy kỹ năng phù hợp.</div>
       ) : null}
       {!skillsLoading && !skillsError && filteredRows.length > 0 ? (
         <div className="mt-3 flex flex-col gap-2">
@@ -241,7 +241,7 @@ export const AgentSkillsPanel = ({
                         onOpenSystemSetup(entry.skill.skillKey);
                       }}
                     >
-                      Open System Setup
+                      Mở thiết lập hệ thống
                     </button>
                   ) : null}
                 </div>

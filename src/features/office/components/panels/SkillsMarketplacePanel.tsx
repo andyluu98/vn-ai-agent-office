@@ -23,21 +23,21 @@ type MarketplaceFilter = "all" | SkillMarketplaceCollectionId;
 
 const FILTER_LABELS: Record<MarketplaceFilter, string> = {
   claw3d: "VN AI Agent Office",
-  all: "All",
-  featured: "Featured",
-  installed: "Installed",
-  "setup-required": "Needs setup",
-  "built-in": "Built-in",
+  all: "Tất cả",
+  featured: "Nổi bật",
+  installed: "Đã cài",
+  "setup-required": "Cần thiết lập",
+  "built-in": "Tích hợp sẵn",
   workspace: "Workspace",
-  extra: "Community",
-  other: "Other",
+  extra: "Cộng đồng",
+  other: "Khác",
 };
 
 const READINESS_LABELS = {
-  ready: "Ready",
-  "needs-setup": "Needs setup",
-  unavailable: "Unavailable",
-  "disabled-globally": "Disabled globally",
+  ready: "Sẵn sàng",
+  "needs-setup": "Cần thiết lập",
+  unavailable: "Không khả dụng",
+  "disabled-globally": "Tắt toàn cục",
 } as const;
 
 const READINESS_CLASSES = {
@@ -182,10 +182,10 @@ export function SkillsMarketplacePanel({
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/70">
-              Skills Marketplace
+              Kho kỹ năng
             </div>
             <div className="mt-1 font-mono text-[11px] text-white/40">
-              Browse gateway skills like a curated plugin store.
+              Duyệt kỹ năng cho cổng kết nối như một cửa hàng plugin.
             </div>
           </div>
           <button
@@ -194,29 +194,28 @@ export function SkillsMarketplacePanel({
             className="inline-flex items-center gap-1 rounded border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-100"
           >
             <RefreshCcw className="h-3.5 w-3.5" />
-            Refresh
+            Làm mới
           </button>
         </div>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
         <div className="rounded border border-amber-500/20 bg-amber-500/10 px-3 py-2 font-mono text-[10px] text-amber-100">
-          Packaged skill installs target the selected agent workspace. Global setup actions still affect
-          the whole gateway. Agent access controls below apply only to the selected agent.
+          Cài kỹ năng theo gói nhắm tới workspace của tác nhân đã chọn. Các thao tác thiết lập toàn cục vẫn ảnh hưởng toàn bộ cổng kết nối. Kiểm soát truy cập bên dưới chỉ áp dụng cho tác nhân đã chọn.
         </div>
 
         <div className="mt-3 rounded border border-cyan-500/15 bg-white/[0.03] px-3 py-3">
           <div className="flex items-center justify-between gap-2">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
-                Agent context
+                Ngữ cảnh tác nhân
               </div>
               <div className="mt-1 font-mono text-[11px] text-white/75">
-                {marketplace.selectedAgent?.name ?? "No agent selected"}
+                {marketplace.selectedAgent?.name ?? "Chưa chọn tác nhân"}
               </div>
             </div>
             <div className="font-mono text-[10px] text-white/35">
-              Access mode: {accessMode === "selected" ? "Selected skills" : accessMode}
+              Chế độ truy cập: {accessMode === "selected" ? "Kỹ năng được chọn" : accessMode}
             </div>
           </div>
 
@@ -226,7 +225,7 @@ export function SkillsMarketplacePanel({
               onChange={(event) => marketplace.setSelectedAgentId(event.target.value || null)}
               className="min-w-0 flex-1 rounded border border-white/10 bg-black/40 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
             >
-              {marketplace.agents.length === 0 ? <option value="">No agents available</option> : null}
+              {marketplace.agents.length === 0 ? <option value="">Chưa có tác nhân</option> : null}
               {marketplace.agents.map((agent) => (
                 <option key={agent.agentId} value={agent.agentId}>
                   {agent.name}
@@ -243,7 +242,7 @@ export function SkillsMarketplacePanel({
               }}
               className="rounded border border-white/10 bg-white/5 px-2 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Focus chat
+              Mở chat
             </button>
             <button
               type="button"
@@ -255,7 +254,7 @@ export function SkillsMarketplacePanel({
               }}
               className="rounded border border-white/10 bg-white/5 px-2 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Settings
+              Cài đặt
             </button>
           </div>
         </div>
@@ -264,9 +263,9 @@ export function SkillsMarketplacePanel({
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search skills, categories, or sources"
+            placeholder="Tìm kỹ năng, danh mục, hoặc nguồn"
             className="w-full rounded border border-white/10 bg-black/40 px-3 py-2 font-mono text-[11px] text-white/85 outline-none transition focus:border-cyan-400/35"
-            aria-label="Search marketplace skills"
+            aria-label="Tìm kiếm kỹ năng marketplace"
           />
         </div>
 
@@ -311,14 +310,14 @@ export function SkillsMarketplacePanel({
         ) : null}
 
         {marketplace.loading ? (
-          <div className="mt-4 font-mono text-[11px] text-white/45">Loading marketplace inventory...</div>
+          <div className="mt-4 font-mono text-[11px] text-white/45">Đang tải kho kỹ năng...</div>
         ) : null}
 
         {!marketplace.loading && activeFilter === "all" && featuredEntries.length > 0 ? (
           <div className="mt-4">
             <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
               <Sparkles className="h-3.5 w-3.5 text-cyan-300" />
-              Featured shelf
+              Kỹ năng nổi bật
             </div>
             <div className="grid gap-2">
               {featuredEntries.map((entry) => (
@@ -334,7 +333,7 @@ export function SkillsMarketplacePanel({
                       <div className="mt-1 font-mono text-[10px] text-cyan-100/75">{entry.metadata.tagline}</div>
                     </div>
                     <div className="rounded border border-cyan-500/20 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-cyan-100/85">
-                      {entry.metadata.editorBadge ?? "Featured"}
+                      {entry.metadata.editorBadge ?? "Nổi bật"}
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-3 font-mono text-[10px] text-white/55">
@@ -344,14 +343,14 @@ export function SkillsMarketplacePanel({
                           <Star className="h-3 w-3 text-amber-300" />
                           {formatRating(entry.metadata.rating)}
                         </span>
-                        <span>{formatInstalls(entry.metadata.installs)} installs</span>
+                        <span>{formatInstalls(entry.metadata.installs)} lượt cài</span>
                       </>
                     ) : null}
                     <span>{entry.metadata.category}</span>
                   </div>
                   {entry.metadata.poweredByName && entry.metadata.poweredByUrl ? (
                     <div className="mt-2 font-mono text-[10px] text-white/55">
-                      Powered by{" "}
+                      Được cung cấp bởi{" "}
                       <a
                         href={entry.metadata.poweredByUrl}
                         target="_blank"
@@ -371,7 +370,7 @@ export function SkillsMarketplacePanel({
 
         {!marketplace.loading && filteredCollections.length === 0 ? (
           <div className="mt-4 rounded border border-white/10 bg-white/[0.03] px-3 py-4 font-mono text-[11px] text-white/45">
-            No matching skills found for this gateway.
+            Không tìm thấy kỹ năng phù hợp cho cổng kết nối này.
           </div>
         ) : null}
 
@@ -389,25 +388,25 @@ export function SkillsMarketplacePanel({
                   const primaryAction =
                     packageOnly
                       ? {
-                          label: "Install skill",
+                          label: "Cài kỹ năng",
                           run: () => void marketplace.handleInstallPackagedSkill(entry.skill.skillKey),
                           icon: Download,
                         }
                       : entry.readiness === "needs-setup" && entry.installable
                       ? {
-                          label: "Install deps",
+                          label: "Cài gói phụ thuộc",
                           run: () => void marketplace.handleInstallSkill(entry.skill),
                           icon: Download,
                         }
                       : entry.readiness === "disabled-globally"
                         ? {
-                            label: "Enable gateway",
+                            label: "Bật cho cổng kết nối",
                             run: () => void marketplace.handleSetSkillGlobalEnabled(entry.skill.skillKey, true),
                             icon: Settings2,
                           }
                         : entry.readiness === "needs-setup"
                           ? {
-                              label: "Open settings",
+                              label: "Mở cài đặt",
                               run: () => {
                                 if (marketplace.selectedAgentId) {
                                   onOpenAgentSettings(marketplace.selectedAgentId);
@@ -453,14 +452,14 @@ export function SkillsMarketplacePanel({
                                   <Star className="h-3 w-3 text-amber-300" />
                                   {formatRating(entry.metadata.rating)}
                                 </span>
-                                <span>{formatInstalls(entry.metadata.installs)} installs</span>
+                                <span>{formatInstalls(entry.metadata.installs)} lượt cài</span>
                               </>
                             ) : null}
                             <span>{entry.skill.source}</span>
                           </div>
                           {entry.metadata.poweredByName && entry.metadata.poweredByUrl ? (
                             <div className="mt-2 font-mono text-[10px] text-white/55">
-                              Powered by{" "}
+                              Được cung cấp bởi{" "}
                               <a
                                 href={entry.metadata.poweredByUrl}
                                 target="_blank"
@@ -494,7 +493,7 @@ export function SkillsMarketplacePanel({
                                 : "border-white/10 bg-white/5 text-white/75 hover:bg-white/10"
                             }`}
                           >
-                            {isEnabledForAgent ? "Disable for agent" : "Enable for agent"}
+                            {isEnabledForAgent ? "Tắt cho tác nhân" : "Bật cho tác nhân"}
                           </button>
 
                           <div className="flex flex-wrap justify-end gap-2">
@@ -523,7 +522,7 @@ export function SkillsMarketplacePanel({
                                 className="inline-flex items-center gap-1 rounded border border-rose-500/25 bg-rose-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-rose-100 transition-colors hover:border-rose-400/40 disabled:cursor-not-allowed disabled:opacity-45"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
-                                Remove for all agents
+                                Xoá cho tất cả tác nhân
                               </button>
                             ) : null}
 
@@ -532,7 +531,7 @@ export function SkillsMarketplacePanel({
                               onClick={() => setDetailSkillKey(entry.skill.skillKey)}
                               className="rounded border border-white/10 bg-white/5 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10"
                             >
-                              Details
+                              Chi tiết
                             </button>
                           </div>
                         </div>
@@ -540,11 +539,11 @@ export function SkillsMarketplacePanel({
                       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-white/35">
                         <div>
                           {isEnabledForAgent
-                            ? "This skill is currently enabled for the selected agent."
-                            : "This skill is currently disabled for the selected agent."}
+                            ? "Kỹ năng này đang bật cho tác nhân đã chọn."
+                            : "Kỹ năng này đang tắt cho tác nhân đã chọn."}
                         </div>
                         {entry.removable ? (
-                          <div>Removing from the gateway deletes the installed skill for every agent.</div>
+                          <div>Xoá khỏi cổng kết nối sẽ xoá kỹ năng đã cài cho tất cả tác nhân.</div>
                         ) : null}
                       </div>
                     </div>
@@ -560,7 +559,7 @@ export function SkillsMarketplacePanel({
           <div className="flex items-start justify-between border-b border-cyan-500/10 px-4 py-3">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
-                Skill detail
+                Chi tiết kỹ năng
               </div>
               <div className="mt-1 font-mono text-[14px] font-semibold text-white/90">
                 {detailEntry.skill.name}
@@ -570,7 +569,7 @@ export function SkillsMarketplacePanel({
               type="button"
               onClick={() => setDetailSkillKey(null)}
               className="rounded border border-white/10 bg-white/5 p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-              aria-label="Close marketplace detail"
+              aria-label="Đóng chi tiết marketplace"
             >
               <X className="h-4 w-4" />
             </button>
@@ -594,7 +593,7 @@ export function SkillsMarketplacePanel({
               <div className="mt-3 font-mono text-[11px] text-white/75">{detailEntry.metadata.tagline}</div>
               {detailEntry.metadata.poweredByName && detailEntry.metadata.poweredByUrl ? (
                 <div className="mt-3 font-mono text-[10px] text-white/60">
-                  Powered by{" "}
+                  Được cung cấp bởi{" "}
                   <a
                     href={detailEntry.metadata.poweredByUrl}
                     target="_blank"
@@ -613,17 +612,17 @@ export function SkillsMarketplacePanel({
                 {!detailEntry.metadata.hideStats ? (
                   <>
                     <div className="rounded border border-white/8 bg-black/30 px-2 py-2">
-                      <div className="text-white/35">Rating</div>
+                      <div className="text-white/35">Đánh giá</div>
                       <div className="mt-1 text-white/90">{formatRating(detailEntry.metadata.rating)}</div>
                     </div>
                     <div className="rounded border border-white/8 bg-black/30 px-2 py-2">
-                      <div className="text-white/35">Installs</div>
+                      <div className="text-white/35">Lượt cài</div>
                       <div className="mt-1 text-white/90">{formatInstalls(detailEntry.metadata.installs)}</div>
                     </div>
                   </>
                 ) : null}
                 <div className="rounded border border-white/8 bg-black/30 px-2 py-2">
-                  <div className="text-white/35">Source</div>
+                  <div className="text-white/35">Nguồn</div>
                   <div className="mt-1 text-white/90">{detailEntry.skill.source}</div>
                 </div>
               </div>
@@ -631,7 +630,7 @@ export function SkillsMarketplacePanel({
 
             <div className="mt-4">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
-                Capabilities
+                Tính năng
               </div>
               <div className="mt-2 flex flex-col gap-2">
                 {detailEntry.metadata.capabilities.map((capability) => (
@@ -648,7 +647,7 @@ export function SkillsMarketplacePanel({
             {detailEntry.missingDetails.length > 0 ? (
               <div className="mt-4">
                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
-                  Setup notes
+                  Ghi chú thiết lập
                 </div>
                 <div className="mt-2 flex flex-col gap-2">
                   {detailEntry.missingDetails.map((line) => (
@@ -664,8 +663,7 @@ export function SkillsMarketplacePanel({
             ) : null}
 
             <div className="mt-4 rounded border border-cyan-500/15 bg-cyan-500/10 px-3 py-3 font-mono text-[10px] text-cyan-100">
-              Packaged installs land in the selected workspace. Gateway setup changes still apply to every
-              agent, and agent enablement depends on the selected agent&apos;s allowlist.
+              Cài gói sẽ nằm trong workspace đã chọn. Thay đổi thiết lập cổng kết nối vẫn áp dụng cho mọi tác nhân, và việc bật/tắt tác nhân phụ thuộc vào danh sách cho phép của tác nhân đó.
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
@@ -678,7 +676,7 @@ export function SkillsMarketplacePanel({
                   className="inline-flex items-center gap-1 rounded border border-cyan-500/25 bg-cyan-500/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-100 transition-colors hover:border-cyan-400/40 disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Download className="h-3.5 w-3.5" />
-                  Install skill
+                  Cài kỹ năng
                 </button>
               ) : null}
               {detailEntry.readiness === "needs-setup" && detailEntry.installable ? (
@@ -689,7 +687,7 @@ export function SkillsMarketplacePanel({
                   className="inline-flex items-center gap-1 rounded border border-cyan-500/25 bg-cyan-500/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-100 transition-colors hover:border-cyan-400/40 disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Download className="h-3.5 w-3.5" />
-                  Install dependencies
+                  Cài gói phụ thuộc
                 </button>
               ) : null}
               {detailEntry.readiness === "disabled-globally" ? (
@@ -702,7 +700,7 @@ export function SkillsMarketplacePanel({
                   className="inline-flex items-center gap-1 rounded border border-cyan-500/25 bg-cyan-500/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-100 transition-colors hover:border-cyan-400/40 disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Settings2 className="h-3.5 w-3.5" />
-                  Enable for gateway
+                  Bật cho cổng kết nối
                 </button>
               ) : null}
               <button
@@ -716,7 +714,7 @@ export function SkillsMarketplacePanel({
                 className="inline-flex items-center gap-1 rounded border border-white/10 bg-white/5 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45"
               >
                 <Settings2 className="h-3.5 w-3.5" />
-                Manage in settings
+                Quản lý trong cài đặt
               </button>
               {detailEntry.skill.homepage ? (
                 <a
@@ -726,13 +724,12 @@ export function SkillsMarketplacePanel({
                   className="inline-flex items-center gap-1 rounded border border-white/10 bg-white/5 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
-                  Homepage
+                  Trang chủ
                 </a>
               ) : null}
             </div>
             <div className="mt-4 rounded border border-white/8 bg-white/[0.03] px-3 py-3 font-mono text-[10px] text-white/60">
-              `Enable/Disable for agent` only changes access for the selected agent. `Remove for all agents`
-              deletes the installed skill from the gateway workspace.
+              `Bật/Tắt cho tác nhân` chỉ thay đổi quyền truy cập cho tác nhân đã chọn. `Xoá cho tất cả tác nhân` sẽ xoá kỹ năng đã cài khỏi workspace của cổng kết nối.
             </div>
           </div>
         </div>

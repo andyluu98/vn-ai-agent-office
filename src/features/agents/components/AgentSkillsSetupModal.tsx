@@ -30,10 +30,10 @@ type AgentSkillsSetupModalProps = {
 };
 
 const READINESS_LABELS = {
-  ready: "Ready",
-  "needs-setup": "Needs setup",
-  unavailable: "Unavailable",
-  "disabled-globally": "Disabled globally",
+  ready: "Sẵn sàng",
+  "needs-setup": "Cần thiết lập",
+  unavailable: "Không khả dụng",
+  "disabled-globally": "Tắt toàn cục",
 } as const;
 
 const READINESS_CLASSES = {
@@ -103,7 +103,7 @@ export const AgentSkillsSetupModal = ({
         <div className="flex items-start justify-between gap-3 px-6 py-5">
           <div className="min-w-0">
             <div className="text-[11px] font-medium tracking-[0.01em] text-muted-foreground/80">
-              System setup
+              Thiết lập hệ thống
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <span className="text-base font-semibold text-foreground">{skill.name}</span>
@@ -114,7 +114,7 @@ export const AgentSkillsSetupModal = ({
               </span>
             </div>
             <div className="mt-2 text-[10px] text-muted-foreground/80">
-              Changes affect all agents on this gateway.
+              Thay đổi ảnh hưởng đến tất cả tác nhân trên cổng kết nối này.
             </div>
           </div>
           <button
@@ -122,7 +122,7 @@ export const AgentSkillsSetupModal = ({
             className="sidebar-btn-ghost px-3 font-mono text-[10px] font-semibold tracking-[0.06em]"
             onClick={onClose}
           >
-            Close
+            Đóng
           </button>
         </div>
         <div className="space-y-3 px-6 pb-3 text-[11px] text-muted-foreground">
@@ -134,7 +134,7 @@ export const AgentSkillsSetupModal = ({
           <div>{skill.description}</div>
           {skill.blockedByAllowlist ? (
             <div className="text-[10px] text-muted-foreground/80">
-              Blocked by bundled skills policy (`skills.allowBundled`).
+              Bị chặn bởi chính sách kỹ năng tích hợp sẵn (`skills.allowBundled`).
             </div>
           ) : null}
           {missingDetails.map((line) => (
@@ -159,7 +159,7 @@ export const AgentSkillsSetupModal = ({
                   void onInstallSkill(skill.skillKey, skill.name, installOption.id);
                 }}
               >
-                {busyForSkill ? "Working..." : installOption.label}
+                {busyForSkill ? "Đang xử lý..." : installOption.label}
               </button>
             ) : null}
             <button
@@ -171,10 +171,10 @@ export const AgentSkillsSetupModal = ({
               }}
             >
               {busyForSkill
-                ? "Working..."
+                ? "Đang xử lý..."
                 : skill.disabled
-                  ? "Enable globally"
-                  : "Disable globally"}
+                  ? "Bật toàn cục"
+                  : "Tắt toàn cục"}
             </button>
             {skill.primaryEnv ? (
               <>
@@ -200,7 +200,7 @@ export const AgentSkillsSetupModal = ({
                     void onSaveSkillApiKey(skill.skillKey);
                   }}
                 >
-                  {busyForSkill ? "Working..." : `Save ${skill.primaryEnv}`}
+                  {busyForSkill ? "Đang xử lý..." : `Lưu ${skill.primaryEnv}`}
                 </button>
               </>
             ) : null}
@@ -211,7 +211,7 @@ export const AgentSkillsSetupModal = ({
                 disabled={anySkillBusy}
                 onClick={() => {
                   const approved = window.confirm(
-                    `Remove ${skill.name} from the gateway for all agents?`
+                    `Xoá ${skill.name} khỏi cổng kết nối cho tất cả tác nhân?`
                   );
                   if (!approved) {
                     return;
@@ -224,7 +224,7 @@ export const AgentSkillsSetupModal = ({
                   onClose();
                 }}
               >
-                Remove for all agents
+                Xoá cho tất cả tác nhân
               </button>
             ) : null}
           </div>

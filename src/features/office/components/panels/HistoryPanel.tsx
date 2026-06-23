@@ -71,7 +71,7 @@ export function HistoryPanel({
             onChange={(event) => setAgentFilter(event.target.value)}
             className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
           >
-            <option value="all">All agents</option>
+            <option value="all">Tất cả tác nhân</option>
             {agents.map((agent) => (
               <option key={agent.agentId} value={agent.agentId}>
                 {agent.name || agent.agentId}
@@ -89,8 +89,8 @@ export function HistoryPanel({
             onChange={(event) => setTriggerFilter(event.target.value as "all" | RunTriggerKind)}
             className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
           >
-            <option value="all">All triggers</option>
-            <option value="user">User</option>
+            <option value="all">Tất cả trigger</option>
+            <option value="user">Người dùng</option>
             <option value="heartbeat">Heartbeat</option>
             <option value="cron">Cron</option>
           </select>
