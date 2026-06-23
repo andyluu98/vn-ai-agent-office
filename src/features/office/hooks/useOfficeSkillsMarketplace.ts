@@ -277,7 +277,7 @@ export const useOfficeSkillsMarketplace = ({
 
       await runSkillMutation({
         skillKey: packagedSkill.skillKey,
-        successMessage: `Successfully installed ${packagedSkill.name.trim()} in the selected workspace. Enable it for the agent from the CLAW3D tab.`,
+        successMessage: `Đã cài ${packagedSkill.name.trim()} vào workspace đã chọn. Bật cho tác nhân từ tab VN AI Agent Office.`,
         run: async (_agentId, report) => {
           await installPackagedSkillViaGatewayAgent({
             client,

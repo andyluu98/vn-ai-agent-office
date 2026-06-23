@@ -297,7 +297,7 @@ export function SkillsMarketplacePanel({
             {marketplace.message.text}
             {marketplace.message.kind === "success" ? (
               <div className="mt-1 font-mono text-[10px] text-emerald-100/80">
-                Check the `CLAW3D` filter below to find the installed skill quickly.
+                Dùng bộ lọc VN AI Agent Office bên dưới để tìm nhanh kỹ năng vừa cài.
               </div>
             ) : null}
           </div>

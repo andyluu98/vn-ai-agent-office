@@ -269,7 +269,7 @@ Các biến môi trường phổ biến:
 - `CUSTOM_RUNTIME_ALLOWLIST` giới hạn host mà `/api/runtime/custom` có thể fetch. Nếu không đặt, fallback về `UPSTREAM_ALLOWLIST`.
 - `NEXT_PUBLIC_GATEWAY_URL` cung cấp upstream gateway URL mặc định khi Studio settings trống. **Lưu ý:** đây là biến build-time — thay đổi cần `npm run build` để có hiệu lực.
 - `CLAW3D_GATEWAY_URL` và `CLAW3D_GATEWAY_TOKEN` cung cấp giải pháp thay thế runtime cho `NEXT_PUBLIC_GATEWAY_URL`, có hiệu lực sau khi restart server mà không cần rebuild.
-- `CLAW3D_GATEWAY_ADAPTER_TYPE` có thể kết hợp với `CLAW3D_GATEWAY_URL` để đánh dấu các runtime defaults đó là `openclaw`, `hermes`, `demo`, `local`, `vn-office`, hoặc `custom`.
+- `CLAW3D_GATEWAY_ADAPTER_TYPE` có thể kết hợp với `CLAW3D_GATEWAY_URL` để đánh dấu các runtime defaults đó là `openclaw`, `hermes`, `demo`, `local`, `claw3d`, hoặc `custom`.
 - Nếu `CLAW3D_GATEWAY_URL` không được đặt, Studio vẫn có thể hiển thị các Hermes hoặc demo adapter defaults cục bộ từ `HERMES_ADAPTER_PORT` / `DEMO_ADAPTER_PORT`.
 - Các file defaults của OpenClaw vẫn đến từ `~/.openclaw/openclaw.json` khi có.
 - `OPENCLAW_STATE_DIR` và `OPENCLAW_CONFIG_PATH` ghi đè các đường dẫn OpenClaw mặc định.
