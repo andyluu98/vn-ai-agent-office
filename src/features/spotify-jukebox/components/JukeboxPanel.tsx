@@ -132,7 +132,7 @@ function SetupView() {
   return (
     <div className="space-y-6 p-6">
       <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 px-4 py-3 text-sm text-cyan-100">
-        Keep Claw3D open on <code className="rounded bg-slate-900/70 px-1">{localhostOrigin}</code>.
+        Keep VN AI Agent Office open on <code className="rounded bg-slate-900/70 px-1">{localhostOrigin}</code>.
         Spotify will redirect to your ngrok callback, which sends the auth code back into this window.
       </div>
 

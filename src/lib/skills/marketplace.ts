@@ -99,13 +99,13 @@ const SKILL_MARKETPLACE_OVERRIDES: Record<
       "Shared workspace state",
     ],
     featured: true,
-    editorBadge: "Claw3D test",
+    editorBadge: "VN Office test",
     hideStats: true,
   },
   "task-manager": {
     category: "Productivity",
     tagline:
-      "Turns actionable requests into persistent shared tasks that power the Claw3D Kanban board.",
+      "Turns actionable requests into persistent shared tasks that power the VN AI Agent Office Kanban board.",
     capabilities: [
       "Automatic task capture",
       "Task lifecycle tracking",
@@ -230,7 +230,7 @@ export const buildSkillMarketplaceEntry = (
   const missingDetails = buildSkillMissingDetails(skill);
   if (packagedSkill && !skill.baseDir.trim()) {
     missingDetails.unshift(
-      "Install this packaged Claw3D skill to make it available on the gateway.",
+      "Install this packaged VN AI Agent Office skill to make it available on the gateway.",
     );
   }
   return {
@@ -269,7 +269,7 @@ export const buildSkillMarketplaceCollections = (
     getPackagedSkillBySkillKey(entry.skill.skillKey),
   );
   if (claw3d.length > 0) {
-    collections.push({ id: "claw3d", label: "Claw3D", entries: claw3d });
+    collections.push({ id: "claw3d", label: "VN AI Agent Office", entries: claw3d });
   }
 
   const installed = entries.filter(

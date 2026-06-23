@@ -96,10 +96,11 @@ const readPortBasedGatewayProfile = (
 };
 
 const buildEnvGatewayDefaults = (): StudioGatewaySettings | null => {
-  const envUrl = process.env.CLAW3D_GATEWAY_URL?.trim();
-  const envToken = process.env.CLAW3D_GATEWAY_TOKEN?.trim() ?? "";
+  // VN_OFFICE_* is the new canonical name; CLAW3D_* is kept as a legacy fallback.
+  const envUrl = (process.env.VN_OFFICE_GATEWAY_URL ?? process.env.CLAW3D_GATEWAY_URL)?.trim();
+  const envToken = (process.env.VN_OFFICE_GATEWAY_TOKEN ?? process.env.CLAW3D_GATEWAY_TOKEN)?.trim() ?? "";
   const envAdapterType =
-    normalizeAdapterType(process.env.CLAW3D_GATEWAY_ADAPTER_TYPE) ?? "openclaw";
+    normalizeAdapterType(process.env.VN_OFFICE_GATEWAY_ADAPTER_TYPE ?? process.env.CLAW3D_GATEWAY_ADAPTER_TYPE) ?? "openclaw";
 
   const hermesProfile = readPortBasedGatewayProfile("hermes", "HERMES_ADAPTER_PORT");
   const demoProfile = readPortBasedGatewayProfile("demo", "DEMO_ADAPTER_PORT");

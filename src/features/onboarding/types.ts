@@ -36,7 +36,7 @@ export type OnboardingState = {
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "welcome",
-    title: "Welcome to Claw3D",
+    title: "Welcome to VN AI Agent Office",
     description: "Your AI office in 3D",
     skippable: false,
   },

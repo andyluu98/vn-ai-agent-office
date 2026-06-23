@@ -74,7 +74,7 @@ export const resolveRuntimeContext = ({
   const adapterType = normalizeAdapterType(
     gateway?.adapterType ??
       upstreamGateway?.adapterType ??
-      env.CLAW3D_GATEWAY_ADAPTER_TYPE,
+      env.VN_OFFICE_GATEWAY_ADAPTER_TYPE ?? env.CLAW3D_GATEWAY_ADAPTER_TYPE,
     "openclaw",
   );
   const rawProfiles = isRecord(gateway?.profiles) ? gateway.profiles : null;
@@ -295,7 +295,7 @@ export const buildGatewayFailureActions = ({
 
   if (normalized.includes("econnrefused") || normalized.includes("timed out")) {
     actions.push(
-      "Verify the backend is actually listening on the configured host and port before retrying from Claw3D.",
+      "Verify the backend is actually listening on the configured host and port before retrying from VN AI Agent Office.",
     );
   }
 
@@ -477,7 +477,7 @@ export const formatDoctorReport = ({
   }
   const lines = [];
   lines.push("==================================================");
-  lines.push(`Claw3Doctor ${formatStatusBadge(summary)}`);
+  lines.push(`VN Office Doctor ${formatStatusBadge(summary)}`);
   lines.push("==================================================");
   lines.push("");
   lines.push(`Runtime provider: ${runtimeContext.adapterType}`);
@@ -526,7 +526,7 @@ export const buildDoctorJsonReport = ({
   paths,
   checks,
 }) => ({
-  doctor: "claw3doctor",
+  doctor: "vn-office-doctor",
   summary,
   runtimeContext,
   paths,

@@ -30,7 +30,7 @@ const PROVIDER_LABEL: Record<FloorProvider, string> = {
   paperclip: "Paperclip",
   custom: "Custom",
   local: "Local",
-  claw3d: "Claw3D",
+  claw3d: "VN Office",
 };
 
 const renderFloorButton = (params: {

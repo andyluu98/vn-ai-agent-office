@@ -380,7 +380,7 @@ When this skill is activated, the agent should walk to the office jukebox before
 ## OpenClaw Gateway Skill Contract
 
 > This section is for developers implementing the backend skill handler in OpenClaw.
-> The Claw3D UI handles authentication via Spotify PKCE OAuth in the browser.
+> The VN AI Agent Office UI handles authentication via Spotify PKCE OAuth in the browser.
 > The gateway skill handles agent-driven requests via the \`soundclaw.*\` RPC namespace.
 
 ### Authentication model

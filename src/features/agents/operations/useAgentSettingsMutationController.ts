@@ -449,7 +449,7 @@ export function useAgentSettingsMutationController(params: UseAgentSettingsMutat
       const agent = params.agents.find((entry) => entry.agentId === decision.normalizedAgentId);
       if (!agent) return;
       const confirmed = window.confirm(
-        `Delete ${agent.name}? This removes the agent record from OpenClaw and clears its scheduled automations. Claw3D will not touch workspace files.`
+        `Delete ${agent.name}? This removes the agent record from OpenClaw and clears its scheduled automations. VN AI Agent Office will not touch workspace files.`
       );
       if (!confirmed) return;
 

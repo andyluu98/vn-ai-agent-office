@@ -219,7 +219,7 @@ export const AgentEditorModal = ({
                   <div>
                     <div className="text-sm font-semibold text-inherit">Delete Agent</div>
                     <div className="text-xs text-red-100/85">
-                      Remove this agent from Claw3D and OpenClaw.
+                      Remove this agent from VN AI Agent Office and OpenClaw.
                     </div>
                   </div>
                 </button>

@@ -532,9 +532,9 @@ export const submitGitHubPullRequestReview = (params: {
   const body =
     params.body?.trim() ||
     (params.action === "COMMENT"
-      ? "Reviewed in Claw3D."
+      ? "Reviewed in VN AI Agent Office."
       : params.action === "REQUEST_CHANGES"
-        ? "Please address the requested updates from Claw3D."
+        ? "Please address the requested updates from VN AI Agent Office."
         : "");
   if (body) {
     args.push("--body", body);

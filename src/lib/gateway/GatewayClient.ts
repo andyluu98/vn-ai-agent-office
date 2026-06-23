@@ -531,16 +531,16 @@ const doctorFixHint =
   "Run `npx openclaw doctor --fix` on the gateway host (or `pnpm openclaw doctor --fix` in a source checkout).";
 
 const protocolMismatchHint =
-  "This gateway looks too old for Claw3D's protocol v3. Upgrade OpenClaw, use the Hermes adapter, or run `npm run demo-gateway` for a no-framework office demo.";
+  "This gateway looks too old for VN AI Agent Office's protocol v3. Upgrade OpenClaw, use the Hermes adapter, or run `npm run demo-gateway` for a no-framework office demo.";
 
 const tailscaleGatewayHint =
   "If this is a remote OpenClaw/Tailscale gateway, confirm the Studio host can reach the `wss://...` address and approve the first device pairing on the gateway host with `openclaw devices approve --latest`.";
 
 const pairingRequiredHint =
-  "This gateway is asking for first-time device approval. Run `openclaw devices approve --latest` on the gateway host, then restart Claw3D and reconnect from this browser.";
+  "This gateway is asking for first-time device approval. Run `openclaw devices approve --latest` on the gateway host, then restart VN AI Agent Office and reconnect from this browser.";
 
 const requiresDeviceIdentityHint =
-  "This gateway rejected the client as a control UI without device identity. For remote OpenClaw/Tailscale connections, update to the latest Claw3D build and approve the device pairing on the gateway host.";
+  "This gateway rejected the client as a control UI without device identity. For remote OpenClaw/Tailscale connections, update to the latest VN AI Agent Office build and approve the device pairing on the gateway host.";
 
 const isGatewayProtocolMismatchError = (error: GatewayResponseError) => {
   if (error.code.trim().toUpperCase() !== "INVALID_REQUEST") return false;

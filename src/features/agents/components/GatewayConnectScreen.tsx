@@ -108,7 +108,7 @@ export const GatewayConnectScreen = ({
       case "local":
         return "Local runtime expects a direct HTTP runtime/orchestrator boundary, not a provider catalog.";
       case "claw3d":
-        return "Claw3D runtime preserves Claw3D transcript conventions over the direct runtime seam.";
+        return "VN Office runtime preserves transcript conventions over the direct runtime seam.";
       case "custom":
       default:
         return "Custom is the generic direct runtime seam. Use it for compatible orchestrators, not for provider-specific auth flows.";
@@ -298,7 +298,7 @@ export const GatewayConnectScreen = ({
               className="ui-btn-secondary px-3 py-1.5 text-[11px] font-semibold tracking-[0.05em]"
               onClick={useClaw3dPreset}
             >
-              Claw3D runtime
+              VN Office runtime
             </button>
             <button
               type="button"
@@ -349,14 +349,14 @@ export const GatewayConnectScreen = ({
             <p className="text-xs font-medium text-foreground">Using a local or custom runtime?</p>
             <p className="mt-1 text-xs leading-snug text-muted-foreground">
               Choose <span className="font-mono text-foreground">Local runtime</span>,
-              <span className="font-mono text-foreground"> Claw3D runtime</span>, or
+              <span className="font-mono text-foreground"> VN Office runtime</span>, or
               <span className="font-mono text-foreground"> Custom backend</span> and point the URL at
               your orchestrator or runtime boundary. These profiles already preserve separate saved URLs
               and tokens, but transport-specific chat handoff still needs a follow-up slice.
             </p>
           </div>
           <div className="rounded-md border border-border bg-muted/30 px-3 py-3">
-            <p className="text-xs font-medium text-foreground">Opening Claw3D from another machine?</p>
+            <p className="text-xs font-medium text-foreground">Opening VN AI Agent Office from another machine?</p>
             <p className="mt-1 text-xs leading-snug text-muted-foreground">
               Start Studio with <span className="font-mono text-foreground">HOST=0.0.0.0</span> (or a
               specific LAN/Tailscale host) and set
