@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // TODO: Create Claw3D voice and text skill.
+    // TODO: Create VN AI Agent Office voice and text skill.
     const scenario = buildMockPhoneCallScenario({
       callee,
       message: message || null,
