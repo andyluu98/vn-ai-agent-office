@@ -1,154 +1,154 @@
-# VN AI Agent Office Vision
+# Tầm nhìn VN AI Agent Office
 
-VN AI Agent Office is an open-source 3D environment for visualizing and interacting with AI agents powered by OpenClaw.
+VN AI Agent Office là môi trường 3D mã nguồn mở để hiển thị và tương tác với các AI agent được hỗ trợ bởi OpenClaw.
 
-The long-term goal of VN AI Agent Office is to build a living 3D world where AI agents and humans collaborate: a kind of digital city where agents operate, communicate, and perform tasks in a shared visual space.
+Mục tiêu dài hạn của VN AI Agent Office là xây dựng một thế giới 3D sống động nơi các AI agent và con người cộng tác: một thành phố kỹ thuật số nơi các agent vận hành, giao tiếp và thực thi nhiệm vụ trong không gian trực quan chung.
 
-OpenClaw acts as the intelligence and orchestration engine, while VN AI Agent Office provides the visual layer and interactive environment that makes agent activity understandable, inspectable, and collaborative.
+OpenClaw đóng vai trò là engine thông minh và điều phối, trong khi VN AI Agent Office cung cấp lớp trực quan và môi trường tương tác làm cho hoạt động của agent trở nên dễ hiểu, có thể kiểm tra và có tính cộng tác.
 
-This document explains the direction of the project and the guardrails guiding its development.
+Tài liệu này giải thích định hướng của dự án và các guardrail hướng dẫn quá trình phát triển.
 
-Project overview and developer documentation can be found in:
+Tổng quan dự án và tài liệu developer có thể tìm thấy trong:
 
 - [`README.md`](README.md)
 - [`ROADMAP.md`](ROADMAP.md)
 - [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
-## Why VN AI Agent Office Exists
+## Tại sao VN AI Agent Office tồn tại
 
-AI systems are becoming increasingly capable, but their behavior is often invisible or difficult to understand.
+Các hệ thống AI ngày càng trở nên có khả năng hơn, nhưng hành vi của chúng thường vô hình hoặc khó hiểu.
 
-VN AI Agent Office aims to solve this by providing a visual interface for AI systems, allowing people to:
+VN AI Agent Office hướng đến giải quyết vấn đề này bằng cách cung cấp giao diện trực quan cho các hệ thống AI, cho phép mọi người:
 
-- observe AI agents operating in real time
-- understand system behavior visually
-- collaborate with AI in shared environments
-- debug and inspect complex agent interactions
+- quan sát AI agent hoạt động theo thời gian thực
+- hiểu hành vi hệ thống một cách trực quan
+- cộng tác với AI trong môi trường chung
+- debug và kiểm tra các tương tác agent phức tạp
 
-The ultimate vision is a 3D city of AI agents, where:
+Tầm nhìn cuối cùng là một thành phố AI agent 3D, nơi:
 
-- agents represent services, tasks, and workflows
-- humans can explore, monitor, and interact with them
-- systems become understandable through spatial interaction
+- các agent đại diện cho dịch vụ, nhiệm vụ và workflow
+- con người có thể khám phá, giám sát và tương tác với chúng
+- hệ thống trở nên dễ hiểu thông qua tương tác không gian
 
-## Relationship to OpenClaw
+## Mối quan hệ với OpenClaw
 
-VN AI Agent Office is designed to work with OpenClaw, not replace it.
+VN AI Agent Office được thiết kế để hoạt động với OpenClaw, không thay thế nó.
 
-OpenClaw provides:
+OpenClaw cung cấp:
 
-- agent orchestration
-- tools and integrations
-- communication channels
-- task execution
-- model provider integrations
+- điều phối agent
+- công cụ và tích hợp
+- kênh giao tiếp
+- thực thi nhiệm vụ
+- tích hợp model provider
 
-VN AI Agent Office provides:
+VN AI Agent Office cung cấp:
 
-- visualization
-- interaction
-- spatial representation of agents and systems
-- collaborative environments for humans and AI
+- hiển thị
+- tương tác
+- biểu diễn không gian của agent và hệ thống
+- môi trường cộng tác cho con người và AI
 
-In simple terms:
+Nói đơn giản:
 
 ```text
-OpenClaw         -> intelligence and task execution
-VN AI Agent Office -> visualization and interaction layer
+OpenClaw            -> thông minh và thực thi nhiệm vụ
+VN AI Agent Office  -> lớp hiển thị và tương tác
 ```
 
-Maintaining compatibility with OpenClaw is an important design goal.
+Duy trì tương thích với OpenClaw là mục tiêu thiết kế quan trọng.
 
-Features that require breaking OpenClaw integration will generally not be accepted unless there is a strong architectural reason.
+Các tính năng yêu cầu phá vỡ tích hợp OpenClaw nói chung sẽ không được chấp nhận trừ khi có lý do kiến trúc mạnh mẽ.
 
-## Current Priorities
+## Ưu tiên hiện tại
 
-VN AI Agent Office is still in an early stage of development.
+VN AI Agent Office vẫn đang trong giai đoạn phát triển sớm.
 
-Current priorities include:
+Các ưu tiên hiện tại bao gồm:
 
-### Stability and Reliability
+### Tính ổn định và độ tin cậy
 
-- bug fixes
-- predictable rendering behavior
-- improving the developer experience
+- sửa lỗi
+- hành vi rendering có thể dự đoán
+- cải thiện trải nghiệm developer
 
-### Core Architecture
+### Kiến trúc cốt lõi
 
-- defining how agents map to visual entities
-- building a scalable world model
-- establishing a clean integration path with OpenClaw
+- xác định cách agent ánh xạ tới các thực thể trực quan
+- xây dựng mô hình thế giới có thể mở rộng
+- thiết lập đường tích hợp sạch với OpenClaw
 
-### Developer Ergonomics
+### Ergonomics cho developer
 
-- clear APIs for extending the environment
-- easy local setup
-- straightforward contribution paths
+- API rõ ràng để mở rộng môi trường
+- cài đặt cục bộ dễ dàng
+- con đường đóng góp đơn giản
 
-### Visualization Primitives
+### Nguyên thủy hiển thị
 
-- representing agents
-- representing workflows
-- representing system activity in spatial form
+- biểu diễn agent
+- biểu diễn workflow
+- biểu diễn hoạt động hệ thống dưới dạng không gian
 
-## Contribution Rules
+## Quy tắc đóng góp
 
-To keep the project maintainable:
+Để dự án có thể bảo trì được:
 
-- One PR = one topic. Avoid bundling unrelated changes.
-- Very large PRs may be declined or split into smaller pieces.
-- Architectural changes should be discussed in issues before implementation.
-- Contributors should respect the project's direction and scope.
+- Một PR = một chủ đề. Tránh gộp các thay đổi không liên quan.
+- PR quá lớn có thể bị từ chối hoặc tách thành các phần nhỏ hơn.
+- Các thay đổi kiến trúc nên được thảo luận trong issues trước khi triển khai.
+- Contributor nên tôn trọng định hướng và phạm vi của dự án.
 
-VN AI Agent Office is still evolving quickly, so iteration is expected.
+VN AI Agent Office vẫn đang phát triển nhanh, vì vậy sự lặp lại là điều được mong đợi.
 
-## Architecture Direction
+## Định hướng kiến trúc
 
-VN AI Agent Office is designed as a visual layer on top of agent systems.
+VN AI Agent Office được thiết kế như lớp trực quan trên đỉnh các hệ thống agent.
 
-The system should remain:
+Hệ thống nên duy trì:
 
-- modular
-- extensible
-- easy to experiment with
+- tính mô đun
+- khả năng mở rộng
+- dễ thử nghiệm
 
-The current stack focuses on:
+Stack hiện tại tập trung vào:
 
 - Three.js
 - WebGL
 - browser-based rendering
-- integration with OpenClaw runtime systems
+- tích hợp với các hệ thống runtime OpenClaw
 
-The goal is to keep the environment accessible to developers and contributors.
+Mục tiêu là giữ cho môi trường có thể tiếp cận với developer và contributor.
 
-## What We Will Not Merge (For Now)
+## Những gì chúng tôi sẽ không merge (hiện tại)
 
-To maintain focus, the following types of contributions are generally avoided:
+Để duy trì tập trung, các loại đóng góp sau đây thường được tránh:
 
-- features that break compatibility with OpenClaw
-- major architectural rewrites without prior discussion
-- replacing the rendering stack without strong technical justification
-- heavy framework layers that reduce hackability
-- extremely large PRs without prior coordination
-- unrelated product experiments that do not advance the VN AI Agent Office vision
+- tính năng phá vỡ tương thích với OpenClaw
+- viết lại kiến trúc lớn mà không có thảo luận trước
+- thay thế rendering stack mà không có lý do kỹ thuật mạnh mẽ
+- các lớp framework nặng làm giảm khả năng hack
+- PR cực lớn mà không có sự phối hợp trước
+- thử nghiệm sản phẩm không liên quan không thúc đẩy tầm nhìn VN AI Agent Office
 
-This list is a directional guardrail, not a permanent restriction.
+Danh sách này là guardrail định hướng, không phải hạn chế vĩnh viễn.
 
-Strong technical arguments or user demand may change these decisions.
+Các lập luận kỹ thuật mạnh mẽ hoặc nhu cầu người dùng có thể thay đổi các quyết định này.
 
-## Long-Term Direction
+## Định hướng dài hạn
 
-The long-term vision for VN AI Agent Office is ambitious:
+Tầm nhìn dài hạn cho VN AI Agent Office đầy tham vọng:
 
-**A 3D city of AI agents.**
+**Một thành phố AI agent 3D.**
 
-In this environment:
+Trong môi trường này:
 
-- AI agents operate as visible entities
-- systems become spatially understandable
-- humans can interact with agent systems in real time
-- collaboration between humans and AI becomes natural
+- AI agent hoạt động như các thực thể có thể nhìn thấy
+- hệ thống trở nên có thể hiểu được không gian
+- con người có thể tương tác với hệ thống agent theo thời gian thực
+- sự cộng tác giữa con người và AI trở nên tự nhiên
 
-Instead of interacting with invisible systems through logs and dashboards, users will be able to walk through and interact with the systems themselves.
+Thay vì tương tác với các hệ thống vô hình qua log và dashboard, người dùng sẽ có thể đi bộ qua và tương tác với chính các hệ thống đó.
 
-VN AI Agent Office is an early step toward that future.
+VN AI Agent Office là bước đầu tiên hướng tới tương lai đó.

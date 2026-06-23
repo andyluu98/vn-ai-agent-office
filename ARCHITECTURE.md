@@ -1,136 +1,136 @@
-# Architecture
+# Kiến trúc
 
-## Overview
-VN AI Agent Office is a gateway-first Next.js application for visualizing and operating AI agents powered by OpenClaw using Three.JS framework.
+## Tổng quan
+VN AI Agent Office là ứng dụng Next.js gateway-first để hiển thị và vận hành các AI agent được hỗ trợ bởi OpenClaw sử dụng framework Three.JS.
 
-It is the UI and proxy layer, not the OpenClaw runtime itself. OpenClaw remains the system of record for agents, sessions, and execution, while VN AI Agent Office provides:
+Đây là lớp UI và proxy, không phải bản thân OpenClaw runtime. OpenClaw vẫn là hệ thống nguồn sự thật cho agent, session và thực thi, trong khi VN AI Agent Office cung cấp:
 
-- an `/agents` workspace for chat, approvals, settings, and runtime monitoring,
-- an `/office` 3D environment for spatializing agent activity,
-- an `/office/builder` surface for editing office layouts,
-- a Studio-side settings and proxy layer that connects the browser to an upstream OpenClaw gateway.
+- không gian làm việc `/agents` cho chat, approval, cài đặt và giám sát runtime,
+- môi trường 3D `/office` để không gian hóa hoạt động agent,
+- giao diện `/office/builder` để chỉnh sửa office layout,
+- lớp cài đặt và proxy phía Studio kết nối trình duyệt với OpenClaw gateway upstream.
 
-## Goals
-- Keep OpenClaw as the source of truth for runtime state.
-- Keep local Studio state limited to UI preferences and connection settings.
-- Support both local and remote gateway setups.
-- Preserve clear boundaries between browser code, server code, and gateway-owned data.
-- Favor feature-focused modules over large shared abstractions.
+## Mục tiêu
+- Giữ OpenClaw là nguồn sự thật cho trạng thái runtime.
+- Giữ trạng thái Studio cục bộ giới hạn ở các tùy chọn UI và cài đặt kết nối.
+- Hỗ trợ cả cài đặt gateway cục bộ và từ xa.
+- Duy trì ranh giới rõ ràng giữa code trình duyệt, code server và dữ liệu thuộc gateway.
+- Ưu tiên các module tập trung vào tính năng hơn các abstraction chung lớn.
 
-## Non-goals
-- Multi-user or multi-tenant coordination.
-- Replacing OpenClaw as the execution engine.
-- Moving gateway-owned agent state into local frontend storage.
+## Không phải mục tiêu
+- Điều phối multi-user hoặc multi-tenant.
+- Thay thế OpenClaw làm execution engine.
+- Di chuyển trạng thái agent thuộc gateway vào local frontend storage.
 
-## System Model
-VN AI Agent Office is split into four main parts:
+## Mô hình hệ thống
+VN AI Agent Office được chia thành bốn phần chính:
 
 1. Browser UI.
-   The Next.js client renders the agents workspace, the office, and the builder.
+   Client Next.js render không gian làm việc agents, văn phòng và builder.
 2. Studio API routes.
-   Server routes handle local settings and other server-only operations.
+   Các server route xử lý cài đặt cục bộ và các thao tác chỉ dành cho server.
 3. Studio WebSocket proxy.
-   A custom Node server terminates browser WebSocket connections at `/api/gateway/ws` and forwards them to the upstream OpenClaw gateway.
+   Custom Node server terminate browser WebSocket connections tại `/api/gateway/ws` và chuyển tiếp chúng tới OpenClaw gateway upstream.
 4. OpenClaw gateway.
-   The gateway owns agent records, sessions, config, approvals, and runtime events.
+   Gateway sở hữu agent records, session, config, approval và runtime event.
 
-## Core Boundaries
-### 1. Gateway-owned state
-Agent records, sessions, approvals, runtime streams, and agent files belong to OpenClaw.
+## Ranh giới cốt lõi
+### 1. Trạng thái thuộc gateway
+Agent records, session, approval, runtime stream và file agent thuộc về OpenClaw.
 
-VN AI Agent Office may read and mutate that state through gateway APIs, but it should not create a competing local source of truth.
+VN AI Agent Office có thể đọc và thay đổi trạng thái đó qua gateway API, nhưng không nên tạo ra nguồn sự thật cục bộ cạnh tranh.
 
-### 2. Studio-owned local state
-Studio stores local settings such as:
+### 2. Trạng thái cục bộ thuộc Studio
+Studio lưu trữ các cài đặt cục bộ như:
 
-- gateway URL and token,
-- focused agent and related UI preferences,
-- office layout and local presentation state.
+- gateway URL và token,
+- agent được tập trung và các tùy chọn UI liên quan,
+- office layout và trạng thái hiển thị cục bộ.
 
-These settings live under the local VN AI Agent Office state directory and are accessed through server routes, not directly from the browser.
+Các cài đặt này nằm trong thư mục trạng thái VN AI Agent Office cục bộ và được truy cập qua server route, không trực tiếp từ trình duyệt.
 
-### 3. Client-server boundary
-Client components should not read or write the local filesystem directly.
+### 3. Ranh giới client-server
+Client component không nên đọc hoặc ghi local filesystem trực tiếp.
 
-Anything that touches files, environment-backed settings, or SSH helpers belongs on the server side.
+Bất cứ điều gì chạm đến file, cài đặt dựa trên môi trường hoặc SSH helper thuộc về phía server.
 
-### 4. Browser-gateway boundary
-The browser does not connect directly to the upstream gateway. It connects to Studio over a same-origin WebSocket, and Studio opens the upstream gateway connection on the server.
+### 4. Ranh giới browser-gateway
+Trình duyệt không kết nối trực tiếp tới upstream gateway. Nó kết nối với Studio qua same-origin WebSocket, và Studio mở kết nối upstream gateway trên server.
 
-This keeps the upstream connection server-managed and makes local, remote, and tunneled setups easier to support. The current UI still loads the configured upstream URL/token into browser memory at runtime, so the browser remains part of the active trust boundary.
+Điều này giữ upstream connection được quản lý bởi server và làm cho các cài đặt cục bộ, từ xa và tunnel dễ hỗ trợ hơn. UI hiện tại vẫn tải URL/token upstream đã cấu hình vào bộ nhớ trình duyệt lúc runtime, vì vậy trình duyệt vẫn là một phần của trust boundary đang hoạt động.
 
-This avoids drift between VN AI Agent Office and the upstream runtime.
+Điều này tránh sự lệch lạc giữa VN AI Agent Office và upstream runtime.
 
-## Main Flows
-### Connection flow
-1. The UI loads Studio settings from `/api/studio`.
-2. The browser opens a WebSocket to `/api/gateway/ws`.
-3. The Studio proxy loads the upstream gateway URL and token server-side.
-4. Studio opens the upstream gateway connection and forwards frames between browser and gateway.
+## Các luồng chính
+### Luồng kết nối
+1. UI tải Studio settings từ `/api/studio`.
+2. Trình duyệt mở WebSocket tới `/api/gateway/ws`.
+3. Studio proxy tải upstream gateway URL và token phía server.
+4. Studio mở kết nối upstream gateway và chuyển tiếp frame giữa trình duyệt và gateway.
 
-### Agent runtime flow
-1. The UI connects through the Studio proxy and requests gateway state.
-2. Runtime events stream from the gateway into the agents UI.
-3. The agents workspace derives chat, status, approvals, and summaries from that event stream.
-4. The office view derives animation and room activity from the same underlying runtime signals.
+### Luồng agent runtime
+1. UI kết nối qua Studio proxy và yêu cầu trạng thái gateway.
+2. Runtime event stream từ gateway vào agents UI.
+3. Không gian làm việc agents dẫn xuất chat, status, approval và summary từ event stream đó.
+4. Office view dẫn xuất animation và room activity từ các runtime signal cơ bản tương tự.
 
-### Office flow
-1. The office subscribes to agent runtime state.
-2. Event-trigger logic converts runtime activity into spatial cues.
-3. The 3D scene renders agent movement, room activity, and temporary janitor/reset behavior from derived state.
+### Luồng văn phòng
+1. Văn phòng đăng ký trạng thái agent runtime.
+2. Logic event-trigger chuyển đổi runtime activity thành các tín hiệu không gian.
+3. Cảnh 3D render chuyển động agent, room activity và hành vi janitor/reset tạm thời từ trạng thái được dẫn xuất.
 
-## Repo Shape
-- `src/app`: routes, layouts, and API endpoints.
-- `src/features/agents`: agents workspace UI and agent-runtime state handling.
-- `src/features/office`: office screens, panels, and builder UI.
-- `src/features/retro-office`: 3D scene, navigation, actors, and rendering helpers.
-- `src/lib`: gateway adapters, Studio settings, office derivation logic, and shared utilities.
-- `server`: custom Studio server and WebSocket proxy.
+## Cấu trúc Repo
+- `src/app`: route, layout và API endpoint.
+- `src/features/agents`: agents workspace UI và xử lý trạng thái agent-runtime.
+- `src/features/office`: màn hình office, panel và builder UI.
+- `src/features/retro-office`: cảnh 3D, điều hướng, actor và rendering helper.
+- `src/lib`: gateway adapter, Studio settings, logic dẫn xuất văn phòng và shared utility.
+- `server`: custom Studio server và WebSocket proxy.
 
-For a practical contributor code map and extension guide, see `CODE_DOCUMENTATION.md`.
+Để biết bản đồ code contributor thực tế và hướng dẫn mở rộng, xem `CODE_DOCUMENTATION.md`.
 
-## Design Principles
+## Nguyên tắc thiết kế
 - Gateway first.
-  If data belongs to the runtime, it should live in OpenClaw, not in a local frontend file.
-- Derived UI state over duplicated state.
-  The UI should derive views from gateway events and local preferences instead of creating parallel records.
-- Feature-first organization.
-  Keep most UI logic inside feature modules and move only true shared utilities into `src/lib`.
-- Narrow server boundaries.
-  Filesystem access, SSH helpers, and token handling should stay on the server side.
-- Stable architecture docs.
-  This document should describe boundaries and intent, not every helper, hook, or workflow file.
+  Nếu dữ liệu thuộc về runtime, nó nên nằm trong OpenClaw, không phải trong local frontend file.
+- Trạng thái UI được dẫn xuất hơn là trạng thái bị sao chép.
+  UI nên dẫn xuất view từ gateway event và local preference thay vì tạo các record song song.
+- Tổ chức theo tính năng.
+  Giữ hầu hết logic UI bên trong feature module và chỉ chuyển các utility thực sự chung vào `src/lib`.
+- Ranh giới server hẹp.
+  Truy cập filesystem, SSH helper và xử lý token nên ở phía server.
+- Tài liệu kiến trúc ổn định.
+  Tài liệu này nên mô tả ranh giới và ý định, không phải mọi helper, hook hoặc workflow file.
 
-## Important Decisions
-- Local settings use a JSON-backed store rather than a database.
-  This keeps the app simple and local-first, at the cost of multi-user support.
-- Browser traffic goes through a same-origin Studio proxy rather than directly to the gateway.
-  This adds one hop, but keeps credentials server-side and improves deployment flexibility.
-- Agent configuration and files are managed through gateway APIs.
-  This avoids drift between VN AI Agent Office and the upstream runtime.
-- Office behavior is driven from derived event state rather than imperative scene mutations.
-  This keeps the 3D layer more reproducible and testable.
+## Các quyết định quan trọng
+- Cài đặt cục bộ dùng JSON-backed store thay vì database.
+  Điều này giữ ứng dụng đơn giản và local-first, với chi phí là không hỗ trợ multi-user.
+- Browser traffic đi qua same-origin Studio proxy thay vì trực tiếp tới gateway.
+  Điều này thêm một hop, nhưng giữ credential phía server và cải thiện tính linh hoạt deployment.
+- Cấu hình và file agent được quản lý qua gateway API.
+  Điều này tránh sự lệch lạc giữa VN AI Agent Office và upstream runtime.
+- Hành vi văn phòng được điều khiển từ trạng thái event được dẫn xuất thay vì các scene mutation bắt buộc.
+  Điều này giữ lớp 3D có thể tái tạo và test được hơn.
 
-## Constraints
-- Do not store gateway tokens or secrets in client-side persistent storage.
-- Do not read or write local files from client components.
-- Do not add a second source of truth for agent records outside the gateway.
-- Do not write gateway-owned agent config directly to local OpenClaw config files.
-- Do not add parallel Studio settings endpoints when `/api/studio` already owns that responsibility.
-- Do not add heavyweight abstractions without a clear need.
+## Ràng buộc
+- Không lưu gateway token hoặc secret trong client-side persistent storage.
+- Không đọc hoặc ghi local file từ client component.
+- Không thêm nguồn sự thật thứ hai cho agent record bên ngoài gateway.
+- Không ghi agent config thuộc gateway trực tiếp vào local OpenClaw config file.
+- Không thêm Studio settings endpoint song song khi `/api/studio` đã sở hữu trách nhiệm đó.
+- Không thêm abstraction nặng mà không có nhu cầu rõ ràng.
 
-## Future Direction
-- If multi-user support becomes important, replace the local settings store with a service-backed persistence layer and add authentication at the API boundary.
-- If the gateway protocol changes, keep the impact isolated inside `src/lib/gateway` and the Studio proxy boundary.
+## Định hướng tương lai
+- Nếu hỗ trợ multi-user trở nên quan trọng, thay thế local settings store bằng persistence layer dựa trên service và thêm authentication tại API boundary.
+- Nếu gateway protocol thay đổi, giữ tác động bị cô lập bên trong `src/lib/gateway` và ranh giới Studio proxy.
 
-See `KNOWN_ISSUES.md` for the current publication caveats and unresolved follow-up items.
+Xem `KNOWN_ISSUES.md` để biết các lưu ý xuất bản hiện tại và các mục follow-up chưa giải quyết.
 
-## Diagram
+## Sơ đồ
 ```mermaid
 flowchart LR
-  U[User] --> B[Browser UI]
+  U[Người dùng] --> B[Browser UI]
   B -->|HTTP| A[Studio API Routes]
   B -->|WebSocket /api/gateway/ws| P[Studio WS Proxy]
-  A -->|Read/write local settings| F[Local Filesystem]
+  A -->|Đọc/ghi cài đặt cục bộ| F[Local Filesystem]
   P -->|WebSocket| G[OpenClaw Gateway]
 ```

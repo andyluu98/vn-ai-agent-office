@@ -1,155 +1,155 @@
-# VN AI Agent Office + OpenClaw + Tailscale Setup Tutorial
+# Hướng dẫn cài đặt VN AI Agent Office + OpenClaw + Tailscale
 
-This guide is a step-by-step runbook for the most common production-like setup:
+Đây là hướng dẫn từng bước cho cài đặt phổ biến nhất giống môi trường production:
 
-- **Machine A** runs **OpenClaw Gateway**.
-- **Machine B** runs **VN AI Agent Office**.
-- **Tailscale** connects both machines securely.
+- **Máy A** chạy **OpenClaw Gateway**.
+- **Máy B** chạy **VN AI Agent Office**.
+- **Tailscale** kết nối hai máy một cách bảo mật.
 
-If you follow this exactly, people should avoid the most common confusion: **VN AI Agent Office does not install or run OpenClaw for you.**
-
----
-
-## 0) Architecture and Responsibilities
-
-- **OpenClaw** is the runtime and Gateway.
-- **VN AI Agent Office** is the UI and Studio proxy.
-- VN AI Agent Office connects to an already running OpenClaw Gateway.
-- In this tutorial, the Gateway lives on a different machine from VN AI Agent Office.
+Nếu làm theo chính xác, bạn sẽ tránh được lỗi nhầm lẫn phổ biến nhất: **VN AI Agent Office không cài đặt hoặc chạy OpenClaw cho bạn.**
 
 ---
 
-## 1) Prerequisites
+## 0) Kiến trúc và trách nhiệm
 
-### Machine A (Gateway host)
-
-- macOS, Linux, or WSL2.
-- Internet access.
-- Ability to install OpenClaw and Tailscale.
-
-### Machine B (VN AI Agent Office host)
-
-- Node.js `20+` recommended for this repo.
-- npm `10+` recommended.
-- Internet access.
-- Ability to install Tailscale.
-
-### Accounts and permissions
-
-- A Tailscale account for your tailnet.
-- If your tailnet uses device approval, you need Owner/Admin/IT admin access in Tailscale admin.
+- **OpenClaw** là runtime và Gateway.
+- **VN AI Agent Office** là UI và Studio proxy.
+- VN AI Agent Office kết nối với OpenClaw Gateway đã đang chạy.
+- Trong hướng dẫn này, Gateway nằm trên máy khác với VN AI Agent Office.
 
 ---
 
-## 2) Install and Start OpenClaw on Machine A
+## 1) Điều kiện tiên quyết
 
-OpenClaw official install docs are here: [Install](https://docs.openclaw.ai/install/index.md) and [Getting Started](https://docs.openclaw.ai/start/getting-started.md).
+### Máy A (Gateway host)
 
-### 2.1 Install OpenClaw
+- macOS, Linux hoặc WSL2.
+- Kết nối internet.
+- Khả năng cài OpenClaw và Tailscale.
 
-On **Machine A**:
+### Máy B (VN AI Agent Office host)
+
+- Node.js `20+` khuyến nghị cho repo này.
+- npm `10+` khuyến nghị.
+- Kết nối internet.
+- Khả năng cài Tailscale.
+
+### Tài khoản và quyền hạn
+
+- Tài khoản Tailscale cho tailnet của bạn.
+- Nếu tailnet của bạn dùng device approval, bạn cần quyền Owner/Admin/IT admin trong Tailscale admin.
+
+---
+
+## 2) Cài đặt và khởi động OpenClaw trên Máy A
+
+Tài liệu cài đặt chính thức của OpenClaw ở đây: [Install](https://docs.openclaw.ai/install/index.md) và [Getting Started](https://docs.openclaw.ai/start/getting-started.md).
+
+### 2.1 Cài đặt OpenClaw
+
+Trên **Máy A**:
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-### 2.2 Run onboarding and install daemon
+### 2.2 Chạy onboarding và cài daemon
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-### 2.3 Verify Gateway health
+### 2.3 Kiểm tra trạng thái Gateway
 
 ```bash
 openclaw gateway status
 openclaw status
 ```
 
-You want a healthy result such as runtime running and RPC probe ok.
+Bạn muốn kết quả healthy như runtime đang chạy và RPC probe ok.
 
-### 2.4 Get your Gateway token
+### 2.4 Lấy Gateway token của bạn
 
-You will need this token in VN AI Agent Office:
+Bạn sẽ cần token này trong VN AI Agent Office:
 
 ```bash
 openclaw config get gateway.auth.token
 ```
 
-Store it securely.
+Lưu trữ nó an toàn.
 
 ---
 
-## 3) Install and Authorize Tailscale on Both Machines
+## 3) Cài đặt và ủy quyền Tailscale trên cả hai máy
 
-Tailscale docs: [Serve overview](https://tailscale.com/kb/1312/serve), [Serve CLI](https://tailscale.com/docs/reference/tailscale-cli/serve), and [Device approval](https://tailscale.com/kb/1099/device-approval).
+Tài liệu Tailscale: [Serve overview](https://tailscale.com/kb/1312/serve), [Serve CLI](https://tailscale.com/docs/reference/tailscale-cli/serve) và [Device approval](https://tailscale.com/kb/1099/device-approval).
 
-### 3.1 Install Tailscale
+### 3.1 Cài đặt Tailscale
 
-Install Tailscale on **Machine A** and **Machine B** using official installers: [Tailscale downloads](https://tailscale.com/download).
+Cài Tailscale trên **Máy A** và **Máy B** bằng installer chính thức: [Tailscale downloads](https://tailscale.com/download).
 
-### 3.2 Join both machines to the same tailnet
+### 3.2 Tham gia cả hai máy vào cùng tailnet
 
-On each machine:
+Trên mỗi máy:
 
 ```bash
 tailscale up
 tailscale status
 ```
 
-Confirm both machines appear in the same tailnet.
+Xác nhận cả hai máy xuất hiện trong cùng một tailnet.
 
-### 3.3 If your tailnet requires approval, approve devices
+### 3.3 Nếu tailnet của bạn yêu cầu approval, phê duyệt thiết bị
 
-In Tailscale admin:
+Trong Tailscale admin:
 
-1. Open [Machines](https://login.tailscale.com/admin/machines).
-2. Find devices marked **Needs approval**.
-3. Approve both Machine A and Machine B.
+1. Mở [Machines](https://login.tailscale.com/admin/machines).
+2. Tìm các thiết bị được đánh dấu **Needs approval**.
+3. Phê duyệt cả Máy A và Máy B.
 
-Without this, the machines cannot communicate over tailnet traffic.
+Nếu không làm bước này, các máy không thể giao tiếp qua tailnet traffic.
 
 ---
 
-## 4) Expose OpenClaw Gateway Through Tailscale on Machine A
+## 4) Expose OpenClaw Gateway qua Tailscale trên Máy A
 
-You have two valid ways. Pick one.
+Bạn có hai cách hợp lệ. Chọn một.
 
-### Option A (simple and explicit): Tailscale Serve command
+### Tùy chọn A (đơn giản và rõ ràng): Lệnh Tailscale Serve
 
-On **Machine A**, keep Gateway bound locally (`127.0.0.1:18789`) and publish through Serve:
+Trên **Máy A**, giữ Gateway bound cục bộ (`127.0.0.1:18789`) và publish qua Serve:
 
 ```bash
 tailscale serve --yes --bg --https=443 http://127.0.0.1:18789
 tailscale serve status
 ```
 
-Notes:
+Lưu ý:
 
-- Newer Tailscale CLI uses `--https=443`.
-- If you are on older docs/commands, you may see syntax like `--https 443`. Use `tailscale serve --help` on your installed version.
+- Tailscale CLI mới hơn dùng `--https=443`.
+- Nếu bạn đang dùng tài liệu/lệnh cũ hơn, bạn có thể thấy cú pháp như `--https 443`. Dùng `tailscale serve --help` trên phiên bản đã cài.
 
-### Option B (OpenClaw-managed Tailscale mode)
+### Tùy chọn B (chế độ Tailscale do OpenClaw quản lý)
 
-OpenClaw can manage Tailscale mode itself:
+OpenClaw có thể tự quản lý chế độ Tailscale:
 
 ```bash
 openclaw gateway --tailscale serve
 ```
 
-OpenClaw Tailscale docs: [Gateway Tailscale](https://docs.openclaw.ai/gateway/tailscale.md).
+Tài liệu Tailscale của OpenClaw: [Gateway Tailscale](https://docs.openclaw.ai/gateway/tailscale.md).
 
-### 4.1 Confirm the public tailnet URL
+### 4.1 Xác nhận URL tailnet công khai
 
-You need the `https://<gateway-host>.<tailnet>.ts.net` host.
+Bạn cần host `https://<gateway-host>.<tailnet>.ts.net`.
 
-This host is what VN AI Agent Office will use as `wss://<gateway-host>.<tailnet>.ts.net`.
+Đây là host mà VN AI Agent Office sẽ dùng là `wss://<gateway-host>.<tailnet>.ts.net`.
 
 ---
 
-## 5) Install and Run VN AI Agent Office on Machine B
+## 5) Cài đặt và chạy VN AI Agent Office trên Máy B
 
-On **Machine B**:
+Trên **Máy B**:
 
 ```bash
 git clone https://github.com/iamlukethedev/Claw3D.git vn-ai-agent-office
@@ -159,42 +159,42 @@ cp .env.example .env
 npm run dev
 ```
 
-Then open:
+Sau đó mở:
 
 - `http://localhost:3000`
 
 ---
 
-## 6) Connect VN AI Agent Office to OpenClaw
+## 6) Kết nối VN AI Agent Office với OpenClaw
 
-In VN AI Agent Office connection UI:
+Trong UI kết nối VN AI Agent Office:
 
-1. Set **Gateway URL** to:
+1. Đặt **Gateway URL** thành:
    - `wss://<gateway-host>.<tailnet>.ts.net`
-2. Paste the token from Machine A (`openclaw config get gateway.auth.token`).
-3. Click **Connect**.
+2. Dán token từ Máy A (`openclaw config get gateway.auth.token`).
+3. Nhấn **Connect**.
 
-Important:
+Quan trọng:
 
-- Use `wss://` for Tailscale HTTPS endpoints.
-- Use `ws://localhost:18789` only when Gateway is local to the same machine as VN AI Agent Office or when using an SSH tunnel.
+- Dùng `wss://` cho các endpoint HTTPS Tailscale.
+- Chỉ dùng `ws://localhost:18789` khi Gateway là cục bộ trên cùng máy với VN AI Agent Office hoặc khi dùng SSH tunnel.
 
 ---
 
-## 7) Required Device-Pairing Approval Step
+## 7) Bước phê duyệt ghép đôi thiết bị bắt buộc
 
-This is the step people often miss.
+Đây là bước người ta thường bỏ qua.
 
-After VN AI Agent Office is running and tries to connect for the first time, approve pending device pairing on **Machine A**:
+Sau khi VN AI Agent Office đang chạy và cố gắng kết nối lần đầu, phê duyệt yêu cầu ghép đôi thiết bị đang chờ trên **Máy A**:
 
 ```bash
 openclaw devices list
 openclaw devices approve --latest
 ```
 
-OpenClaw devices docs: [openclaw devices](https://docs.openclaw.ai/cli/devices.md).
+Tài liệu devices của OpenClaw: [openclaw devices](https://docs.openclaw.ai/cli/devices.md).
 
-If multiple requests are pending, approve by id instead:
+Nếu có nhiều yêu cầu đang chờ, phê duyệt theo id thay thế:
 
 ```bash
 openclaw devices approve <requestId>
@@ -202,69 +202,69 @@ openclaw devices approve <requestId>
 
 ---
 
-## 8) Verification Checklist
+## 8) Danh sách kiểm tra xác nhận
 
-Run this checklist in order:
+Chạy danh sách kiểm tra này theo thứ tự:
 
-1. `openclaw gateway status` on Machine A shows healthy runtime.
-2. `tailscale status` on both machines shows connected devices in same tailnet.
-3. `tailscale serve status` on Machine A shows active Serve config for port `443` to `127.0.0.1:18789`.
-4. VN AI Agent Office connect UI uses `wss://...ts.net` plus valid token.
-5. `openclaw devices approve --latest` has been run after first connect attempt.
-6. VN AI Agent Office UI shows gateway connected and loads agents.
+1. `openclaw gateway status` trên Máy A hiển thị runtime healthy.
+2. `tailscale status` trên cả hai máy hiển thị các thiết bị kết nối trong cùng tailnet.
+3. `tailscale serve status` trên Máy A hiển thị cấu hình Serve đang hoạt động cho cổng `443` tới `127.0.0.1:18789`.
+4. UI kết nối VN AI Agent Office dùng `wss://...ts.net` cộng với token hợp lệ.
+5. `openclaw devices approve --latest` đã được chạy sau lần thử kết nối đầu tiên.
+6. UI VN AI Agent Office hiển thị gateway đã kết nối và tải agents.
 
 ---
 
-## 9) Troubleshooting
+## 9) Khắc phục sự cố
 
-### `EPROTO` or `wrong version number`
+### `EPROTO` hoặc `wrong version number`
 
-- Usually means protocol mismatch.
-- Fix: if your endpoint is HTTPS/Tailscale Serve, use `wss://...`.
-- Do not use `wss://` against a plain `ws://` endpoint.
+- Thường có nghĩa là protocol không khớp.
+- Khắc phục: nếu endpoint của bạn là HTTPS/Tailscale Serve, dùng `wss://...`.
+- Không dùng `wss://` với endpoint `ws://` thông thường.
 
-### `401` or auth errors from VN AI Agent Office
+### Lỗi `401` hoặc auth từ VN AI Agent Office
 
-- Re-copy token from Machine A:
+- Sao chép lại token từ Máy A:
   - `openclaw config get gateway.auth.token`.
-- Confirm Gateway auth mode and token are current.
+- Xác nhận chế độ auth Gateway và token đang dùng.
 
-### VN AI Agent Office still cannot connect after token is correct
+### VN AI Agent Office vẫn không thể kết nối sau khi token đúng
 
-- Approve pending device:
+- Phê duyệt thiết bị đang chờ:
   - `openclaw devices approve --latest`.
-- Check pending requests:
+- Kiểm tra các yêu cầu đang chờ:
   - `openclaw devices list`.
 
-### Tailscale URL works nowhere
+### URL Tailscale không hoạt động
 
-- Confirm both devices are approved in Tailscale admin if device approval is enabled.
-- Re-run:
+- Xác nhận cả hai thiết bị được phê duyệt trong Tailscale admin nếu device approval được bật.
+- Chạy lại:
   - `tailscale status`.
   - `tailscale serve status`.
-- Recreate serve config if needed:
+- Tạo lại cấu hình serve nếu cần:
   - `tailscale serve reset`.
   - `tailscale serve --yes --bg --https=443 http://127.0.0.1:18789`.
 
-### Gateway itself is unhealthy
+### Gateway bản thân không healthy
 
-- Run:
+- Chạy:
   - `openclaw doctor`.
   - `openclaw gateway restart`.
   - `openclaw gateway status`.
 
 ---
 
-## 10) Security Notes
+## 10) Ghi chú bảo mật
 
-- Keep Gateway bound to loopback unless you have a deliberate reason not to.
-- Do not commit tokens into git or `.env` files intended for sharing.
-- Prefer Tailscale Serve over exposing raw Gateway ports publicly.
-- Treat OpenClaw device pairing approval as a security gate, not a one-time annoyance.
+- Giữ Gateway bound với loopback trừ khi bạn có lý do cố ý không làm vậy.
+- Không commit token vào git hoặc file `.env` dành cho chia sẻ.
+- Ưu tiên Tailscale Serve hơn việc expose cổng Gateway thô công khai.
+- Coi việc phê duyệt device pairing OpenClaw là cổng bảo mật, không phải phiền toái một lần.
 
 ---
 
-## References
+## Tài liệu tham khảo
 
 - OpenClaw install: [docs.openclaw.ai/install/index.md](https://docs.openclaw.ai/install/index.md).
 - OpenClaw getting started: [docs.openclaw.ai/start/getting-started.md](https://docs.openclaw.ai/start/getting-started.md).
