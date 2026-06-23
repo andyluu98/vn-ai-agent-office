@@ -14,7 +14,7 @@ export const AgentsStep = ({ agentCount, connected }: AgentsStepProps) => {
       <div className="flex flex-col items-center justify-center gap-3 py-8">
         <WifiOff className="h-8 w-8 text-white/30" />
         <p className="text-sm text-white/60">
-          Connect to your gateway first to discover agents.
+          Kết nối tới cổng kết nối trước để khám phá các tác nhân.
         </p>
       </div>
     );
@@ -27,21 +27,20 @@ export const AgentsStep = ({ agentCount, connected }: AgentsStepProps) => {
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
             <Bot className="h-6 w-6 text-white/40" />
           </div>
-          <p className="text-sm font-medium text-white">No agents found</p>
+          <p className="text-sm font-medium text-white">Không tìm thấy tác nhân</p>
           <p className="max-w-xs text-center text-xs text-white/55">
-            Your gateway is connected, but no agents are configured yet.
-            You can create agents from the VN AI Agent Office fleet sidebar after
-            completing this wizard.
+            Cổng kết nối đã kết nối nhưng chưa có tác nhân nào được cấu hình.
+            Bạn có thể tạo tác nhân từ thanh bên danh sách tác nhân của VN AI Agent Office sau khi hoàn thành hướng dẫn này.
           </p>
         </div>
 
         <div className="rounded-lg border border-white/8 bg-white/[0.02] px-4 py-3">
-          <p className="text-xs font-medium text-white/80">Quick start:</p>
+          <p className="text-xs font-medium text-white/80">Bắt đầu nhanh:</p>
           <ol className="mt-2 space-y-1.5 text-[11px] text-white/55">
-            <li>1. Click the + button in the fleet sidebar</li>
-            <li>2. Choose a name and model for your agent</li>
-            <li>3. Configure skills and personality</li>
-            <li>4. Watch your agent appear at their desk!</li>
+            <li>1. Nhấn nút + trong thanh bên danh sách tác nhân</li>
+            <li>2. Đặt tên và chọn mô hình cho tác nhân</li>
+            <li>3. Cấu hình kỹ năng và tính cách</li>
+            <li>4. Xem tác nhân xuất hiện tại bàn làm việc!</li>
           </ol>
         </div>
       </div>
@@ -54,24 +53,24 @@ export const AgentsStep = ({ agentCount, connected }: AgentsStepProps) => {
         <Users className="h-5 w-5 text-amber-300" />
         <div>
           <p className="text-sm font-semibold text-white">
-            {agentCount} agent{agentCount !== 1 ? "s" : ""} discovered
+            Đã phát hiện {agentCount} tác nhân
           </p>
           <p className="text-[11px] text-white/55">
-            Your AI team is ready and waiting in the office.
+            Đội AI của bạn đang sẵn sàng trong văn phòng.
           </p>
         </div>
       </div>
 
       <div className="space-y-2">
         <p className="text-xs font-medium text-white/70">
-          What you can do with agents:
+          Bạn có thể làm gì với tác nhân:
         </p>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { label: "Chat", desc: "Send messages and get responses" },
-            { label: "Approve", desc: "Review and approve exec commands" },
-            { label: "Configure", desc: "Edit brain files and settings" },
-            { label: "Monitor", desc: "Watch runtime activity in real time" },
+            { label: "Trò chuyện", desc: "Gửi tin nhắn và nhận phản hồi" },
+            { label: "Phê duyệt", desc: "Xem xét và phê duyệt lệnh thực thi" },
+            { label: "Cấu hình", desc: "Chỉnh sửa file não và cài đặt" },
+            { label: "Theo dõi", desc: "Xem hoạt động runtime theo thời gian thực" },
           ].map(({ label, desc }) => (
             <div
               key={label}

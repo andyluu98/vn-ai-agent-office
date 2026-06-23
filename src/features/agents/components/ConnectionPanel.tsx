@@ -64,16 +64,16 @@ export const ConnectionPanel = ({
   };
   const selectedAdapterHint =
     selectedAdapterType === "openclaw"
-      ? "OpenClaw owns provider/model routing behind the gateway."
+      ? "OpenClaw quản lý định tuyến nhà cung cấp/mô hình phía sau cổng kết nối."
       : selectedAdapterType === "hermes"
-        ? "Hermes owns provider/account routing behind the gateway."
+        ? "Hermes quản lý định tuyến nhà cung cấp/tài khoản phía sau cổng kết nối."
         : selectedAdapterType === "demo"
-          ? "Demo can seed a local main agent or connect to the mock gateway."
+          ? "Demo có thể seed tác nhân chính cục bộ hoặc kết nối tới cổng mock."
           : selectedAdapterType === "claw3d"
-            ? "VN Office runtime keeps transcript semantics over direct HTTP."
+            ? "Runtime VN Office giữ nguyên ngữ nghĩa transcript qua HTTP trực tiếp."
             : selectedAdapterType === "local"
-              ? "Local runtime expects a direct orchestrator boundary."
-              : "Custom is a generic runtime endpoint, not a provider-native adapter.";
+              ? "Runtime cục bộ kỳ vọng ranh giới orchestrator trực tiếp."
+              : "Custom là điểm cuối runtime tổng quát, không phải adapter theo nhà cung cấp.";
 
   return (
     <div className="fade-up-delay flex flex-col gap-3">
@@ -91,7 +91,7 @@ export const ConnectionPanel = ({
             onClick={isConnected ? onDisconnect : onConnect}
             disabled={isConnecting || !gatewayUrl.trim()}
           >
-            {isConnected ? "Disconnect" : "Connect"}
+            {isConnected ? "Ngắt kết nối" : "Kết nối"}
           </button>
         </div>
         {onClose ? (
@@ -100,16 +100,16 @@ export const ConnectionPanel = ({
             type="button"
             onClick={onClose}
             data-testid="gateway-connection-close"
-            aria-label="Close gateway connection panel"
+            aria-label="Đóng bảng kết nối cổng"
           >
             <X className="h-3.5 w-3.5" />
-            Close
+            Đóng
           </button>
         ) : null}
       </div>
       <div className="grid gap-3 lg:grid-cols-[1.4fr_1fr]">
         <label className="flex flex-col gap-1 font-mono text-[10px] font-semibold tracking-[0.06em] text-muted-foreground">
-          Upstream URL
+          URL nguồn
           <input
             className="ui-input h-10 rounded-md px-4 font-sans text-sm text-foreground outline-none"
             type="text"
@@ -120,21 +120,21 @@ export const ConnectionPanel = ({
           />
         </label>
         <label className="flex flex-col gap-1 font-mono text-[10px] font-semibold tracking-[0.06em] text-muted-foreground">
-          {tokenOptional ? "Upstream token (optional)" : "Upstream token"}
+          {tokenOptional ? "Token nguồn (tuỳ chọn)" : "Token nguồn"}
           <input
             className="ui-input h-10 rounded-md px-4 font-sans text-sm text-foreground outline-none"
             type="password"
             value={token}
             onChange={(event) => onTokenChange(event.target.value)}
-            placeholder={tokenOptional ? "optional token" : "gateway token"}
+            placeholder={tokenOptional ? "token tuỳ chọn" : "token cổng kết nối"}
             spellCheck={false}
           />
         </label>
       </div>
       <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-        <span className="font-mono">Selected backend: {selectedAdapterType}</span>
-        <span className="font-mono">Active backend: {activeAdapterType}</span>
-        <span>Each backend keeps its own saved URL and token.</span>
+        <span className="font-mono">Backend đang chọn: {selectedAdapterType}</span>
+        <span className="font-mono">Backend đang hoạt động: {activeAdapterType}</span>
+        <span>Mỗi backend lưu URL và token riêng.</span>
       </div>
       <div className="text-[11px] leading-snug text-muted-foreground">
         {selectedAdapterHint}

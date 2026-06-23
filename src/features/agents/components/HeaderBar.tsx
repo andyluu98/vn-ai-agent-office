@@ -47,9 +47,9 @@ export const HeaderBar = ({
               className={`ui-chip px-2 py-0.5 font-mono text-[9px] font-semibold tracking-[0.08em] ${resolveGatewayStatusBadgeClass(status)}`}
               data-testid="gateway-status-indicator"
               data-status={status}
-              aria-label={`Gateway ${status}`}
+              aria-label={`Cổng kết nối ${status}`}
             >
-              {status === "connecting" ? "Connecting" : "Connected"}
+              {status === "connecting" ? "Đang kết nối" : "Đã kết nối"}
             </span>
           ) : null}
           <ThemeToggle />
@@ -64,7 +64,7 @@ export const HeaderBar = ({
                 onClick={() => setMenuOpen((prev) => !prev)}
               >
                 <Plug className="h-3.5 w-3.5" />
-                <span className="sr-only">Open studio menu</span>
+                <span className="sr-only">Mở menu studio</span>
               </button>
               {menuOpen ? (
                 <div className="ui-card ui-menu-popover absolute right-0 top-9 z-[260] min-w-44 p-1">
@@ -77,7 +77,7 @@ export const HeaderBar = ({
                     }}
                     data-testid="gateway-settings-toggle"
                   >
-                    Gateway connection
+                    Cổng kết nối
                   </button>
                 </div>
               ) : null}

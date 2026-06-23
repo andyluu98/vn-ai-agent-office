@@ -87,35 +87,35 @@ export const GatewayConnectScreen = ({
   };
   const statusCopy = useMemo(() => {
     if (status === "connecting" && isLocal) {
-      return `Local gateway detected on port ${localPort}. Connecting…`;
+      return `Phát hiện cổng kết nối cục bộ tại cổng ${localPort}. Đang kết nối…`;
     }
     if (status === "connecting") {
-      return "Connecting to remote gateway…";
+      return "Đang kết nối tới cổng kết nối từ xa…";
     }
     if (isLocal) {
-      return "No local gateway found.";
+      return "Không tìm thấy cổng kết nối cục bộ.";
     }
-    return "Not connected to a gateway.";
+    return "Chưa kết nối tới cổng kết nối.";
   }, [isLocal, localPort, status]);
   const selectedAdapterHint = useMemo(() => {
     switch (selectedAdapterType) {
       case "openclaw":
-        return "OpenClaw is the provider-rich gateway path. Use this when you want upstream model/provider routing managed by OpenClaw itself.";
+        return "OpenClaw là đường dẫn cổng kết nối phong phú nhà cung cấp. Dùng khi muốn OpenClaw quản lý định tuyến mô hình/nhà cung cấp.";
       case "hermes":
-        return "Hermes is the agent runtime path with its own provider/account flow behind the gateway.";
+        return "Hermes là đường chạy tác nhân với luồng nhà cung cấp/tài khoản riêng phía sau cổng kết nối.";
       case "demo":
-        return "Demo can fall back to a seeded main agent locally, or connect to the bundled mock gateway for streaming replies.";
+        return "Demo có thể dùng tác nhân chính cục bộ được seed sẵn, hoặc kết nối tới cổng mock tích hợp để nhận phản hồi streaming.";
       case "local":
-        return "Local runtime expects a direct HTTP runtime/orchestrator boundary, not a provider catalog.";
+        return "Runtime cục bộ kỳ vọng ranh giới HTTP trực tiếp runtime/orchestrator, không phải danh mục nhà cung cấp.";
       case "claw3d":
-        return "VN Office runtime preserves transcript conventions over the direct runtime seam.";
+        return "Runtime VN Office giữ nguyên quy ước transcript qua đường nối runtime trực tiếp.";
       case "custom":
       default:
-        return "Custom is the generic direct runtime seam. Use it for compatible orchestrators, not for provider-specific auth flows.";
+        return "Custom là điểm nối runtime tổng quát. Dùng cho orchestrator tương thích, không phải luồng xác thực theo nhà cung cấp.";
     }
   }, [selectedAdapterType]);
   const connectDisabled = status === "connecting";
-  const connectLabel = connectDisabled ? "Connecting…" : "Connect";
+  const connectLabel = connectDisabled ? "Đang kết nối…" : "Kết nối";
   const statusDotClass =
     status === "connected"
       ? "ui-dot-status-connected"
@@ -144,19 +144,19 @@ export const GatewayConnectScreen = ({
           type="button"
           className="ui-btn-icon ui-command-copy h-7 w-7 shrink-0"
           onClick={copyLocalCommand}
-          aria-label="Copy local gateway command"
-          title="Copy command"
+          aria-label="Sao chép lệnh cổng kết nối cục bộ"
+          title="Sao chép lệnh"
         >
           {copyStatus === "copied" ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
         </button>
       </div>
       {copyStatus === "copied" ? (
-        <p className="text-xs text-muted-foreground">Copied</p>
+        <p className="text-xs text-muted-foreground">Đã sao chép</p>
       ) : copyStatus === "failed" ? (
-        <p className="ui-text-danger text-xs">Could not copy command.</p>
+        <p className="ui-text-danger text-xs">Không thể sao chép lệnh.</p>
       ) : (
         <p className="text-xs leading-snug text-muted-foreground">
-          In a source checkout, use <span className="font-mono text-foreground">{localGatewayCommandPnpm}</span>.
+          Trong source checkout, dùng <span className="font-mono text-foreground">{localGatewayCommandPnpm}</span>.
         </p>
       )}
     </div>
@@ -165,7 +165,7 @@ export const GatewayConnectScreen = ({
   const remoteForm = (
     <div className="mt-2.5 flex flex-col gap-3">
       <label className="flex flex-col gap-1 text-[11px] font-medium text-foreground/90">
-        Upstream URL
+        URL nguồn
         <input
           className="ui-input h-10 rounded-md px-4 font-sans text-sm text-foreground outline-none"
           type="text"
@@ -177,27 +177,27 @@ export const GatewayConnectScreen = ({
       </label>
 
       <div className="space-y-0.5 text-xs text-muted-foreground">
-        <p className="font-medium text-foreground">Using Tailscale?</p>
+        <p className="font-medium text-foreground">Dùng Tailscale?</p>
         <p>
           URL: <span className="font-mono">wss://&lt;your-tailnet-host&gt;</span>
         </p>
       </div>
 
       <label className="flex flex-col gap-1 text-[11px] font-medium text-foreground/90">
-        {tokenOptional ? "Upstream token (optional)" : "Upstream token"}
+        {tokenOptional ? "Token nguồn (tuỳ chọn)" : "Token nguồn"}
         <div className="relative">
           <input
             className="ui-input h-10 w-full rounded-md px-4 pr-10 font-sans text-sm text-foreground outline-none"
             type={showToken ? "text" : "password"}
             value={token}
             onChange={(event) => onTokenChange(event.target.value)}
-            placeholder={tokenOptional ? "optional token" : "gateway token"}
+            placeholder={tokenOptional ? "token tuỳ chọn" : "token cổng kết nối"}
             spellCheck={false}
           />
           <button
             type="button"
             className="ui-btn-icon absolute inset-y-0 right-1 my-auto h-8 w-8 border-transparent bg-transparent text-muted-foreground hover:bg-transparent hover:text-foreground"
-            aria-label={showToken ? "Hide token" : "Show token"}
+            aria-label={showToken ? "Ẩn token" : "Hiện token"}
             onClick={() => setShowToken((prev) => !prev)}
           >
             {showToken ? (
@@ -221,15 +221,14 @@ export const GatewayConnectScreen = ({
       {status === "connecting" ? (
         <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
           <RunningAvatarLoader size={16} trackWidth={32} inline />
-          Connecting…
+          Đang kết nối…
         </div>
       ) : null}
       {error ? <p className="ui-text-danger text-xs leading-snug">{error}</p> : null}
       {showApprovalHint && selectedAdapterType === "openclaw" ? (
         <div className="rounded-md border border-border bg-muted/40 px-3 py-3 text-xs text-muted-foreground">
           <p className="leading-snug">
-            If the first connection attempt did not work, go to your OpenClaw computer and approve this
-            device:
+            Nếu lần kết nối đầu không thành công, hãy vào máy tính OpenClaw và phê duyệt thiết bị này:
           </p>
           <code className="mt-2 block overflow-x-auto whitespace-nowrap rounded-md bg-[var(--command-bg)] px-2.5 py-2 font-mono text-[11px] text-[var(--command-fg)]">
             openclaw devices approve --latest
@@ -257,16 +256,16 @@ export const GatewayConnectScreen = ({
       <div className="ui-card px-4 py-5 sm:px-6">
         <div>
           <p className="font-mono text-[10px] font-medium tracking-[0.06em] text-muted-foreground">
-            Remote gateway (recommended)
+            Cổng kết nối từ xa (khuyến nghị)
           </p>
           <p className="mt-2 text-sm text-foreground/90">
-            Choose a backend, then connect to its gateway URL.
+            Chọn backend rồi kết nối tới URL cổng kết nối của nó.
           </p>
           <p className="mt-2 font-mono text-[11px] text-muted-foreground">
-            Selected backend: {selectedAdapterType} | Active backend: {activeAdapterType}
+            Backend đang chọn: {selectedAdapterType} | Backend đang hoạt động: {activeAdapterType}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Each backend keeps its own saved URL and token.
+            Mỗi backend lưu URL và token riêng.
           </p>
           <p className="mt-2 text-xs leading-snug text-muted-foreground">
             {selectedAdapterHint}
@@ -322,54 +321,52 @@ export const GatewayConnectScreen = ({
       <div className="ui-card px-4 py-4 sm:px-6 sm:py-5">
         <div className="space-y-1.5">
           <p className="font-mono text-[10px] font-semibold tracking-[0.06em] text-muted-foreground">
-            Run locally (optional)
+            Chạy cục bộ (tuỳ chọn)
           </p>
           <p className="text-sm text-foreground/90">
-            Start a local gateway process on this machine, then connect.
+            Khởi động tiến trình cổng kết nối cục bộ trên máy này rồi kết nối.
           </p>
         </div>
         <div className="mt-3 space-y-3">
           {commandField}
           <div className="rounded-md border border-border bg-muted/30 px-3 py-3">
-            <p className="text-xs font-medium text-foreground">Just want to see the office?</p>
+            <p className="text-xs font-medium text-foreground">Chỉ muốn xem văn phòng?</p>
             <p className="mt-1 text-xs leading-snug text-muted-foreground">
-              Run <span className="font-mono text-foreground">{localDemoCommand}</span> to start a built-in mock gateway with demo agents.
-              Then choose <span className="font-mono text-foreground">Demo backend</span> and connect.
+              Chạy <span className="font-mono text-foreground">{localDemoCommand}</span> để khởi động cổng mock tích hợp với các tác nhân demo.
+              Sau đó chọn <span className="font-mono text-foreground">Demo backend</span> và kết nối.
             </p>
           </div>
           <div className="rounded-md border border-border bg-muted/30 px-3 py-3">
-            <p className="text-xs font-medium text-foreground">Using Hermes locally?</p>
+            <p className="text-xs font-medium text-foreground">Dùng Hermes cục bộ?</p>
             <p className="mt-1 text-xs leading-snug text-muted-foreground">
-              Run <span className="font-mono text-foreground">npm run hermes-adapter</span>, then choose
-              <span className="font-mono text-foreground"> Hermes backend</span>. The default local URL is
+              Chạy <span className="font-mono text-foreground">npm run hermes-adapter</span>, rồi chọn
+              <span className="font-mono text-foreground"> Hermes backend</span>. URL cục bộ mặc định là
               <span className="font-mono text-foreground"> ws://localhost:18789</span>.
             </p>
           </div>
           <div className="rounded-md border border-border bg-muted/30 px-3 py-3">
-            <p className="text-xs font-medium text-foreground">Using a local or custom runtime?</p>
+            <p className="text-xs font-medium text-foreground">Dùng runtime cục bộ hoặc tuỳ chỉnh?</p>
             <p className="mt-1 text-xs leading-snug text-muted-foreground">
-              Choose <span className="font-mono text-foreground">Local runtime</span>,
-              <span className="font-mono text-foreground"> VN Office runtime</span>, or
-              <span className="font-mono text-foreground"> Custom backend</span> and point the URL at
-              your orchestrator or runtime boundary. These profiles already preserve separate saved URLs
-              and tokens, but transport-specific chat handoff still needs a follow-up slice.
+              Chọn <span className="font-mono text-foreground">Local runtime</span>,
+              <span className="font-mono text-foreground"> VN Office runtime</span>, hoặc
+              <span className="font-mono text-foreground"> Custom backend</span> rồi trỏ URL tới
+              orchestrator hoặc ranh giới runtime. Các cấu hình này đã lưu URL và token riêng.
             </p>
           </div>
           <div className="rounded-md border border-border bg-muted/30 px-3 py-3">
-            <p className="text-xs font-medium text-foreground">Opening VN AI Agent Office from another machine?</p>
+            <p className="text-xs font-medium text-foreground">Mở VN AI Agent Office từ máy khác?</p>
             <p className="mt-1 text-xs leading-snug text-muted-foreground">
-              Start Studio with <span className="font-mono text-foreground">HOST=0.0.0.0</span> (or a
-              specific LAN/Tailscale host) and set
-              <span className="font-mono text-foreground"> STUDIO_ACCESS_TOKEN</span> before exposing it
-              beyond localhost. Gateway settings are stored on the Studio host, but OpenClaw device approval
-              remains per browser/device.
+              Khởi động Studio với <span className="font-mono text-foreground">HOST=0.0.0.0</span> (hoặc
+              host LAN/Tailscale cụ thể) và đặt
+              <span className="font-mono text-foreground"> STUDIO_ACCESS_TOKEN</span> trước khi mở ra ngoài localhost.
+              Cài đặt cổng kết nối lưu trên host Studio, phê duyệt thiết bị OpenClaw vẫn theo từng trình duyệt/thiết bị.
             </p>
           </div>
           {localGatewayDefaults ? (
             <div className="ui-input rounded-md px-3 py-3">
               <div className="space-y-2">
                 <p className="text-xs text-muted-foreground">
-                  Use token from <span className="font-mono">~/.openclaw/openclaw.json</span>.
+                  Dùng token từ <span className="font-mono">~/.openclaw/openclaw.json</span>.
                 </p>
                 <p className="font-mono text-[11px] text-foreground">
                   {localGatewayDefaults.url}
@@ -379,7 +376,7 @@ export const GatewayConnectScreen = ({
                   className="ui-btn-secondary h-9 w-full px-3 text-xs font-semibold tracking-[0.05em]"
                   onClick={onUseLocalDefaults}
                 >
-                  Use local defaults
+                  Dùng cài đặt mặc định cục bộ
                 </button>
               </div>
             </div>
