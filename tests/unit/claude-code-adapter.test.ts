@@ -12,21 +12,28 @@ const okRunner = async ({ prompt, system }: { prompt: string; system?: string })
 
 describe("claude-code adapter handler", () => {
   it("GET /health returns ok", async () => {
-    const r = await handleRequest({ method: "GET", pathname: "/health", runner: okRunner, roster: ROSTER, model: MODEL });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = await handleRequest({ method: "GET", pathname: "/health", body: undefined as any, runner: okRunner, roster: ROSTER, model: MODEL });
     expect(r.status).toBe(200);
-    expect(r.body.ok).toBe(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((r.body as any).ok).toBe(true);
   });
 
   it("GET /state exposes one active role per roster entry", async () => {
-    const r = await handleRequest({ method: "GET", pathname: "/state", runner: okRunner, roster: ROSTER, model: MODEL });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = await handleRequest({ method: "GET", pathname: "/state", body: undefined as any, runner: okRunner, roster: ROSTER, model: MODEL });
     expect(r.status).toBe(200);
-    expect(Object.keys(r.body.active)).toEqual(ROSTER.map((x) => x.role));
-    expect(r.body.runtime.name).toBe("Claude Code");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const body = r.body as any;
+    expect(Object.keys(body.active)).toEqual(ROSTER.map((x: { role: string }) => x.role));
+    expect(body.runtime.name).toBe("Claude Code");
   });
 
   it("GET /registry lists the model", async () => {
-    const r = await handleRequest({ method: "GET", pathname: "/registry", runner: okRunner, roster: ROSTER, model: MODEL });
-    expect(r.body.models[MODEL]).toBeTruthy();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = await handleRequest({ method: "GET", pathname: "/registry", body: undefined as any, runner: okRunner, roster: ROSTER, model: MODEL });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((r.body as any).models[MODEL]).toBeTruthy();
   });
 
   it("POST /v1/chat/completions returns assistant text routed by role", async () => {
@@ -35,8 +42,10 @@ describe("claude-code adapter handler", () => {
       body: { role: "Coder", messages: [{ role: "user", content: "hi" }] },
     });
     expect(r.status).toBe(200);
-    expect(r.body.choices[0].message.content).toContain("coder");
-    expect(r.body.choices[0].message.content).toContain("hi");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const body = r.body as any;
+    expect(body.choices[0].message.content).toContain("coder");
+    expect(body.choices[0].message.content).toContain("hi");
   });
 
   it("POST with empty messages -> 400", async () => {
