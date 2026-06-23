@@ -390,18 +390,18 @@ const buildIdentityFileDraft = (identity: AgentIdentityValues) => {
 
 const resolveOfficeMutationGuardMessage = (guardReason?: string) => {
   if (guardReason === "not-connected") {
-    return "Connect to the gateway before changing the office fleet.";
+    return "Kết nối tới cổng kết nối trước khi thay đổi danh sách tác nhân.";
   }
   if (guardReason === "create-block-active") {
-    return "Finish the active agent creation before starting another fleet change.";
+    return "Hoàn thành thao tác tạo tác nhân hiện tại trước khi bắt đầu thay đổi khác.";
   }
   if (guardReason === "rename-block-active") {
-    return "Finish the active rename before changing the office fleet.";
+    return "Hoàn thành thao tác đổi tên hiện tại trước khi thay đổi danh sách tác nhân.";
   }
   if (guardReason === "delete-block-active") {
-    return "Finish the active deletion before changing the office fleet.";
+    return "Hoàn thành thao tác xoá hiện tại trước khi thay đổi danh sách tác nhân.";
   }
-  return "The office fleet is busy right now.";
+  return "Danh sách tác nhân đang bận.";
 };
 
 const PHONE_BOOTH_ASSISTANT_FALLBACK_RE =
@@ -4707,21 +4707,21 @@ export function OfficeScreen({
     status === "connected" && agentsLoaded && state.agents.length === 0;
   const emptyFleetMessage =
     state.error?.trim() ||
-    "Connected to the gateway, but no agents were loaded into the office.";
+    "Đã kết nối tới cổng kết nối nhưng không có tác nhân nào được tải vào văn phòng.";
 
   return (
     <main className="relative h-full w-full overflow-hidden bg-black">
       {showGatewayLoadingOverlay ? (
         <div
           className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center bg-[#120a05]/76"
-          aria-label="Connecting to runtime"
+          aria-label="Đang kết nối tới runtime"
           role="status"
         >
           <div className="rounded-xl border border-amber-700/45 bg-[#1a1008] px-8 py-6 shadow-2xl">
             <RunningAvatarLoader
               size={28}
               trackWidth={76}
-              label="Connecting to your runtime..."
+              label="Đang kết nối tới runtime của bạn..."
               labelClassName="text-amber-100/80"
             />
           </div>
@@ -5175,7 +5175,7 @@ export function OfficeScreen({
       {showOpenClawConsole ? (
         <section className="pointer-events-auto fixed bottom-3 left-3 z-30 flex w-[520px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded border border-cyan-500/25 bg-black/78 shadow-2xl backdrop-blur">
           <div className="flex items-center justify-between border-b border-cyan-500/15 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-cyan-200/80">
-            <span>Agent Event Console</span>
+            <span>Bảng điều khiển sự kiện tác nhân</span>
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-cyan-100/45">
                 agents {state.agents.length} | events{" "}
@@ -5189,24 +5189,24 @@ export function OfficeScreen({
                 className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
               >
                 {openClawConsoleCopyStatus === "copied"
-                  ? "Copied"
+                  ? "Đã sao chép"
                   : openClawConsoleCopyStatus === "error"
-                    ? "Copy Failed"
-                    : "Copy JSON"}
+                    ? "Sao chép thất bại"
+                    : "Sao chép JSON"}
               </button>
               <button
                 type="button"
                 onClick={handleDownloadOpenClawConsoleJson}
                 className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
               >
-                Download JSON
+                Tải JSON
               </button>
               <button
                 type="button"
                 onClick={handleClearOpenClawConsole}
                 className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
               >
-                Clear
+                Xoá
               </button>
               <button
                 type="button"
@@ -5215,7 +5215,7 @@ export function OfficeScreen({
                 }
                 className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
               >
-                {openClawConsoleCollapsed ? "Expand" : "Minimize"}
+                {openClawConsoleCollapsed ? "Mở rộng" : "Thu nhỏ"}
               </button>
             </div>
           </div>
@@ -5229,7 +5229,7 @@ export function OfficeScreen({
                   onChange={(event) =>
                     setOpenClawConsoleSearch(event.target.value)
                   }
-                  placeholder="Search logs, payloads, thinking, user text."
+                  placeholder="Tìm kiếm log, payload, suy nghĩ, văn bản người dùng."
                   className="min-w-0 flex-1 rounded border border-cyan-500/20 bg-black/35 px-2 py-1 text-[10px] normal-case tracking-normal text-cyan-50 placeholder:text-cyan-100/30 focus:border-cyan-400/40 focus:outline-none"
                 />
                 {openClawConsoleSearch ? (
@@ -5238,7 +5238,7 @@ export function OfficeScreen({
                     onClick={() => setOpenClawConsoleSearch("")}
                     className="rounded border border-cyan-500/20 px-2 py-1 text-[9px] uppercase tracking-[0.16em] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
                   >
-                    Reset
+                    Đặt lại
                   </button>
                 ) : null}
               </div>
@@ -5246,7 +5246,7 @@ export function OfficeScreen({
             {openClawLiveStateMatchesSearch ? (
               <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2">
                 <div className="mb-1 text-[9px] uppercase tracking-[0.16em] text-cyan-300/70">
-                  Live OpenClaw State
+                  Trạng thái OpenClaw trực tiếp
                 </div>
                 <pre className="whitespace-pre-wrap break-words text-cyan-100/80">
                   {renderOpenClawHighlightedText(
@@ -5257,17 +5257,17 @@ export function OfficeScreen({
               </div>
             ) : (
               <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2 text-cyan-100/45">
-                Live OpenClaw state does not match the current search.
+                Trạng thái OpenClaw không khớp tìm kiếm hiện tại.
               </div>
             )}
             <div className="text-[9px] uppercase tracking-[0.16em] text-cyan-300/70">
-              Raw OpenClaw Gateway Events
+              Sự kiện cổng kết nối OpenClaw thô
             </div>
             {filteredOpenClawLogEntries.length === 0 ? (
               <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2 text-cyan-100/45">
                 {openClawLogEntries.length === 0
-                  ? "No OpenClaw gateway events received yet."
-                  : "No OpenClaw events match the current search."}
+                  ? "Chưa nhận được sự kiện cổng kết nối nào."
+                  : "Không có sự kiện OpenClaw nào khớp tìm kiếm."}
               </div>
             ) : (
               filteredOpenClawLogEntries.map((entry) => {
@@ -5315,7 +5315,7 @@ export function OfficeScreen({
                     {entry.messageText ? (
                       <div className="mt-2 rounded border border-amber-400/20 bg-amber-950/25 px-2 py-1 text-amber-100">
                         <div className="text-[9px] uppercase tracking-[0.16em] text-amber-300/75">
-                          User / Message Text
+                          Người dùng / Nội dung tin nhắn
                         </div>
                         <div className="mt-1 whitespace-pre-wrap break-words">
                           {renderOpenClawHighlightedText(
@@ -5328,7 +5328,7 @@ export function OfficeScreen({
                     {entry.thinkingText ? (
                       <div className="mt-2 rounded border border-fuchsia-400/15 bg-fuchsia-950/15 px-2 py-1 text-fuchsia-100/90">
                         <div className="text-[9px] uppercase tracking-[0.16em] text-fuchsia-300/70">
-                          Thinking
+                          Suy nghĩ
                         </div>
                         <div className="mt-1 whitespace-pre-wrap break-words">
                           {renderOpenClawHighlightedText(
@@ -5354,7 +5354,7 @@ export function OfficeScreen({
                     {entry.toolText ? (
                       <div className="mt-2 rounded border border-violet-400/15 bg-violet-950/15 px-2 py-1 text-violet-100/90">
                         <div className="text-[9px] uppercase tracking-[0.16em] text-violet-300/70">
-                          Tool Output
+                          Kết quả công cụ
                         </div>
                         <div className="mt-1 whitespace-pre-wrap break-words">
                           {renderOpenClawHighlightedText(
@@ -5366,7 +5366,7 @@ export function OfficeScreen({
                     ) : null}
                     <details className="mt-2">
                       <summary className="cursor-pointer text-[9px] uppercase tracking-[0.16em] text-cyan-300/55">
-                        Raw Payload
+                        Payload thô
                       </summary>
                       <pre className="mt-1 whitespace-pre-wrap break-words text-cyan-100/45">
                         {renderOpenClawHighlightedText(
@@ -5408,7 +5408,7 @@ export function OfficeScreen({
                 {!chatRosterCollapsed ? (
                   <>
                     <span className="font-mono text-[11px] font-semibold uppercase tracking-widest text-white/60">
-                      Agents
+                      Tác nhân
                     </span>
                     <span className="font-mono text-[10px] text-white/40">
                       {chatRosterEntries.length}
@@ -5424,8 +5424,8 @@ export function OfficeScreen({
                 type="button"
                 onClick={() => setChatRosterCollapsed((current) => !current)}
                 className="mx-2 mt-2 inline-flex items-center justify-center rounded border border-white/10 bg-white/5 px-2 py-2 text-white/65 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
-                aria-label={chatRosterCollapsed ? "Expand agent list" : "Collapse agent list"}
-                title={chatRosterCollapsed ? "Expand agent list" : "Collapse agent list"}
+                aria-label={chatRosterCollapsed ? "Mở rộng danh sách tác nhân" : "Thu gọn danh sách tác nhân"}
+                title={chatRosterCollapsed ? "Mở rộng danh sách tác nhân" : "Thu gọn danh sách tác nhân"}
               >
                 {chatRosterCollapsed ? (
                   <ChevronRight className="h-4 w-4" />
@@ -5457,7 +5457,7 @@ export function OfficeScreen({
                   </div>
                 ) : chatRosterEntries.length === 0 ? (
                   <div className="px-3 py-4 font-mono text-[11px] text-white/30">
-                    No agents.
+                    Không có tác nhân.
                   </div>
                 ) : (
                   chatRosterEntries.map((agent) => {
@@ -5486,7 +5486,7 @@ export function OfficeScreen({
                           </span>
                         ) : null}
                         <span className="sr-only">
-                          {agent.kind === "remote" ? "Remote agent" : "Local agent"}
+                          {agent.kind === "remote" ? "Tác nhân từ xa" : "Tác nhân cục bộ"}
                         </span>
                       </button>
                     );
@@ -5611,7 +5611,7 @@ export function OfficeScreen({
                 />
               ) : (
                 <div className="flex flex-1 items-center justify-center font-mono text-[12px] text-white/30">
-                  Select an agent to chat.
+                  Chọn một tác nhân để trò chuyện.
                 </div>
               )}
             </div>
@@ -5626,7 +5626,7 @@ export function OfficeScreen({
           {chatOpen ? (
             <>
               <ChevronDown className="h-3.5 w-3.5" />
-              <span>HIDE CHAT</span>
+              <span>ẨN CHAT</span>
             </>
           ) : (
             <>
@@ -5664,20 +5664,20 @@ export function OfficeScreen({
             </div>
             <div className="flex flex-col">
               <span className="text-[10px] uppercase tracking-[0.18em] text-white/55">
-                Main agent
+                Tác nhân chính
               </span>
               <span className="text-[12px] font-medium text-white">
                 {mainVoiceError
                   ? mainVoiceError
                   : mainVoiceState === "recording"
-                    ? "Listening. Release Option to send."
+                    ? "Đang nghe. Nhả Option để gửi."
                     : mainVoiceState === "transcribing"
-                      ? "Transcribing your voice note."
+                      ? "Đang chuyển giọng nói thành văn bản."
                       : mainVoiceState === "requesting"
-                        ? "Requesting microphone access."
+                        ? "Đang yêu cầu quyền microphone."
                         : !mainVoiceSupported
-                          ? "Voice shortcuts are not supported in this browser."
-                          : "Voice shortcut ready."}
+                          ? "Trình duyệt này không hỗ trợ phím tắt giọng nói."
+                          : "Phím tắt giọng nói sẵn sàng."}
               </span>
             </div>
           </div>

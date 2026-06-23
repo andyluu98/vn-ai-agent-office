@@ -59,12 +59,12 @@ const renderFloorButton = (params: {
         floor.enabled ? "cursor-pointer" : "cursor-not-allowed opacity-45",
       ].join(" ")}
       aria-pressed={active}
-      aria-label={`Select ${floor.label}`}
+      aria-label={`Chọn ${floor.label}`}
     >
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">
-            {floor.zone === "outside" ? "Destination" : "Floor"}
+            {floor.zone === "outside" ? "Điểm đến" : "Tầng"}
           </div>
           <div className="truncate text-sm font-semibold text-white">{floor.label}</div>
         </div>
@@ -83,10 +83,10 @@ const renderFloorButton = (params: {
         <span>{floor.shortLabel}</span>
         {floor.enabled ? (
           <span>
-            roster {rosterCount} | {rosterStatus}
+            danh sách {rosterCount} | {rosterStatus}
           </span>
         ) : (
-          <span>Locked</span>
+          <span>Khoá</span>
         )}
       </div>
     </button>
@@ -147,10 +147,10 @@ export function OfficeFloorNav({
           aria-expanded={!directoryCollapsed}
           aria-controls="office-floor-directory-body"
           aria-label={
-            directoryCollapsed ? "Expand building directory" : "Collapse building directory"
+            directoryCollapsed ? "Mở rộng danh sách toà nhà" : "Thu gọn danh sách toà nhà"
           }
         >
-          <span>Building Directory</span>
+          <span>Danh sách toà nhà</span>
           {directoryCollapsed ? (
             <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
           ) : (
@@ -164,22 +164,22 @@ export function OfficeFloorNav({
                 type="button"
                 className="rounded border border-amber-500/20 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-100/80 transition-colors hover:border-amber-400/45 hover:text-amber-50"
                 onClick={() => onSelectFloor(getAdjacentEnabledOfficeFloorId(activeFloor.id, -1))}
-                aria-label="Switch to previous enabled floor"
+                aria-label="Chuyển tới tầng trước"
               >
-                Prev
+                Trước
               </button>
               <button
                 type="button"
                 className="rounded border border-amber-500/20 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-100/80 transition-colors hover:border-amber-400/45 hover:text-amber-50"
                 onClick={() => onSelectFloor(getAdjacentEnabledOfficeFloorId(activeFloor.id, 1))}
-                aria-label="Switch to next enabled floor"
+                aria-label="Chuyển tới tầng tiếp theo"
               >
-                Next
+                Tiếp
               </button>
             </div>
             <div className="mt-3 flex flex-col gap-2">
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                Building
+                Toà nhà
               </div>
               {buildingFloors.map((floor) =>
                 renderFloorButton({
@@ -193,7 +193,7 @@ export function OfficeFloorNav({
             {outsideFloors.length > 0 ? (
               <div className="mt-4 flex flex-col gap-2">
                 <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                  Outside
+                  Bên ngoài
                 </div>
                 {outsideFloors.map((floor) =>
                   renderFloorButton({
@@ -211,13 +211,13 @@ export function OfficeFloorNav({
 
       <section className="pointer-events-auto rounded-2xl border border-white/10 bg-black/68 px-3 py-2 shadow-xl backdrop-blur">
         <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/45">
-          Current Floor
+          Tầng hiện tại
         </div>
         <div className="mt-1 text-sm font-semibold text-white">{activeFloor.label}</div>
         <div className="mt-1 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-white/45">
           <span>{PROVIDER_LABEL[activeFloor.provider]}</span>
           <span>
-            roster {activeRoster?.entries.length ?? 0} | {activeRoster?.status ?? "idle"}
+            danh sách {activeRoster?.entries.length ?? 0} | {activeRoster?.status ?? "idle"}
           </span>
         </div>
       </section>
