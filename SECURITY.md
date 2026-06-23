@@ -1,45 +1,49 @@
-# Security Policy
+# Chính sách bảo mật
 
-## Reporting A Vulnerability
+## Báo cáo lỗ hổng bảo mật
 
-Please do not open public GitHub issues for security vulnerabilities.
+Vui lòng không mở public GitHub issue cho các lỗ hổng bảo mật.
 
-Preferred path:
+Đường dẫn ưu tiên:
 
-- If the repository host exposes private vulnerability reporting or GitHub Security Advisories for this repo, use that path first.
+- Nếu repository host có private vulnerability reporting hoặc GitHub Security Advisories cho repo này, hãy dùng đường dẫn đó trước.
 
-Fallback path:
+Đường dẫn dự phòng:
 
-- If no private reporting channel is available, open a minimal public issue requesting a private contact channel and do not include exploit details, tokens, or proof-of-concept payloads in that issue.
+- Nếu không có kênh báo cáo riêng tư nào khả dụng, mở một public issue tối thiểu yêu cầu kênh liên lạc riêng tư và không bao gồm chi tiết exploit, token hoặc proof-of-concept payload trong issue đó.
 
-When reporting a vulnerability, include:
+Khi báo cáo lỗ hổng, bao gồm:
 
-- A clear description of the issue.
-- Impact and affected areas.
-- Reproduction steps or a proof of concept.
-- Any suggested mitigation if you have one.
+- Mô tả rõ ràng về vấn đề.
+- Tác động và các khu vực bị ảnh hưởng.
+- Các bước tái hiện hoặc proof of concept.
+- Bất kỳ đề xuất giảm thiểu nào nếu bạn có.
 
-We aim to acknowledge reports promptly, investigate them, and coordinate a fix and disclosure timeline with the reporter.
+Chúng tôi hướng đến việc xác nhận báo cáo kịp thời, điều tra chúng và phối hợp lịch trình fix và disclosure với người báo cáo.
 
-## Current Security Limitations
+## Giới hạn bảo mật hiện tại
 
-- Studio gateway settings are stored on disk in plaintext under the local OpenClaw state directory.
-- The current UI loads the configured upstream gateway URL/token into browser memory at runtime, even though those values are not stored in browser persistent storage.
-- There is currently no built-in cookie issuance/login flow for `STUDIO_ACCESS_TOKEN`; deployments that enable the access gate must provision the `studio_access` cookie outside the app.
+- Cài đặt gateway Studio được lưu trên disk dưới dạng plaintext trong thư mục trạng thái OpenClaw cục bộ.
+- UI hiện tại tải URL/token upstream gateway đã cấu hình vào bộ nhớ trình duyệt lúc runtime, mặc dù các giá trị đó không được lưu trong browser persistent storage.
+- Hiện không có built-in cookie issuance/login flow cho `STUDIO_ACCESS_TOKEN`; các deployment bật access gate phải provision cookie `studio_access` bên ngoài ứng dụng.
 
-## Scope
+## Phạm vi
 
-Please report issues related to:
+Vui lòng báo cáo các vấn đề liên quan đến:
 
-- Authentication or access-control bypasses.
-- Secret handling or token exposure.
-- Remote code execution or privilege escalation paths.
-- Unsafe filesystem, proxy, or network behavior.
-- Dependency vulnerabilities that materially affect this project.
+- Bỏ qua xác thực hoặc kiểm soát truy cập.
+- Xử lý secret hoặc lộ token.
+- Các đường dẫn thực thi mã từ xa hoặc leo thang đặc quyền.
+- Hành vi filesystem, proxy hoặc mạng không an toàn.
+- Lỗ hổng dependency ảnh hưởng đáng kể đến dự án này.
 
-## Deployment Notes
+## Ghi chú triển khai
 
-- In production, set `UPSTREAM_ALLOWLIST` for the Studio gateway proxy.
-- In production, set `CUSTOM_RUNTIME_ALLOWLIST` if you use `/api/runtime/custom`. If unset, it falls back to `UPSTREAM_ALLOWLIST`.
-- Empty allowlists are intended for local development only.
-- If you enable `STUDIO_ACCESS_TOKEN`, you must also provision the `studio_access` cookie through your deployment/auth layer.
+- Trong production, đặt `UPSTREAM_ALLOWLIST` cho Studio gateway proxy.
+- Trong production, đặt `CUSTOM_RUNTIME_ALLOWLIST` nếu bạn dùng `/api/runtime/custom`. Nếu không đặt, nó fallback về `UPSTREAM_ALLOWLIST`.
+- Allowlist trống chỉ dành cho local development.
+- Nếu bạn bật `STUDIO_ACCESS_TOKEN`, bạn cũng phải provision cookie `studio_access` qua deployment/auth layer của bạn.
+
+## Lưu ý: đổi tên header văn phòng-tới-văn phòng
+
+Header token dùng để xác thực kết nối presence/layout giữa hai instance VN AI Agent Office đã được đổi tên từ `X-Claw3D-Office-Token` thành `X-VN-Office-Token`. Khi vận hành cài đặt multi-office, cả hai peer phải chạy build đã đổi tên. Instance vẫn gửi header cũ `X-Claw3D-Office-Token` sẽ bị từ chối.

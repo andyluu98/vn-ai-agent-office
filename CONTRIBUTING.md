@@ -1,17 +1,17 @@
-# Contributing
+# Đóng góp
 
-Thanks for helping improve VN AI Agent Office.
+Cảm ơn bạn đã giúp cải thiện VN AI Agent Office.
 
-Please use GitHub Issues for bugs, feature requests, and questions about planned work.
+Vui lòng dùng GitHub Issues cho bug, feature request và câu hỏi về công việc đã được lên kế hoạch.
 
-## Before you start
-- Install OpenClaw and confirm the gateway runs locally.
-- This repo is UI-only and reads config from `~/.openclaw` with legacy fallback to `~/.moltbot` or `~/.clawdbot`.
-- It does not run or build the gateway from source.
-- Read `CODE_DOCUMENTATION.md` for the repo code map, extension points, and the recommended onboarding order through the codebase.
-- Use `ROADMAP.md` if you are looking for starter work or near-term priorities.
+## Trước khi bắt đầu
+- Cài OpenClaw và xác nhận gateway chạy cục bộ.
+- Repo này chỉ là UI và đọc config từ `~/.openclaw` với legacy fallback về `~/.moltbot` hoặc `~/.clawdbot`.
+- Nó không chạy hoặc build gateway từ source.
+- Đọc `CODE_DOCUMENTATION.md` để biết bản đồ code repo, điểm mở rộng và thứ tự onboarding được khuyến nghị qua codebase.
+- Dùng `ROADMAP.md` nếu bạn đang tìm kiếm starter work hoặc ưu tiên ngắn hạn.
 
-## Local setup
+## Cài đặt cục bộ
 ```bash
 git clone https://github.com/iamlukethedev/Claw3D.git vn-ai-agent-office
 cd vn-ai-agent-office
@@ -20,33 +20,33 @@ cp .env.example .env
 npm run dev
 ```
 
-## Support And Routing
-- Use the GitHub bug and feature templates for normal public contributions.
-- Use `SUPPORT.md` for help-routing and maintainer contact guidance.
-- Use `SECURITY.md` for sensitive security reports, and avoid posting exploit details in public issues.
+## Hỗ trợ và Định tuyến
+- Dùng các template bug và feature GitHub cho các đóng góp công khai thông thường.
+- Dùng `SUPPORT.md` để được hướng dẫn định tuyến trợ giúp và liên hệ maintainer.
+- Dùng `SECURITY.md` cho các báo cáo bảo mật nhạy cảm và tránh đăng chi tiết exploit trong public issue.
 
 ## Testing
 - `npm run lint`
 - `npm run typecheck`
 - `npm run test`
-- `npm run e2e` (requires `npx playwright install`)
+- `npm run e2e` (yêu cầu `npx playwright install`)
 
-If your change touches generated UX audit artifacts, clean them before committing with `npm run cleanup:ux-artifacts`.
+Nếu thay đổi của bạn chạm đến các UX audit artifact đã được tạo, hãy dọn sạch chúng trước khi commit với `npm run cleanup:ux-artifacts`.
 
-## Pull requests
-- Keep PRs focused and small.
-- Prefer one task per PR.
-- Include the tests you ran.
-- Link to the relevant issue when possible.
-- If you changed gateway behavior, call it out explicitly.
-- Update docs when the user-facing behavior or architecture changes.
-- If you touched bundled assets, vendored code, or dependency/licensing posture, update the relevant `THIRD_PARTY_*` documentation in the same PR.
+## Pull request
+- Giữ PR tập trung và nhỏ gọn.
+- Ưu tiên một nhiệm vụ mỗi PR.
+- Bao gồm các test bạn đã chạy.
+- Liên kết tới issue liên quan khi có thể.
+- Nếu bạn thay đổi hành vi gateway, hãy nêu rõ.
+- Cập nhật tài liệu khi hành vi hoặc kiến trúc hướng đến người dùng thay đổi.
+- Nếu bạn chạm vào bundled asset, vendored code hoặc posture dependency/licensing, hãy cập nhật tài liệu `THIRD_PARTY_*` liên quan trong cùng PR.
 
-## Reporting issues
-When filing an issue, please include:
-- Reproduction steps
-- OS and Node version
-- Any relevant logs or screenshots
+## Báo cáo issue
+Khi nộp issue, vui lòng bao gồm:
+- Các bước tái hiện
+- OS và phiên bản Node
+- Bất kỳ log hoặc screenshot liên quan
 
 ## Minimal PR template
 ```md

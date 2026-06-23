@@ -1,20 +1,20 @@
-# Support
+# Hỗ trợ
 
-Use the following routes so questions and reports land in the right place.
+Dùng các kênh sau để câu hỏi và báo cáo đến đúng nơi.
 
-## Public Help
+## Trợ giúp công khai
 
-- Bug reports: open a GitHub issue using the bug report template.
-- Feature requests: open a GitHub issue using the feature request template.
-- Contribution questions: start with `README.md`, `CODE_DOCUMENTATION.md`, `CONTRIBUTING.md`, and `ROADMAP.md`.
+- Báo cáo lỗi: mở GitHub issue dùng bug report template.
+- Yêu cầu tính năng: mở GitHub issue dùng feature request template.
+- Câu hỏi đóng góp: bắt đầu với `README.md`, `CODE_DOCUMENTATION.md`, `CONTRIBUTING.md` và `ROADMAP.md`.
 
-## Sensitive Reports
+## Báo cáo nhạy cảm
 
-- Security issues: follow `SECURITY.md` and avoid posting exploit details in public issues.
-- Code of conduct concerns: follow `CODE_OF_CONDUCT.md`.
+- Vấn đề bảo mật: làm theo `SECURITY.md` và tránh đăng chi tiết exploit trong public issue.
+- Lo ngại về code of conduct: làm theo `CODE_OF_CONDUCT.md`.
 
-## Maintainer Contact Notes
+## Ghi chú liên hệ Maintainer
 
-- This repository currently routes most public support through GitHub issues and documentation.
-- If you need a private maintainer response and the repository hosting platform exposes private vulnerability reporting, use that path first.
-- If private vulnerability reporting is not available, open a minimal public issue requesting a private contact channel and do not include sensitive details.
+- Repository này hiện định tuyến hầu hết hỗ trợ công khai qua GitHub issue và tài liệu.
+- Nếu bạn cần phản hồi maintainer riêng tư và nền tảng hosting repo có private vulnerability reporting, hãy dùng đường dẫn đó trước.
+- Nếu private vulnerability reporting không khả dụng, mở một public issue tối thiểu yêu cầu kênh liên lạc riêng tư và không bao gồm chi tiết nhạy cảm.
