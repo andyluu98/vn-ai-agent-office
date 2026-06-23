@@ -71,11 +71,11 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
   const handoffDisabled = !canSend || sending || handoffing || !draftValue.trim();
   const helperText = useMemo(() => {
     if (disabledReason?.trim()) return disabledReason.trim();
-    if (sending) return "Forwarding your message to the remote gateway.";
+    if (sending) return "Đang chuyển tiếp tin nhắn của bạn tới cổng kết nối từ xa.";
     if (mode === "interval") {
-      return "Interval thread. Use this for ongoing coordination and checkpoints.";
+      return "Luồng định kỳ. Dùng để phối hợp liên tục và kiểm tra tiến độ.";
     }
-    return "Direct relay. Remote replies are not mirrored here yet.";
+    return "Chuyển tiếp trực tiếp. Phản hồi từ xa chưa được phản chiếu ở đây.";
   }, [disabledReason, mode, sending]);
 
   useEffect(() => {
@@ -109,7 +109,7 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
     <div className="flex min-h-0 flex-1 flex-col bg-[#0e0a04]">
       <div className="border-b border-white/10 px-4 py-3">
         <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-300/70">
-          Remote Agent
+          Tác nhân từ xa
         </div>
         <div className="mt-1 text-sm font-medium text-white">{agentName}</div>
         <div className="mt-2 font-mono text-[11px] text-white/45">{helperText}</div>
@@ -118,7 +118,7 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
       <div ref={feedRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
         {messages.length === 0 ? (
           <div className="rounded border border-dashed border-white/10 bg-black/10 px-3 py-3 font-mono text-[11px] text-white/35">
-            Send a plain-text note to this remote agent.
+            Gửi ghi chú văn bản tới tác nhân từ xa này.
           </div>
         ) : (
           messages.map((message) => (
@@ -176,31 +176,31 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
             onDraftChange(nextValue);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Message the remote agent."
+          placeholder="Nhắn tin tới tác nhân từ xa."
           className="min-h-[92px] w-full resize-none rounded border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-400/50"
         />
         <div className="mt-3 grid gap-2">
           <textarea
             value={handoffContext}
             onChange={(event) => onHandoffContextChange(event.target.value)}
-            placeholder="Handoff context"
+            placeholder="Bối cảnh bàn giao"
             className="min-h-[68px] w-full resize-none rounded border border-white/10 bg-black/20 px-3 py-2 text-xs text-white outline-none transition focus:border-amber-400/40"
           />
           <input
             value={handoffDeliverables}
             onChange={(event) => onHandoffDeliverablesChange(event.target.value)}
-            placeholder="Deliverables, comma-separated"
+            placeholder="Kết quả bàn giao, phân cách bằng dấu phẩy"
             className="h-10 w-full rounded border border-white/10 bg-black/20 px-3 text-xs text-white outline-none transition focus:border-amber-400/40"
           />
           <input
             value={handoffAcceptance}
             onChange={(event) => onHandoffAcceptanceChange(event.target.value)}
-            placeholder="Acceptance criteria"
+            placeholder="Tiêu chí nghiệm thu"
             className="h-10 w-full rounded border border-white/10 bg-black/20 px-3 text-xs text-white outline-none transition focus:border-amber-400/40"
           />
         </div>
         <div className="mt-3 flex items-center justify-between gap-3">
-          <div className="font-mono text-[10px] text-white/35">Enter sends. Shift+Enter adds a line.</div>
+          <div className="font-mono text-[10px] text-white/35">Enter gửi. Shift+Enter xuống dòng.</div>
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -208,7 +208,7 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
               disabled={handoffDisabled}
               className="rounded border border-amber-400/30 bg-amber-500/8 px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-amber-100 transition hover:border-amber-300/55 hover:bg-amber-500/12 disabled:cursor-not-allowed disabled:opacity-45"
             >
-              {handoffing ? "Handing off..." : "Handoff"}
+              {handoffing ? "Đang bàn giao..." : "Bàn giao"}
             </button>
             <button
               type="button"
@@ -216,7 +216,7 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
               disabled={sendDisabled}
               className="rounded border border-cyan-400/40 bg-cyan-500/10 px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-cyan-100 transition hover:border-cyan-300/60 hover:bg-cyan-500/15 disabled:cursor-not-allowed disabled:opacity-45"
             >
-              {sending ? "Sending..." : "Send"}
+              {sending ? "Đang gửi..." : "Gửi"}
             </button>
           </div>
         </div>

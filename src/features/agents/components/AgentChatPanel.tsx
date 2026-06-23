@@ -59,11 +59,11 @@ const CHAT_SELECT_STYLE = {
   color: "#ffffff",
 } as const;
 const EMPTY_CHAT_INTRO_MESSAGES = [
-  "How can I help you today?",
-  "What should we accomplish today?",
-  "Ready when you are. What do you want to tackle?",
-  "What are we working on today?",
-  "I'm here and ready. What's the plan?",
+  "Tôi có thể giúp gì cho bạn hôm nay?",
+  "Hôm nay chúng ta cần hoàn thành gì?",
+  "Sẵn sàng khi bạn muốn. Bạn muốn bắt đầu từ đâu?",
+  "Hôm nay chúng ta đang làm gì?",
+  "Tôi đang ở đây và sẵn sàng. Kế hoạch là gì?",
 ];
 const TEXT_ATTACHMENT_EXTENSIONS = new Set([
   "txt",
@@ -145,7 +145,7 @@ const stableStringHash = (value: string): number => {
 };
 
 const resolveEmptyChatIntroMessage = (agentId: string, sessionEpoch: number | undefined): string => {
-  if (EMPTY_CHAT_INTRO_MESSAGES.length === 0) return "How can I help you today?";
+  if (EMPTY_CHAT_INTRO_MESSAGES.length === 0) return "Tôi có thể giúp gì cho bạn hôm nay?";
   const normalizedEpoch =
     typeof sessionEpoch === "number" && Number.isFinite(sessionEpoch)
       ? Math.max(0, Math.trunc(sessionEpoch))
@@ -237,15 +237,15 @@ const ExecApprovalCard = memo(function ExecApprovalCard({
       data-testid={`exec-approval-card-${approval.id}`}
     >
       <div className="type-meta">
-        Exec approval required
+        Yêu cầu phê duyệt lệnh thực thi
       </div>
       <div className="mt-2 rounded-md bg-surface-3 px-2 py-1.5 shadow-2xs">
         <div className="font-mono text-[10px] font-semibold text-foreground">{approval.command}</div>
       </div>
       <div className="mt-2 grid gap-1 text-[11px] text-muted-foreground sm:grid-cols-2">
-        <div>Host: {approval.host ?? "unknown"}</div>
-        <div>Expires: {formatApprovalExpiry(approval.expiresAtMs)}</div>
-        {approval.cwd ? <div className="sm:col-span-2">CWD: {approval.cwd}</div> : null}
+        <div>Máy chủ: {approval.host ?? "không rõ"}</div>
+        <div>Hết hạn: {formatApprovalExpiry(approval.expiresAtMs)}</div>
+        {approval.cwd ? <div className="sm:col-span-2">Thư mục: {approval.cwd}</div> : null}
       </div>
       {approval.error ? (
         <div className="ui-alert-danger mt-2 rounded-md px-2 py-1 text-[11px] shadow-2xs">
@@ -258,27 +258,27 @@ const ExecApprovalCard = memo(function ExecApprovalCard({
           className="rounded-md border border-border/70 bg-surface-3 px-2.5 py-1 font-mono text-[12px] font-medium tracking-[0.02em] text-foreground transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
           onClick={() => onResolve?.(approval.id, "allow-once")}
           disabled={disabled}
-          aria-label={`Allow once for exec approval ${approval.id}`}
+          aria-label={`Cho phép một lần cho phê duyệt lệnh ${approval.id}`}
         >
-          Allow once
+          Cho phép một lần
         </button>
         <button
           type="button"
           className="rounded-md border border-border/70 bg-surface-3 px-2.5 py-1 font-mono text-[12px] font-medium tracking-[0.02em] text-foreground transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
           onClick={() => onResolve?.(approval.id, "allow-always")}
           disabled={disabled}
-          aria-label={`Always allow for exec approval ${approval.id}`}
+          aria-label={`Luôn cho phép phê duyệt lệnh ${approval.id}`}
         >
-          Always allow
+          Luôn cho phép
         </button>
         <button
           type="button"
           className="ui-btn-danger rounded-md px-2.5 py-1 font-mono text-[12px] font-medium tracking-[0.02em] transition disabled:cursor-not-allowed disabled:opacity-60"
           onClick={() => onResolve?.(approval.id, "deny")}
           disabled={disabled}
-          aria-label={`Deny exec approval ${approval.id}`}
+          aria-label={`Từ chối phê duyệt lệnh ${approval.id}`}
         >
-          Deny
+          Từ chối
         </button>
       </div>
     </div>
@@ -615,7 +615,7 @@ const AssistantIntroCard = memo(function AssistantIntroCard({
         <div className="ui-chat-assistant-card mt-2">
           <div className="text-[14px] leading-[1.65] text-foreground">{title}</div>
           <div className="mt-2 font-mono text-[10px] tracking-[0.03em] text-muted-foreground/80">
-            Try describing a task, bug, or question to get started.
+            Hãy mô tả một nhiệm vụ, lỗi cần sửa, hoặc câu hỏi để bắt đầu.
           </div>
         </div>
       </div>
@@ -848,15 +848,15 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
           {historyMaybeTruncated && isAtTop ? (
             <div className="-mx-1 flex items-center justify-between gap-3 rounded-md bg-surface-2 px-3 py-2 shadow-2xs">
               <div className="type-meta min-w-0 truncate font-mono text-muted-foreground">
-                Showing most recent {typeof historyFetchedCount === "number" ? historyFetchedCount : "?"} messages
-                {typeof historyFetchLimit === "number" ? ` (limit ${historyFetchLimit})` : ""}
+                Đang hiển thị {typeof historyFetchedCount === "number" ? historyFetchedCount : "?"} tin nhắn gần nhất
+                {typeof historyFetchLimit === "number" ? ` (giới hạn ${historyFetchLimit})` : ""}
               </div>
               <button
                 type="button"
                 className="shrink-0 rounded-md border border-border/70 bg-surface-3 px-3 py-1.5 font-mono text-[12px] font-medium tracking-[0.02em] text-foreground transition hover:bg-surface-2"
                 onClick={onLoadMoreHistory}
               >
-                Load more
+                Tải thêm
               </button>
             </div>
           ) : null}
@@ -918,9 +918,9 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
             setPinned(true);
             scrollChatToBottom();
           }}
-          aria-label="Jump to latest"
+          aria-label="Nhảy tới mới nhất"
         >
-          Jump to latest
+          Nhảy tới mới nhất
         </button>
       ) : null}
     </div>
@@ -1019,13 +1019,13 @@ const AgentChatComposer = memo(function AgentChatComposer({
 }) {
   const stopReason = stopDisabledReason?.trim() ?? "";
   const stopDisabled = !canSend || stopBusy || Boolean(stopReason);
-  const stopAriaLabel = stopReason ? `Stop unavailable: ${stopReason}` : "Stop";
+  const stopAriaLabel = stopReason ? `Không thể dừng: ${stopReason}` : "Dừng";
   const voiceBusy = voiceState === "requesting" || voiceState === "transcribing";
   const voiceRecording = voiceState === "recording";
   const voiceDisabled = voiceRecording ? false : !voiceEnabled || !voiceSupported || !canSend || voiceBusy;
   const voiceLabel =
     voiceState === "recording"
-      ? "Stop"
+      ? "Dừng"
       : voiceState === "transcribing"
         ? "..."
         : voiceState === "requesting"
@@ -1033,35 +1033,35 @@ const AgentChatComposer = memo(function AgentChatComposer({
           : "Mic";
   const voiceStatusText =
     voiceState === "recording"
-      ? "Recording. Tap stop to send."
+      ? "Đang ghi âm. Nhấn dừng để gửi."
       : voiceState === "transcribing"
-        ? "Transcribing your voice note."
+        ? "Đang chuyển giọng nói thành văn bản."
         : voiceState === "requesting"
-          ? "Requesting microphone access."
+          ? "Đang yêu cầu quyền microphone."
           : !voiceSupported && voiceEnabled
-            ? "This browser does not support microphone recording."
+            ? "Trình duyệt này không hỗ trợ ghi âm microphone."
             : null;
   const modelSelectedLabel = useMemo(() => {
-    if (modelOptions.length === 0) return "No models found";
+    if (modelOptions.length === 0) return "Không tìm thấy mô hình";
     return modelOptions.find((option) => option.value === modelValue)?.label ?? modelValue;
   }, [modelOptions, modelValue]);
   const modelSelectWidthCh = Math.max(11, Math.min(44, modelSelectedLabel.length + 6));
   const thinkingSelectedLabel = useMemo(() => {
     switch (thinkingValue) {
       case "off":
-        return "Off";
+        return "Tắt";
       case "minimal":
-        return "Minimal";
+        return "Tối thiểu";
       case "low":
-        return "Low";
+        return "Thấp";
       case "medium":
-        return "Medium";
+        return "Trung bình";
       case "high":
-        return "High";
+        return "Cao";
       case "xhigh":
-        return "XHigh";
+        return "Rất cao";
       default:
-        return "Default";
+        return "Mặc định";
     }
   }, [thinkingValue]);
   const thinkingSelectWidthCh = Math.max(9, Math.min(22, thinkingSelectedLabel.length + 6));
@@ -1069,7 +1069,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
     <>
       <div className="mb-1.5 flex items-center justify-between gap-2 px-1">
         <div className="flex min-w-0 items-center gap-2">
-          <InlineHoverTooltip text="Choose model">
+          <InlineHoverTooltip text="Chọn mô hình">
             <select
               className="ui-input ui-control-important h-6 min-w-0 rounded-md border-white/10 px-1.5 text-[10px] font-semibold text-white"
               aria-label="Model"
@@ -1082,7 +1082,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
               }}
             >
               {modelOptions.length === 0 ? (
-                <option value="">No models found</option>
+                <option value="">Không tìm thấy mô hình</option>
               ) : null}
               {modelOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -1092,7 +1092,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
             </select>
           </InlineHoverTooltip>
           {allowThinking ? (
-            <InlineHoverTooltip text="Select reasoning effort">
+            <InlineHoverTooltip text="Chọn mức độ suy luận">
               <select
                 className="ui-input ui-control-important h-6 rounded-md border-white/10 px-1.5 text-[10px] font-semibold text-white"
                 aria-label="Thinking"
@@ -1103,23 +1103,23 @@ const AgentChatComposer = memo(function AgentChatComposer({
                   onThinkingChange(nextValue ? nextValue : null);
                 }}
               >
-                <option value="">Default</option>
-                <option value="off">Off</option>
-                <option value="minimal">Minimal</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="xhigh">XHigh</option>
+                <option value="">Mặc định</option>
+                <option value="off">Tắt</option>
+                <option value="minimal">Tối thiểu</option>
+                <option value="low">Thấp</option>
+                <option value="medium">Trung bình</option>
+                <option value="high">Cao</option>
+                <option value="xhigh">Rất cao</option>
               </select>
             </InlineHoverTooltip>
           ) : null}
         </div>
         <div className="hidden">
-          <span className="font-mono tracking-[0.02em]">Show</span>
+          <span className="font-mono tracking-[0.02em]">Hiện</span>
           <button
             type="button"
             role="switch"
-            aria-label="Show tool calls"
+            aria-label="Hiện lượt gọi công cụ"
             aria-checked={toolCallingEnabled}
             className={`inline-flex h-5 items-center rounded-sm border px-1.5 font-mono text-[10px] tracking-[0.01em] transition ${
               toolCallingEnabled
@@ -1128,12 +1128,12 @@ const AgentChatComposer = memo(function AgentChatComposer({
             }`}
             onClick={() => onToolCallingToggle(!toolCallingEnabled)}
           >
-            Tools
+            Công cụ
           </button>
           <button
             type="button"
             role="switch"
-            aria-label="Show thinking"
+            aria-label="Hiện suy luận"
             aria-checked={showThinkingTraces}
             className={`inline-flex h-5 items-center rounded-sm border px-1.5 font-mono text-[10px] tracking-[0.01em] transition ${
               showThinkingTraces
@@ -1142,7 +1142,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
             }`}
             onClick={() => onThinkingTracesToggle(!showThinkingTraces)}
           >
-            Thinking
+            Suy luận
           </button>
         </div>
       </div>
@@ -1156,7 +1156,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
             <div
               className="min-w-0 max-w-full space-y-1 overflow-hidden"
               data-testid="queued-messages-bar"
-              aria-label="Queued messages"
+              aria-label="Tin nhắn đang chờ"
             >
               {queuedMessages.map((queuedMessage, index) => (
                 <div
@@ -1164,7 +1164,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
                   className="flex w-full min-w-0 max-w-full items-center gap-1 overflow-hidden rounded-md border border-border/70 bg-card/80 px-2 py-1 text-[11px] text-foreground"
                 >
                   <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
-                    Queued
+                    Chờ
                   </span>
                   <span
                     className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
@@ -1175,7 +1175,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
                   <button
                     type="button"
                     className="inline-flex h-4 w-4 flex-none items-center justify-center rounded-sm text-muted-foreground transition hover:bg-surface-2 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label={`Remove queued message ${index + 1}`}
+                    aria-label={`Xoá tin nhắn đang chờ ${index + 1}`}
                     onClick={() => onRemoveQueuedMessage?.(index)}
                     disabled={!onRemoveQueuedMessage}
                   >
@@ -1192,7 +1192,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
                 disabled
                 className="invisible rounded-md border border-border/70 bg-surface-3 px-3 py-2 font-mono text-[12px] font-medium tracking-[0.02em] text-foreground"
               >
-                {stopBusy ? "Stopping" : "Stop"}
+                {stopBusy ? "Đang dừng" : "Dừng"}
               </button>
             ) : null}
             <button
@@ -1202,7 +1202,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
               disabled
               className="ui-btn-primary ui-btn-send invisible px-3 py-2 font-mono text-[12px] font-medium tracking-[0.02em]"
             >
-              Send
+              Gửi
             </button>
           </div>
         ) : null}
@@ -1223,13 +1223,13 @@ const AgentChatComposer = memo(function AgentChatComposer({
                     />
                   ) : (
                     <div className="flex h-16 w-16 items-center justify-center px-2 text-center font-mono text-[10px] text-muted-foreground">
-                      File
+                      Tệp
                     </div>
                   )}
                   <button
                     type="button"
                     className="absolute right-1 top-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-black/70 text-white transition hover:bg-black"
-                    aria-label={`Remove attachment ${attachment.name}`}
+                    aria-label={`Xoá tệp đính kèm ${attachment.name}`}
                     onClick={() => onRemoveAttachment(attachment.id)}
                   >
                     <X className="h-3 w-3" />
@@ -1270,19 +1270,19 @@ const AgentChatComposer = memo(function AgentChatComposer({
             className="chat-composer-input min-h-[64px] flex-1 resize-none border-0 bg-transparent px-0 py-1 text-[15px] leading-6 text-foreground outline-none shadow-none transition placeholder:text-muted-foreground/65 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
             onChange={onChange}
             onKeyDown={onKeyDown}
-            placeholder="type a message"
+            placeholder="nhập tin nhắn"
           />
           <button
             className="rounded-md border border-border/70 bg-surface-3 px-2.5 py-2 font-mono text-[11px] font-medium tracking-[0.02em] text-white transition hover:bg-surface-2 hover:text-white disabled:cursor-not-allowed disabled:border-border/30 disabled:bg-muted/20 disabled:text-muted-foreground"
             type="button"
             onClick={() => attachmentInputRef.current?.click()}
             disabled={!canSend}
-            aria-label="Attach files"
-            title="Attach files"
+            aria-label="Đính kèm tệp"
+            title="Đính kèm tệp"
           >
             <span className="inline-flex items-center gap-1.5">
               <Paperclip className="h-3.5 w-3.5" />
-              <span>Attach</span>
+              <span>Đính kèm</span>
             </span>
           </button>
           {voiceEnabled ? (
@@ -1296,8 +1296,8 @@ const AgentChatComposer = memo(function AgentChatComposer({
               onClick={onVoiceToggle}
               disabled={voiceDisabled}
               data-testid="agent-voice-toggle"
-              aria-label={voiceRecording ? "Stop voice recording" : "Start voice recording"}
-              title={voiceRecording ? "Stop voice recording" : "Start voice recording"}
+              aria-label={voiceRecording ? "Dừng ghi âm giọng nói" : "Bắt đầu ghi âm giọng nói"}
+              title={voiceRecording ? "Dừng ghi âm giọng nói" : "Bắt đầu ghi âm giọng nói"}
             >
               <span className="inline-flex items-center gap-1.5">
                 {voiceRecording ? <Square className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
@@ -1314,7 +1314,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
                 disabled={stopDisabled}
                 aria-label={stopAriaLabel}
               >
-                {stopBusy ? "Stopping" : "Stop"}
+                {stopBusy ? "Đang dừng" : "Dừng"}
               </button>
             </span>
           ) : null}
@@ -1324,7 +1324,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
             onClick={onSend}
             disabled={sendDisabled}
           >
-            Send
+            Gửi
           </button>
         </div>
       </div>
@@ -1556,7 +1556,7 @@ export const AgentChatPanel = ({
       const oversized = files.filter((file) => file.size > MAX_UPLOAD_BYTES);
       const supported = files.filter((file) => file.size <= MAX_UPLOAD_BYTES);
       if (supported.length === 0) {
-        setAttachmentStatus("All selected files exceeded the 10 MB upload limit.");
+        setAttachmentStatus("Tất cả tệp đã chọn vượt quá giới hạn tải lên 10 MB.");
         return;
       }
       try {
@@ -1573,7 +1573,7 @@ export const AgentChatPanel = ({
               const message =
                 typeof payload.error === "string"
                   ? payload.error
-                  : `Failed to upload ${file.name}.`;
+                  : `Không thể tải lên ${file.name}.`;
               throw new Error(message);
             }
             return {
@@ -1587,15 +1587,15 @@ export const AgentChatPanel = ({
           })
         );
         setAttachments((current) => [...current, ...uploaded]);
-        const statusParts = [`Uploaded ${uploaded.length} file${uploaded.length === 1 ? "" : "s"}.`];
+        const statusParts = [`Đã tải lên ${uploaded.length} tệp.`];
         if (oversized.length > 0) {
-          statusParts.push(`${oversized.length} oversized file${oversized.length === 1 ? "" : "s"} skipped.`);
+          statusParts.push(`${oversized.length} tệp quá dung lượng bị bỏ qua.`);
         }
         setAttachmentStatus(statusParts.join(" "));
         scrollToBottomNextOutputRef.current = true;
       } catch (error) {
         setAttachmentStatus(
-          error instanceof Error ? error.message : "Failed to read one or more attachments."
+          error instanceof Error ? error.message : "Không thể đọc một hoặc nhiều tệp đính kèm."
         );
       }
     },
@@ -1647,7 +1647,7 @@ export const AgentChatPanel = ({
     const nextName = renameDraft.trim();
     const currentName = agent.name.trim();
     if (!nextName) {
-      setRenameError("Agent name is required.");
+      setRenameError("Tên tác nhân là bắt buộc.");
       return;
     }
     if (nextName === currentName) {
@@ -1661,7 +1661,7 @@ export const AgentChatPanel = ({
     try {
       const ok = await onRename(nextName);
       if (!ok) {
-        setRenameError("Failed to rename agent.");
+        setRenameError("Không thể đổi tên tác nhân.");
         return;
       }
       setRenameEditing(false);
@@ -1716,7 +1716,7 @@ export const AgentChatPanel = ({
                 className="nodrag ui-btn-icon ui-btn-icon-xs agent-avatar-shuffle-btn absolute bottom-0 right-0"
                 style={{ "--ui-btn-icon-size": "1.1rem" } as React.CSSProperties}
                 type="button"
-                aria-label="Customize avatar"
+                aria-label="Tuỳ chỉnh ảnh đại diện"
                 data-testid="agent-avatar-customize"
                 onClick={(event) => {
                   event.preventDefault();
@@ -1736,7 +1736,7 @@ export const AgentChatPanel = ({
                       <input
                         ref={renameInputRef}
                         className="ui-input agent-rename-input h-8 min-w-0 flex-1 rounded-md px-2 text-[12px] font-semibold text-foreground"
-                        aria-label="Edit agent name"
+                        aria-label="Chỉnh sửa tên tác nhân"
                         data-testid="agent-rename-input"
                         value={renameDraft}
                         disabled={renameSaving}
@@ -1749,7 +1749,7 @@ export const AgentChatPanel = ({
                       <button
                         className="ui-btn-icon ui-btn-icon-sm agent-rename-control"
                         type="button"
-                        aria-label="Save agent name"
+                        aria-label="Lưu tên tác nhân"
                         data-testid="agent-rename-save"
                         onClick={() => {
                           void submitRename();
@@ -1761,7 +1761,7 @@ export const AgentChatPanel = ({
                       <button
                         className="ui-btn-icon ui-btn-icon-sm agent-rename-control"
                         type="button"
-                        aria-label="Cancel agent rename"
+                        aria-label="Huỷ đổi tên tác nhân"
                         data-testid="agent-rename-cancel"
                         onClick={cancelRename}
                         disabled={renameSaving}
@@ -1778,7 +1778,7 @@ export const AgentChatPanel = ({
                         <button
                           className="ui-btn-icon ui-btn-icon-xs agent-rename-control shrink-0"
                           type="button"
-                          aria-label="Rename agent"
+                          aria-label="Đổi tên tác nhân"
                           data-testid="agent-rename-toggle"
                           onClick={beginRename}
                         >
@@ -1801,8 +1801,8 @@ export const AgentChatPanel = ({
                 className="nodrag ui-btn-icon ui-btn-icon-sm shrink-0"
                 type="button"
                 data-testid="agent-settings-toggle"
-                aria-label="Open behavior"
-                title="Open behavior"
+                aria-label="Mở cài đặt hành vi"
+                title="Mở cài đặt hành vi"
                 onClick={onOpenSettings}
               >
                 <ChevronRight className="h-3.5 w-3.5" />
@@ -1812,14 +1812,14 @@ export const AgentChatPanel = ({
               className="nodrag inline-flex items-center whitespace-nowrap rounded border border-[color:var(--status-approval-border)] bg-[color:var(--status-approval-bg)] px-2 py-0.5 font-mono text-[9px] font-medium tracking-[0.02em] text-white transition hover:bg-[color:var(--status-approval-bg)] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
               type="button"
               data-testid="agent-new-session-toggle"
-              aria-label="Start new session"
-              title="Start new session"
+              aria-label="Bắt đầu phiên mới"
+              title="Bắt đầu phiên mới"
               onClick={() => {
                 void handleNewSession();
               }}
               disabled={newSessionDisabled}
             >
-              {newSessionBusy ? "Starting..." : "New session"}
+              {newSessionBusy ? "Đang bắt đầu..." : "Phiên mới"}
             </button>
           </div>
         </div>
