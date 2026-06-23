@@ -57,7 +57,7 @@ describe("FleetSidebar new agent action", () => {
     );
 
     expect(screen.getByTestId("fleet-new-agent-button")).toBeInTheDocument();
-    expect(screen.getByText("New agent")).toBeInTheDocument();
+    expect(screen.getByText("Tác nhân mới")).toBeInTheDocument();
   });
 
   it("calls onCreateAgent when clicked", () => {
@@ -121,7 +121,7 @@ describe("FleetSidebar new agent action", () => {
       })
     );
 
-    const approvalBadge = screen.getByText("Needs approval");
+    const approvalBadge = screen.getByText("Cần phê duyệt");
     expect(approvalBadge).toBeInTheDocument();
     expect(approvalBadge).toHaveClass("ui-badge-approval");
     expect(approvalBadge).toHaveAttribute("data-status", "approval");
@@ -140,7 +140,7 @@ describe("FleetSidebar new agent action", () => {
     );
 
     const row = screen.getByTestId("fleet-agent-row-agent-1");
-    const statusBadge = within(row).getByText("Running");
+    const statusBadge = within(row).getByText("Đang chạy");
     expect(statusBadge).toHaveAttribute("data-status", "running");
     expect(statusBadge).toHaveClass("ui-badge-status-running");
   });

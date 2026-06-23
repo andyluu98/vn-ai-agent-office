@@ -96,10 +96,10 @@ describe("AgentChatPanel scrolling", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Jump to latest" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Nhảy tới mới nhất" })).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Jump to latest" }));
+    fireEvent.click(screen.getByRole("button", { name: "Nhảy tới mới nhất" }));
 
     expect(
       (Element.prototype as unknown as { scrollIntoView: ReturnType<typeof vi.fn> })
@@ -139,10 +139,10 @@ describe("AgentChatPanel scrolling", () => {
     Object.defineProperty(scrollEl, "scrollTop", { value: 120, writable: true, configurable: true });
 
     fireEvent.scroll(scrollEl);
-    expect(screen.queryByText(/Showing most recent 200 messages/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Đang hiển thị 200 tin nhắn gần nhất/i)).not.toBeInTheDocument();
 
     scrollEl.scrollTop = 0;
     fireEvent.scroll(scrollEl);
-    expect(screen.getByText(/Showing most recent 200 messages/i)).toBeInTheDocument();
+    expect(screen.getByText(/Đang hiển thị 200 tin nhắn gần nhất/i)).toBeInTheDocument();
   });
 });

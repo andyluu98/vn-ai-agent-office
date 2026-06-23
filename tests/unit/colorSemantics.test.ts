@@ -13,28 +13,28 @@ import {
 
 describe("colorSemantics", () => {
   it("maps agent statuses to semantic badge classes and labels", () => {
-    expect(AGENT_STATUS_LABEL.idle).toBe("Idle");
-    expect(AGENT_STATUS_LABEL.running).toBe("Running");
-    expect(AGENT_STATUS_LABEL.error).toBe("Error");
+    expect(AGENT_STATUS_LABEL.idle).toBe("Rảnh");
+    expect(AGENT_STATUS_LABEL.running).toBe("Đang chạy");
+    expect(AGENT_STATUS_LABEL.error).toBe("Lỗi");
 
     expect(AGENT_STATUS_BADGE_CLASS.idle).toBe("ui-badge-status-idle");
     expect(AGENT_STATUS_BADGE_CLASS.running).toBe("ui-badge-status-running");
     expect(AGENT_STATUS_BADGE_CLASS.error).toBe("ui-badge-status-error");
 
-    expect(resolveAgentStatusLabel("idle")).toBe("Idle");
+    expect(resolveAgentStatusLabel("idle")).toBe("Rảnh");
     expect(resolveAgentStatusBadgeClass("running")).toBe("ui-badge-status-running");
   });
 
   it("maps gateway statuses to semantic badge classes and labels", () => {
-    expect(GATEWAY_STATUS_LABEL.disconnected).toBe("Disconnected");
-    expect(GATEWAY_STATUS_LABEL.connecting).toBe("Connecting");
-    expect(GATEWAY_STATUS_LABEL.connected).toBe("Connected");
+    expect(GATEWAY_STATUS_LABEL.disconnected).toBe("Đã ngắt kết nối");
+    expect(GATEWAY_STATUS_LABEL.connecting).toBe("Đang kết nối");
+    expect(GATEWAY_STATUS_LABEL.connected).toBe("Đã kết nối");
 
     expect(GATEWAY_STATUS_BADGE_CLASS.disconnected).toBe("ui-badge-status-disconnected");
     expect(GATEWAY_STATUS_BADGE_CLASS.connecting).toBe("ui-badge-status-connecting");
     expect(GATEWAY_STATUS_BADGE_CLASS.connected).toBe("ui-badge-status-connected");
 
-    expect(resolveGatewayStatusLabel("connected")).toBe("Connected");
+    expect(resolveGatewayStatusLabel("connected")).toBe("Đã kết nối");
     expect(resolveGatewayStatusBadgeClass("disconnected")).toBe("ui-badge-status-disconnected");
   });
 

@@ -112,7 +112,7 @@ describe("AgentEditorModal", () => {
       }),
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /Tools/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Công cụ/i }));
 
     expect(screen.getByTestId("brain-panel")).toHaveTextContent("brain:agent-1:TOOLS.md");
   });

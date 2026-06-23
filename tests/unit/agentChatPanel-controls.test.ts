@@ -75,11 +75,11 @@ describe("AgentChatPanel controls", () => {
     expect(screen.getByLabelText("Thinking")).toBeInTheDocument();
     expect(screen.queryByDisplayValue("Agent One")).not.toBeInTheDocument();
     expect(screen.getByTestId("agent-rename-toggle")).toBeInTheDocument();
-    expect(screen.getByLabelText("Rename agent")).toBeInTheDocument();
+    expect(screen.getByLabelText("Đổi tên tác nhân")).toBeInTheDocument();
     expect(screen.getByTestId("agent-new-session-toggle")).toBeInTheDocument();
-    expect(screen.getByLabelText("Start new session")).toBeInTheDocument();
+    expect(screen.getByLabelText("Bắt đầu phiên mới")).toBeInTheDocument();
     expect(screen.getByTestId("agent-settings-toggle")).toBeInTheDocument();
-    expect(screen.getByLabelText("Open behavior")).toBeInTheDocument();
+    expect(screen.getByLabelText("Mở cài đặt hành vi")).toBeInTheDocument();
     expect(screen.queryByText("Inspect")).not.toBeInTheDocument();
   });
 
@@ -325,7 +325,7 @@ describe("AgentChatPanel controls", () => {
       })
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Stop" }));
+    fireEvent.click(screen.getByRole("button", { name: "Dừng" }));
     expect(onStopRun).toHaveBeenCalledTimes(1);
   });
 
@@ -378,7 +378,7 @@ describe("AgentChatPanel controls", () => {
     );
 
     expect(screen.getByTestId("queued-messages-bar")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Remove queued message 1" }));
+    fireEvent.click(screen.getByRole("button", { name: "Xoá tin nhắn đang chờ 1" }));
     expect(onRemoveQueuedMessage).toHaveBeenCalledWith(0);
   });
 
@@ -405,7 +405,7 @@ describe("AgentChatPanel controls", () => {
     );
 
     const stopButton = screen.getByRole("button", {
-      name: `Stop unavailable: ${stopDisabledReason}`,
+      name: `Không thể dừng: ${stopDisabledReason}`,
     });
     expect(stopButton).toBeDisabled();
     expect(stopButton.parentElement).toHaveAttribute("title", stopDisabledReason);
@@ -538,7 +538,7 @@ describe("AgentChatPanel controls", () => {
       })
     );
 
-    const textarea = screen.getByPlaceholderText("type a message") as HTMLTextAreaElement;
+    const textarea = screen.getByPlaceholderText("nhập tin nhắn") as HTMLTextAreaElement;
     fireEvent.change(textarea, { target: { value: "hello world" } });
     expect(textarea.value).toBe("hello world");
 
