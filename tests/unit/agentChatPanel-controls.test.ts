@@ -349,9 +349,9 @@ describe("AgentChatPanel controls", () => {
       })
     );
 
-    const textarea = screen.getByPlaceholderText("type a message");
+    const textarea = screen.getByPlaceholderText("nhập tin nhắn");
     fireEvent.change(textarea, { target: { value: "follow up" } });
-    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    fireEvent.click(screen.getByRole("button", { name: "Gửi" }));
 
     expect(onSend).toHaveBeenCalledWith("follow up");
   });
@@ -601,7 +601,7 @@ describe("AgentChatPanel controls", () => {
       })
     );
 
-    const textarea = screen.getByPlaceholderText("type a message");
+    const textarea = screen.getByPlaceholderText("nhập tin nhắn");
     fireEvent.change(textarea, { target: { value: "draft text" } });
 
     fireEvent.keyDown(textarea, {
