@@ -713,7 +713,7 @@ export const AgentSettingsPanel = ({
                           </div>
                           {!job.enabled ? (
                             <div className="shrink-0 rounded-md bg-muted/50 px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground shadow-2xs">
-                              Disabled
+                              Đã tắt
                             </div>
                           ) : null}
                         </div>
@@ -1079,12 +1079,12 @@ export const AgentSettingsPanel = ({
                     <div className="mt-2 text-[11px]">
                       Lịch:{" "}
                       {cronDraft.scheduleKind === "every"
-                        ? `Every ${cronDraft.everyAmount ?? 0} ${cronDraft.everyUnit ?? "minutes"}${
+                        ? `Mỗi ${cronDraft.everyAmount ?? 0} ${cronDraft.everyUnit ?? "minutes"}${
                             cronDraft.everyUnit === "days"
-                              ? ` at ${cronDraft.everyAtTime ?? ""} (${cronDraft.everyTimeZone ?? resolveLocalTimeZone()})`
+                              ? ` lúc ${cronDraft.everyAtTime ?? ""} (${cronDraft.everyTimeZone ?? resolveLocalTimeZone()})`
                               : ""
                           }`
-                        : `At ${cronDraft.scheduleAt ?? ""}`}
+                        : `Vào ${cronDraft.scheduleAt ?? ""}`}
                     </div>
                   </div>
                 </div>

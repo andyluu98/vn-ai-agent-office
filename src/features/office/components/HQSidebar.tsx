@@ -26,7 +26,7 @@ type HQSidebarProps = {
 };
 
 const TAB_LABELS: Record<HQSidebarTab, string> = {
-  inbox: "Hộp kết quả",
+  inbox: "Kết quả",
   history: "Lịch sử",
   kanban: "Kanban",
   playbooks: "Kịch bản",

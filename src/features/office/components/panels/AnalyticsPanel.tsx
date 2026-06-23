@@ -338,8 +338,8 @@ export function AnalyticsPanel({
               Chi tiết chi phí
             </div>
             <div className="mt-2 space-y-1 font-mono text-[11px] text-white/70">
-              <div>Input: {formatCurrency(usage.totals.inputCost)}.</div>
-              <div>Output: {formatCurrency(usage.totals.outputCost)}.</div>
+              <div>Đầu vào: {formatCurrency(usage.totals.inputCost)}.</div>
+              <div>Đầu ra: {formatCurrency(usage.totals.outputCost)}.</div>
               <div>Đọc cache: {formatCurrency(usage.totals.cacheReadCost)}.</div>
               <div>Ghi cache: {formatCurrency(usage.totals.cacheWriteCost)}.</div>
             </div>
