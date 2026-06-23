@@ -18,9 +18,9 @@ import {
   shouldRunHermesChecks,
   shouldRunOpenClawChecks,
   summarizeChecks,
-} from "../../scripts/lib/claw3doctor-core.mjs";
+} from "../../scripts/lib/vn-office-doctor-core.mjs";
 
-describe("claw3doctor core", () => {
+describe("vn-office-doctor core", () => {
   it("resolves selected runtime from settings profiles", () => {
     const runtime = resolveRuntimeContext({
       settings: {
@@ -305,7 +305,7 @@ describe("claw3doctor core", () => {
     });
 
     expect(report).toMatchObject({
-      doctor: "claw3doctor",
+      doctor: "vn-office-doctor",
       summary: DOCTOR_STATUSES.warn,
       runtimeContext: {
         adapterType: "hermes",
@@ -341,7 +341,7 @@ describe("claw3doctor core", () => {
       ],
     });
 
-    expect(report).toContain("Claw3Doctor");
+    expect(report).toContain("VN Office Doctor");
     expect(report).toContain("Selected profile:");
     expect(report).toContain("Configured profiles:");
     expect(report).toContain("Runtime profiles");
@@ -390,7 +390,7 @@ describe("parseDoctorArgs", () => {
 });
 
 describe("adapterInScope scoping semantics", () => {
-  // Mirror the adapterInScope helper used in claw3doctor.mjs so the logic can
+  // Mirror the adapterInScope helper used in vn-office-doctor.mjs so the logic can
   // be verified independently of the full CLI entrypoint.
   const makeAdapterInScope =
     (args: { allProfiles: boolean; profile: string | null }) =>

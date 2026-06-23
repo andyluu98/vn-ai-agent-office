@@ -22,7 +22,7 @@ import {
   shouldRunHermesChecks,
   shouldRunOpenClawChecks,
   summarizeChecks,
-} from "./lib/claw3doctor-core.mjs";
+} from "./lib/vn-office-doctor-core.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -367,7 +367,7 @@ async function main() {
             "Profile selection",
             `Requested profile "${args.profile}" is not configured in current Studio settings.`,
             [
-              "Run `node scripts/claw3doctor.mjs --all-profiles` to see the configured profile list.",
+              "Run `node scripts/vn-office-doctor.mjs --all-profiles` to see the configured profile list.",
             ],
           ),
     );

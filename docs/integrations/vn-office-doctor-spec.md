@@ -1,6 +1,6 @@
-# Claw3Doctor Spec
+# VN Office Doctor Spec
 
-> First-pass diagnostics plan for Claw3D deployments so users stop chasing the same setup failures manually.
+> First-pass diagnostics plan for VN AI Agent Office deployments so users stop chasing the same setup failures manually.
 
 ## Goal
 
@@ -16,7 +16,7 @@ but focused on Claw3D's integration points across providers.
 
 ## Primary Outcomes
 
-`claw3doctor` should:
+`vn-office-doctor` should:
 
 - identify the selected runtime profile/provider
 - verify the gateway is reachable
@@ -118,7 +118,7 @@ Outputs:
 
 ## Recommended Output Shape
 
-`claw3doctor` should produce:
+`vn-office-doctor` should produce:
 
 - short headline result
 - categorized checks
@@ -128,7 +128,7 @@ Outputs:
 Example:
 
 ```text
-Claw3Doctor: WARN
+VN Office Doctor: WARN
 
 [pass] Runtime profile: OpenClaw Default
 [pass] Gateway URL reachable: ws://localhost:18789
@@ -144,7 +144,7 @@ Suggested next actions:
 
 ## Runtime-Profile Awareness
 
-`claw3doctor` should be designed against the runtime-profile model:
+`vn-office-doctor` should be designed against the runtime-profile model:
 
 - provider
 - runtime profile
@@ -224,7 +224,7 @@ Add:
 
 ## Relationship To Office Systems
 
-`claw3doctor` should land before more runtime complexity because it will
+`vn-office-doctor` should land before more runtime complexity because it will
 make debugging:
 
 - multi-runtime support
@@ -237,7 +237,7 @@ This is why it is sequenced ahead of deeper Office Systems feature work.
 
 ## V1 Delivery Boundary
 
-`claw3doctor` v1 should be considered complete when it provides:
+`vn-office-doctor` v1 should be considered complete when it provides:
 
 - selected-profile diagnostics with optional per-profile probing
 - grouped terminal output with clear pass / warn / fail results
@@ -277,7 +277,7 @@ diagnosis depth and better operator ergonomics rather than broader scope.
 
 ### Runtime-Profile Follow-Through
 
-`claw3doctor` v2 should also benefit from the separate runtime-profile work:
+`vn-office-doctor` v2 should also benefit from the separate runtime-profile work:
 
 - simultaneous runtime profile visibility
 - per-profile health history

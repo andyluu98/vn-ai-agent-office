@@ -251,7 +251,7 @@ This model supports the current Office Systems direction cleanly.
 Recommended next branches:
 
 - `docs/runtime-profiles`
-- `feat/claw3doctor`
+- `feat/vn-office-doctor`
 - `refactor/office-shell`
 - later:
   - `docs/floor-builder-schema`
@@ -269,7 +269,7 @@ Define:
 - `Custom Runtime(s)` optional
 - one gateway contract, different backends
 
-### 2. `feat: claw3doctor`
+### 2. `feat: vn-office-doctor`
 
 First pass should check:
 
@@ -302,7 +302,7 @@ The runtime-profile document should land before more implementation work
 because it informs both:
 
 - multi-runtime support
-- `claw3doctor`
+- `vn-office-doctor`
 
 Without this, diagnostics and floor binding will keep being designed
 against moving assumptions.

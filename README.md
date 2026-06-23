@@ -1,7 +1,7 @@
 # Claw3D — A 3D Workspace for AI Agents
 
 <p align="center">
-    <img src="assets/branding/claw3d-hero.png" alt="Claw3D" width="700">
+    <img src="assets/branding/vn-ai-agent-office-hero.png" alt="VN AI Agent Office" width="700">
 </p>
 
 <p align="center">

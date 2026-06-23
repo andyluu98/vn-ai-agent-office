@@ -64,7 +64,7 @@ adoption-critical support for the office-as-operations-center model.
 After the recent hardening and runtime work, the next sequence should be:
 
 1. runtime profile architecture
-2. `claw3doctor`
+2. `vn-office-doctor`
 3. `OfficeScreen` modularization
 4. floor schema and builder plan
 5. admin floor builder
@@ -414,7 +414,7 @@ These platform lanes should keep moving in parallel with the office feature
 roadmap because they directly affect adoption and maintainability:
 
 1. runtime profile architecture
-2. `claw3doctor`
+2. `vn-office-doctor`
 3. `OfficeScreen` modularization
 4. mobile shell work
 5. auth/proxy deployment guidance
@@ -444,7 +444,7 @@ Examples:
 If this roadmap is used for implementation planning, the best next concrete docs/tasks are:
 
 1. Runtime profile architecture doc
-2. `claw3doctor` implementation
+2. `vn-office-doctor` implementation
 3. `OfficeScreen` modularization plan and extraction work
 4. Floor schema and builder plan
 5. Bulletin board system spec
@@ -458,9 +458,9 @@ simulation layers, and enterprise-ready adoption.
 ## Diagnostics Roadmap Split
 
 To keep diagnostics aligned with the platform work without turning them into
-an unbounded tooling branch, treat `claw3doctor` in two phases:
+an unbounded tooling branch, treat `vn-office-doctor` in two phases:
 
-### `claw3doctor` v1
+### `vn-office-doctor` v1
 
 - first-pass deployment diagnostics
 - runtime profile awareness
@@ -469,7 +469,7 @@ an unbounded tooling branch, treat `claw3doctor` in two phases:
 - OpenClaw / Hermes / demo / custom provider checks
 - tunnel, auth, and close-code remediation
 
-### `claw3doctor` v2
+### `vn-office-doctor` v2
 
 - deeper OpenClaw pairing/device heuristics
 - stronger Cloudflare / Tailscale / reverse-proxy fingerprints
