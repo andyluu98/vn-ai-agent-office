@@ -40,7 +40,7 @@ export function TaskBoardPanel({
   return (
     <TaskBoardView
       title="Kanban"
-      subtitle="Manual tasks, inferred requests, and scheduled playbooks."
+      subtitle="Nhiệm vụ thủ công, yêu cầu suy luận và kịch bản theo lịch."
       agents={agents}
       cardsByStatus={cardsByStatus}
       selectedCard={selectedCard}

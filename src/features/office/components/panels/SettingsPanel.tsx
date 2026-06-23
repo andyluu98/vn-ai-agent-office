@@ -98,13 +98,13 @@ export function SettingsPanel({
       <div className="rounded-lg border border-cyan-500/10 bg-black/20 px-4 py-3">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-[11px] font-medium text-white">Studio title</div>
+            <div className="text-[11px] font-medium text-white">Tiêu đề Studio</div>
             <div className="mt-1 text-[10px] text-white/75">
-              Customize the banner shown at the top of the office.
+              Tuỳ chỉnh banner hiển thị ở đầu văn phòng.
             </div>
           </div>
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-200/70">
-            {officeTitleLoaded ? "Ready" : "Loading"}
+            {officeTitleLoaded ? "Sẵn sàng" : "Đang tải"}
           </span>
         </div>
         <input
@@ -117,15 +117,15 @@ export function SettingsPanel({
           className="mt-3 w-full rounded-md border border-cyan-500/10 bg-black/25 px-3 py-2 text-[11px] uppercase tracking-[0.18em] text-cyan-100 outline-none transition-colors placeholder:text-cyan-100/30 focus:border-cyan-400/30 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <div className="mt-2 text-[10px] text-white/50">
-          Used in the office scene header.
+          Dùng trong thanh tiêu đề của cảnh văn phòng.
         </div>
       </div>
       <div className="mt-3 rounded-lg border border-cyan-500/10 bg-black/20 px-4 py-3">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-[11px] font-medium text-white">Gateway</div>
+            <div className="text-[11px] font-medium text-white">Cổng kết nối</div>
             <div className="mt-1 text-[10px] text-white/75">
-              Switch the active backend and update its saved endpoint details.
+              Chuyển đổi backend đang dùng và cập nhật thông tin endpoint đã lưu.
             </div>
           </div>
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-200/70">
@@ -163,7 +163,7 @@ export function SettingsPanel({
         <div className="mt-3 grid gap-3">
           <div>
             <div className="mb-1 text-[10px] uppercase tracking-[0.14em] text-cyan-100/65">
-              Upstream URL
+              URL nguồn
             </div>
             <input
               type="text"
@@ -182,29 +182,29 @@ export function SettingsPanel({
           </div>
           <div>
             <div className="mb-1 text-[10px] uppercase tracking-[0.14em] text-cyan-100/65">
-              {tokenOptional ? "Upstream token (optional)" : "Upstream token"}
+              {tokenOptional ? "Token nguồn (tuỳ chọn)" : "Token nguồn"}
             </div>
             <input
               type="password"
               value={normalizedGatewayToken}
               onChange={(event) => onGatewayTokenChange?.(event.target.value)}
-              placeholder={tokenOptional ? "optional token" : "gateway token"}
+              placeholder={tokenOptional ? "token tuỳ chọn" : "token cổng kết nối"}
               className="w-full rounded-md border border-cyan-500/10 bg-black/25 px-3 py-2 text-[11px] text-cyan-100 outline-none transition-colors placeholder:text-cyan-100/30 focus:border-cyan-400/30"
             />
           </div>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-[10px] text-white/60">
           <span className="font-mono">
-            Selected backend: {selectedAdapterType}
+            Backend đang chọn: {selectedAdapterType}
           </span>
           <span className="font-mono">
-            Active backend: {activeAdapterType}
+            Backend đang dùng: {activeAdapterType}
           </span>
-          <span>Each backend keeps its own saved URL and token.</span>
+          <span>Mỗi backend lưu riêng URL và token của nó.</span>
         </div>
         <div className="mt-3 flex items-center justify-between gap-3">
           <div className="text-[10px] text-white/60">
-            Connect to apply the selected backend, or disconnect to return to the connection screen.
+            Kết nối để áp dụng backend đã chọn, hoặc ngắt kết nối để quay về màn hình kết nối.
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -213,7 +213,7 @@ export function SettingsPanel({
               disabled={gatewayConnectDisabled}
               className="rounded-md border border-cyan-500/20 bg-cyan-500/10 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.14em] text-cyan-50 transition-colors hover:border-cyan-400/40 hover:bg-cyan-500/15 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {gatewayStatus === "connecting" ? "Connecting..." : "Connect"}
+              {gatewayStatus === "connecting" ? "Đang kết nối..." : "Kết nối"}
             </button>
             <button
               type="button"
@@ -221,7 +221,7 @@ export function SettingsPanel({
               disabled={gatewayDisconnectDisabled}
               className="rounded-md border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.14em] text-rose-100 transition-colors hover:border-rose-400/40 hover:bg-rose-500/15 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Disconnect gateway
+              Ngắt kết nối
             </button>
           </div>
         </div>
@@ -229,13 +229,13 @@ export function SettingsPanel({
       <div className="mt-3 rounded-lg border border-cyan-500/10 bg-black/20 px-4 py-3">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-[11px] font-medium text-white">Remote office</div>
+            <div className="text-[11px] font-medium text-white">Văn phòng từ xa</div>
             <div className="mt-1 text-[10px] text-white/75">
-              Attach a second read-only office from either another VN AI Agent Office or a remote OpenClaw gateway.
+              Gắn thêm một văn phòng chỉ đọc từ VN AI Agent Office khác hoặc một cổng OpenClaw từ xa.
             </div>
           </div>
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-200/70">
-            {remoteOfficeEnabled ? "Enabled" : "Disabled"}
+            {remoteOfficeEnabled ? "Đã bật" : "Đã tắt"}
           </span>
         </div>
         <div className="ui-settings-row mt-3 flex min-h-[72px] items-center justify-between gap-6 rounded-lg border border-cyan-500/10 bg-black/15 px-4 py-3">
@@ -243,7 +243,7 @@ export function SettingsPanel({
             <button
               type="button"
               role="switch"
-              aria-label="Remote office"
+              aria-label="Văn phòng từ xa"
               aria-checked={remoteOfficeEnabled}
               className={`ui-switch self-center ${remoteOfficeEnabled ? "ui-switch--on" : ""}`}
               onClick={() => onRemoteOfficeEnabledChange(!remoteOfficeEnabled)}
@@ -251,20 +251,20 @@ export function SettingsPanel({
               <span className="ui-switch-thumb" />
             </button>
             <div className="flex flex-col">
-              <span className="text-[11px] font-medium text-white">Show second office</span>
+              <span className="text-[11px] font-medium text-white">Hiện văn phòng thứ hai</span>
               <span className="text-[10px] text-white/80">
-                Remote agents stay visible but non-interactive.
+                Tác nhân từ xa vẫn hiển thị nhưng không tương tác được.
               </span>
             </div>
           </div>
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-200/70">
-            {remoteOfficeTokenConfigured ? "Token set" : "No token"}
+            {remoteOfficeTokenConfigured ? "Đã cài token" : "Chưa có token"}
           </span>
         </div>
         <div className="mt-3 grid gap-3">
           <div>
             <div className="mb-1 text-[10px] uppercase tracking-[0.14em] text-cyan-100/65">
-              Source type
+              Loại nguồn
             </div>
             <select
               value={remoteOfficeSourceKind}
@@ -275,23 +275,23 @@ export function SettingsPanel({
               }
               className="w-full rounded-md border border-cyan-500/10 bg-black/25 px-3 py-2 text-[11px] text-cyan-100 outline-none transition-colors focus:border-cyan-400/30"
             >
-              <option value="presence_endpoint">Remote VN AI Agent Office presence endpoint</option>
-              <option value="openclaw_gateway">Remote OpenClaw gateway</option>
+              <option value="presence_endpoint">Presence endpoint VN AI Agent Office từ xa</option>
+              <option value="openclaw_gateway">Cổng OpenClaw từ xa</option>
             </select>
             <div className="mt-1 text-[10px] text-white/50">
-              Use a presence endpoint when the other machine runs VN AI Agent Office. Use gateway mode when the other machine only runs OpenClaw.
+              Dùng presence endpoint khi máy kia chạy VN AI Agent Office. Dùng chế độ cổng khi máy kia chỉ chạy OpenClaw.
             </div>
           </div>
           <div>
             <div className="mb-1 text-[10px] uppercase tracking-[0.14em] text-cyan-100/65">
-              Label
+              Nhãn
             </div>
             <input
               type="text"
               value={remoteOfficeLabel}
               maxLength={48}
               onChange={(event) => onRemoteOfficeLabelChange(event.target.value)}
-              placeholder="Remote Office"
+              placeholder="Văn phòng từ xa"
               className="w-full rounded-md border border-cyan-500/10 bg-black/25 px-3 py-2 text-[11px] uppercase tracking-[0.14em] text-cyan-100 outline-none transition-colors placeholder:text-cyan-100/30 focus:border-cyan-400/30"
             />
           </div>
@@ -299,7 +299,7 @@ export function SettingsPanel({
             <>
               <div>
                 <div className="mb-1 text-[10px] uppercase tracking-[0.14em] text-cyan-100/65">
-                  Presence URL
+                  URL presence
                 </div>
                 <input
                   type="url"
@@ -309,19 +309,19 @@ export function SettingsPanel({
                   className="w-full rounded-md border border-cyan-500/10 bg-black/25 px-3 py-2 text-[11px] text-cyan-100 outline-none transition-colors placeholder:text-cyan-100/30 focus:border-cyan-400/30"
                 />
                 <div className="mt-1 text-[10px] text-white/50">
-                  Studio polls this endpoint server-side when the other machine is also running VN AI Agent Office.
+                  Studio polling endpoint này phía server khi máy kia cũng đang chạy VN AI Agent Office.
                 </div>
               </div>
               <div>
                 <div className="mb-1 text-[10px] uppercase tracking-[0.14em] text-cyan-100/65">
-                  Optional token
+                  Token tuỳ chọn
                 </div>
                 <div className="flex items-center gap-2">
                   <input
                     type="password"
                     value={remoteOfficeTokenDraft}
                     onChange={(event) => setRemoteOfficeTokenDraft(event.target.value)}
-                    placeholder={remoteOfficeTokenConfigured ? "Token configured. Enter a new one to replace it." : "Enter token"}
+                    placeholder={remoteOfficeTokenConfigured ? "Token đã cấu hình. Nhập mới để thay thế." : "Nhập token"}
                     className="min-w-0 flex-1 rounded-md border border-cyan-500/10 bg-black/25 px-3 py-2 text-[11px] text-cyan-100 outline-none transition-colors placeholder:text-cyan-100/30 focus:border-cyan-400/30"
                   />
                   <button
@@ -332,7 +332,7 @@ export function SettingsPanel({
                     }}
                     className="rounded-md border border-cyan-500/20 bg-cyan-500/10 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-cyan-100 transition-colors hover:border-cyan-400/40 hover:bg-cyan-500/15"
                   >
-                    Save
+                    Lưu
                   </button>
                   {remoteOfficeTokenConfigured ? (
                     <button
@@ -343,7 +343,7 @@ export function SettingsPanel({
                       }}
                       className="rounded-md border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-rose-100 transition-colors hover:border-rose-400/40 hover:bg-rose-500/15"
                     >
-                      Clear
+                      Xoá
                     </button>
                   ) : null}
                 </div>
@@ -353,7 +353,7 @@ export function SettingsPanel({
             <>
               <div>
                 <div className="mb-1 text-[10px] uppercase tracking-[0.14em] text-cyan-100/65">
-                  Gateway URL
+                  URL cổng kết nối
                 </div>
                 <input
                   type="text"
@@ -363,19 +363,19 @@ export function SettingsPanel({
                   className="w-full rounded-md border border-cyan-500/10 bg-black/25 px-3 py-2 text-[11px] text-cyan-100 outline-none transition-colors placeholder:text-cyan-100/30 focus:border-cyan-400/30"
                 />
                 <div className="mt-1 text-[10px] text-white/50">
-                  VN AI Agent Office connects from the browser directly to the remote OpenClaw gateway and derives a read-only presence snapshot.
+                  VN AI Agent Office kết nối từ trình duyệt trực tiếp tới cổng OpenClaw từ xa và tạo snapshot presence chỉ đọc.
                 </div>
               </div>
               <div>
                 <div className="mb-1 text-[10px] uppercase tracking-[0.14em] text-cyan-100/65">
-                  Shared gateway token
+                  Token cổng kết nối chung
                 </div>
                 <div className="flex items-center gap-2">
                   <input
                     type="password"
                     value={remoteOfficeTokenDraft}
                     onChange={(event) => setRemoteOfficeTokenDraft(event.target.value)}
-                    placeholder={remoteOfficeTokenConfigured ? "Token configured. Enter a new one to replace it." : "Enter token"}
+                    placeholder={remoteOfficeTokenConfigured ? "Token đã cấu hình. Nhập mới để thay thế." : "Nhập token"}
                     className="min-w-0 flex-1 rounded-md border border-cyan-500/10 bg-black/25 px-3 py-2 text-[11px] text-cyan-100 outline-none transition-colors placeholder:text-cyan-100/30 focus:border-cyan-400/30"
                   />
                   <button
@@ -386,7 +386,7 @@ export function SettingsPanel({
                     }}
                     className="rounded-md border border-cyan-500/20 bg-cyan-500/10 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-cyan-100 transition-colors hover:border-cyan-400/40 hover:bg-cyan-500/15"
                   >
-                    Save
+                    Lưu
                   </button>
                   {remoteOfficeTokenConfigured ? (
                     <button
@@ -397,12 +397,12 @@ export function SettingsPanel({
                       }}
                       className="rounded-md border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.14em] text-rose-100 transition-colors hover:border-rose-400/40 hover:bg-rose-500/15"
                     >
-                      Clear
+                      Xoá
                     </button>
                   ) : null}
                 </div>
                 <div className="mt-1 text-[10px] text-white/50">
-                  Optional. Browser-based remote presence and messaging can work without it when the remote gateway already allows your Control UI origin.
+                  Tuỳ chọn. Presence và nhắn tin từ xa qua trình duyệt có thể hoạt động mà không cần token khi cổng từ xa đã cho phép origin Control UI của bạn.
                 </div>
               </div>
             </>
@@ -412,9 +412,9 @@ export function SettingsPanel({
       <div className="mt-3 rounded-lg border border-cyan-500/10 bg-black/20 px-4 py-3">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-[11px] font-medium text-white">Onboarding</div>
+            <div className="text-[11px] font-medium text-white">Hướng dẫn ban đầu</div>
             <div className="mt-1 text-[10px] text-white/75">
-              Re-open the onboarding wizard to test the new-user flow.
+              Mở lại trình hướng dẫn để kiểm tra luồng người dùng mới.
             </div>
           </div>
           <button
@@ -422,7 +422,7 @@ export function SettingsPanel({
             onClick={() => onOpenOnboarding?.()}
             className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.14em] text-emerald-100 transition-colors hover:border-emerald-400/40 hover:bg-emerald-500/15"
           >
-            Launch wizard
+            Khởi động trình hướng dẫn
           </button>
         </div>
       </div>
@@ -431,7 +431,7 @@ export function SettingsPanel({
           <button
             type="button"
             role="switch"
-            aria-label="Voice replies"
+            aria-label="Phản hồi bằng giọng nói"
             aria-checked={voiceRepliesEnabled}
             className={`ui-switch self-center ${voiceRepliesEnabled ? "ui-switch--on" : ""}`}
             onClick={() => onVoiceRepliesToggle(!voiceRepliesEnabled)}
@@ -440,20 +440,20 @@ export function SettingsPanel({
             <span className="ui-switch-thumb" />
           </button>
           <div className="flex flex-col">
-            <span className="text-[11px] font-medium text-white">Voice replies</span>
+            <span className="text-[11px] font-medium text-white">Phản hồi bằng giọng nói</span>
             <span className="text-[10px] text-white/80">
-              Play finalized assistant replies with a natural voice.
+              Phát các phản hồi cuối cùng của trợ lý bằng giọng nói tự nhiên.
             </span>
           </div>
         </div>
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-200/70">
-          {voiceRepliesLoaded ? (voiceRepliesEnabled ? "On" : "Off") : "Loading"}
+          {voiceRepliesLoaded ? (voiceRepliesEnabled ? "Bật" : "Tắt") : "Đang tải"}
         </span>
       </div>
       <div className="mt-3 rounded-lg border border-cyan-500/10 bg-black/20 px-4 py-3">
-        <div className="text-[11px] font-medium text-white">Voice</div>
+        <div className="text-[11px] font-medium text-white">Giọng nói</div>
         <div className="mt-1 text-[10px] text-white/75">
-          Choose the voice used for spoken agent replies.
+          Chọn giọng nói dùng cho phản hồi bằng giọng của tác nhân.
         </div>
         <div className="mt-3 grid grid-cols-2 gap-2">
           {CURATED_ELEVENLABS_VOICES.map((voice) => {
@@ -483,9 +483,9 @@ export function SettingsPanel({
       <div className="mt-3 rounded-lg border border-cyan-500/10 bg-black/20 px-4 py-3">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <div className="text-[11px] font-medium text-white">Speed</div>
+            <div className="text-[11px] font-medium text-white">Tốc độ</div>
             <div className="mt-1 text-[10px] text-white/75">
-              Adjust how fast the selected voice speaks.
+              Điều chỉnh tốc độ nói của giọng đã chọn.
             </div>
           </div>
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-200/70">
@@ -505,8 +505,8 @@ export function SettingsPanel({
           className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-full bg-cyan-500/15 accent-cyan-400"
         />
         <div className="mt-1 flex items-center justify-between text-[10px] text-white/45">
-          <span>Slower</span>
-          <span>Faster</span>
+          <span>Chậm hơn</span>
+          <span>Nhanh hơn</span>
         </div>
       </div>
     </div>

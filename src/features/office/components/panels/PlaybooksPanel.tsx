@@ -253,7 +253,7 @@ export function PlaybooksPanel({
     if (!activeTemplate) return;
     const agent = agentById.get(selectedAgentId);
     if (!agent) {
-      setError("Pick an agent before launching a playbook.");
+      setError("Chọn tác nhân trước khi khởi động kịch bản.");
       return;
     }
 
@@ -361,7 +361,7 @@ export function PlaybooksPanel({
 
   const handleSaveManualNotes = useCallback(async () => {
     if (!standupAgentId) {
-      setError("Pick an agent before saving standup notes.");
+      setError("Chọn tác nhân trước khi lưu ghi chú standup.");
       return;
     }
     setError(null);
@@ -392,10 +392,10 @@ export function PlaybooksPanel({
         <div className="flex items-center justify-between gap-2">
           <div>
             <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/70">
-              Playbooks
+              Kịch bản
             </div>
             <div className="mt-1 font-mono text-[11px] text-white/40">
-              Launch reusable schedules for the whole headquarters.
+              Khởi động các lịch có thể tái sử dụng cho toàn bộ trụ sở.
             </div>
           </div>
           <button
@@ -404,12 +404,12 @@ export function PlaybooksPanel({
             disabled={!cronEnabled}
             className="rounded border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-100"
           >
-            Refresh
+            Làm mới
           </button>
         </div>
         {!cronEnabled ? (
           <div className="mt-2 font-mono text-[11px] text-white/35">
-            This runtime does not expose scheduled playbooks.
+            Runtime này không hỗ trợ kịch bản theo lịch.
           </div>
         ) : null}
         {error ? <div className="mt-2 font-mono text-[11px] text-rose-300">{error}</div> : null}
@@ -421,13 +421,13 @@ export function PlaybooksPanel({
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="border-b border-cyan-500/10 px-4 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-            Active Jobs
+            Công việc đang chạy
           </div>
           <div className="mt-3 space-y-2">
             {loading ? (
-              <div className="font-mono text-[11px] text-white/40">Loading scheduled jobs.</div>
+              <div className="font-mono text-[11px] text-white/40">Đang tải công việc theo lịch.</div>
             ) : jobs.length === 0 ? (
-              <div className="font-mono text-[11px] text-white/35">No active playbooks yet.</div>
+              <div className="font-mono text-[11px] text-white/35">Chưa có kịch bản nào đang chạy.</div>
             ) : (
               jobs.map((job) => {
                 const agentName = agentById.get(job.agentId ?? "")?.name || job.agentId || "Unknown";
@@ -450,8 +450,8 @@ export function PlaybooksPanel({
 
                     <div className="mt-3 space-y-1 font-mono text-[11px] text-white/65">
                       <div>{formatCronSchedule(job.schedule)}</div>
-                      <div>Next run: {formatRelativeDateTime(job.state.nextRunAtMs)}</div>
-                      <div>Last run: {formatRelativeDateTime(job.state.lastRunAtMs)}</div>
+                      <div>Lần tiếp: {formatRelativeDateTime(job.state.nextRunAtMs)}</div>
+                      <div>Lần trước: {formatRelativeDateTime(job.state.lastRunAtMs)}</div>
                     </div>
 
                     <div className="mt-3 flex gap-2">
@@ -461,7 +461,7 @@ export function PlaybooksPanel({
                         disabled={runBusyJobId === job.id || deleteBusyJobId === job.id}
                         className="rounded border border-amber-500/25 bg-amber-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-200 transition-colors hover:border-amber-400/50 hover:text-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        {runBusyJobId === job.id ? "Running" : "Run now"}
+                        {runBusyJobId === job.id ? "Đang chạy" : "Chạy ngay"}
                       </button>
                       <button
                         type="button"
@@ -469,7 +469,7 @@ export function PlaybooksPanel({
                         disabled={deleteBusyJobId === job.id || runBusyJobId === job.id}
                         className="rounded border border-rose-500/25 bg-rose-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-rose-200 transition-colors hover:border-rose-400/50 hover:text-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        {deleteBusyJobId === job.id ? "Deleting" : "Delete"}
+                        {deleteBusyJobId === job.id ? "Đang xoá" : "Xoá"}
                       </button>
                     </div>
                   </div>
@@ -484,10 +484,10 @@ export function PlaybooksPanel({
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-200/85">
-                  Automated Standup
+                  Họp standup tự động
                 </div>
                 <div className="mt-1 font-mono text-[11px] leading-5 text-white/50">
-                  Configure the daily meeting, Jira source, and manual notes board.
+                  Cấu hình cuộc họp hằng ngày, nguồn Jira và bảng ghi chú thủ công.
                 </div>
               </div>
               <button
@@ -495,7 +495,7 @@ export function PlaybooksPanel({
                 onClick={() => void standup.startMeeting("manual")}
                 className="rounded border border-emerald-500/25 bg-emerald-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-100 transition-colors hover:border-emerald-400/50 hover:text-white"
               >
-                Start now
+                Bắt đầu ngay
               </button>
             </div>
 
@@ -506,12 +506,12 @@ export function PlaybooksPanel({
                   checked={standupScheduleEnabled}
                   onChange={(event) => setStandupScheduleEnabled(event.target.checked)}
                 />
-                Enable scheduled standup.
+                Bật standup theo lịch.
               </label>
 
               <label className="flex flex-col gap-1">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                  Cron expression
+                  Biểu thức Cron
                 </span>
                 <input
                   value={standupCronExpr}
@@ -522,7 +522,7 @@ export function PlaybooksPanel({
 
               <label className="flex flex-col gap-1">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                  Timezone
+                  Múi giờ
                 </span>
                 <input
                   value={standupTimezone}
@@ -533,7 +533,7 @@ export function PlaybooksPanel({
 
               <label className="flex flex-col gap-1">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                  Seconds per speaker
+                  Giây mỗi người nói
                 </span>
                 <input
                   value={standupSpeakerSeconds}
@@ -548,7 +548,7 @@ export function PlaybooksPanel({
                   checked={standupAutoOpenBoard}
                   onChange={(event) => setStandupAutoOpenBoard(event.target.checked)}
                 />
-                Auto-open the standup board when a meeting starts.
+                Tự động mở bảng standup khi họp bắt đầu.
               </label>
 
               <label className="flex items-center gap-2 font-mono text-[11px] text-white/75">
@@ -557,12 +557,12 @@ export function PlaybooksPanel({
                   checked={jiraEnabled}
                   onChange={(event) => setJiraEnabled(event.target.checked)}
                 />
-                Enable Jira source.
+                Bật nguồn Jira.
               </label>
 
               <label className="flex flex-col gap-1">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                  Jira base URL
+                  URL nguồn Jira
                 </span>
                 <input
                   value={jiraBaseUrl}
@@ -574,7 +574,7 @@ export function PlaybooksPanel({
 
               <label className="flex flex-col gap-1">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                  Jira email
+                  Email Jira
                 </span>
                 <input
                   value={jiraEmail}
@@ -585,7 +585,7 @@ export function PlaybooksPanel({
 
               <label className="flex flex-col gap-1">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                  Jira API token
+                  Token API Jira
                 </span>
                 <input
                   type="password"
@@ -595,20 +595,20 @@ export function PlaybooksPanel({
                     setJiraApiTokenConfigured(event.target.value.trim().length > 0);
                   }}
                   placeholder={
-                    jiraApiTokenConfigured ? "Stored on Studio host. Enter to replace." : ""
+                    jiraApiTokenConfigured ? "Đã lưu trên máy chủ Studio. Nhập để thay thế." : ""
                   }
                   className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
                 />
                 {jiraApiTokenConfigured ? (
                   <span className="text-[10px] text-white/45">
-                    A Jira API token is already stored on the Studio host.
+                    Token API Jira đã được lưu trên máy chủ Studio.
                   </span>
                 ) : null}
               </label>
 
               <label className="flex flex-col gap-1">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                  Jira project key
+                  Mã dự án Jira
                 </span>
                 <input
                   value={jiraProjectKey}
@@ -619,7 +619,7 @@ export function PlaybooksPanel({
 
               <label className="flex flex-col gap-1">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                  Jira JQL override
+                  Ghi đè JQL Jira
                 </span>
                 <textarea
                   value={jiraJql}
@@ -635,25 +635,25 @@ export function PlaybooksPanel({
                 disabled={standup.saving}
                 className="rounded border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-100 transition-colors hover:border-emerald-400/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {standup.saving ? "Saving standup settings" : "Save standup settings"}
+                {standup.saving ? "Đang lưu cài đặt standup" : "Lưu cài đặt standup"}
               </button>
             </div>
 
             <div className="mt-4 border-t border-white/10 pt-4">
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                Manual board input
+                Nhập liệu bảng thủ công
               </div>
               <div className="mt-3 grid gap-3">
                 <label className="flex flex-col gap-1">
                   <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                    Agent
+                    Tác nhân
                   </span>
                   <select
                     value={standupAgentId}
                     onChange={(event) => setStandupAgentId(event.target.value)}
                     className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
                   >
-                    <option value="">Select an agent</option>
+                    <option value="">Chọn tác nhân</option>
                     {agents.map((agent) => (
                       <option key={agent.agentId} value={agent.agentId}>
                         {agent.name || agent.agentId}
@@ -664,7 +664,7 @@ export function PlaybooksPanel({
 
                 <label className="flex flex-col gap-1">
                   <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                    Jira assignee hint
+                    Gợi ý người được giao Jira
                   </span>
                   <input
                     value={manualJiraAssignee}
@@ -675,7 +675,7 @@ export function PlaybooksPanel({
 
                 <label className="flex flex-col gap-1">
                   <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                    Current task
+                    Nhiệm vụ hiện tại
                   </span>
                   <input
                     value={manualTask}
@@ -686,7 +686,7 @@ export function PlaybooksPanel({
 
                 <label className="flex flex-col gap-1">
                   <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                    Blockers
+                    Vướng mắc
                   </span>
                   <textarea
                     value={manualBlockers}
@@ -698,7 +698,7 @@ export function PlaybooksPanel({
 
                 <label className="flex flex-col gap-1">
                   <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                    Manual note
+                    Ghi chú thủ công
                   </span>
                   <textarea
                     value={manualNote}
@@ -713,24 +713,24 @@ export function PlaybooksPanel({
                   onClick={() => void handleSaveManualNotes()}
                   className="rounded border border-cyan-500/25 bg-cyan-500/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-100 transition-colors hover:border-cyan-400/50 hover:text-white"
                 >
-                  Save manual notes
+                  Lưu ghi chú thủ công
                 </button>
               </div>
             </div>
 
             {standup.meeting ? (
               <div className="mt-4 rounded border border-white/8 bg-white/[0.03] px-3 py-3 font-mono text-[11px] text-white/65">
-                <div>Meeting phase: {standup.meeting.phase}</div>
-                <div>Participants: {standup.meeting.participantOrder.length}</div>
+                <div>Giai đoạn họp: {standup.meeting.phase}</div>
+                <div>Người tham dự: {standup.meeting.participantOrder.length}</div>
                 <div>
-                  Current speaker: {standup.meeting.currentSpeakerAgentId ?? "Waiting"}
+                  Người đang nói: {standup.meeting.currentSpeakerAgentId ?? "Đang chờ"}
                 </div>
               </div>
             ) : null}
           </div>
 
           <div className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-            Templates
+            Mẫu kịch bản
           </div>
           <div className="mt-3 space-y-2">
             {PLAYBOOK_TEMPLATES.map((template) => {
@@ -767,14 +767,14 @@ export function PlaybooksPanel({
                     <div className="mt-3 space-y-3 border-t border-cyan-500/10 pt-3">
                       <label className="flex flex-col gap-1">
                         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                          Agent
+                          Tác nhân
                         </span>
                         <select
                           value={selectedAgentId}
                           onChange={(event) => setSelectedAgentId(event.target.value)}
                           className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
                         >
-                          <option value="">Select an agent</option>
+                          <option value="">Chọn tác nhân</option>
                           {agents.map((agent) => (
                             <option key={agent.agentId} value={agent.agentId}>
                               {agent.name || agent.agentId}
@@ -785,7 +785,7 @@ export function PlaybooksPanel({
 
                       <label className="flex flex-col gap-1">
                         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-                          Name override
+                          Ghi đè tên
                         </span>
                         <input
                           value={nameOverride}
@@ -801,7 +801,7 @@ export function PlaybooksPanel({
                         disabled={createBusy}
                         className="w-full rounded border border-cyan-500/25 bg-cyan-500/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-100 transition-colors hover:border-cyan-400/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        {createBusy ? "Creating playbook" : "Launch playbook"}
+                        {createBusy ? "Đang tạo kịch bản" : "Khởi động kịch bản"}
                       </button>
                     </div>
                   ) : null}

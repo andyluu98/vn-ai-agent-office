@@ -27,17 +27,16 @@ export function KanbanDisabledPanel({
         <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-slate-500">
           Task Manager
         </div>
-        <h2 className="mt-1 text-xl font-semibold text-white">Kanban Skill Not Installed</h2>
+        <h2 className="mt-1 text-xl font-semibold text-white">Chưa cài kỹ năng Kanban</h2>
         <p className="mt-3 text-sm leading-relaxed text-slate-400">
-          Install the <span className="text-cyan-400">TASK-MANAGER</span> skill to let your
-          agents capture work as tasks and open the Kanban desk.
+          Cài kỹ năng <span className="text-cyan-400">TASK-MANAGER</span> để tác nhân ghi lại công việc dưới dạng task và mở bảng Kanban.
         </p>
 
         {installing ? (
           <div className="mt-5 rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4 text-left">
             <div className="flex items-center justify-between gap-3">
               <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-300/80">
-                Installing
+                Đang cài
               </span>
               <span className="font-mono text-[10px] text-cyan-100/70">
                 {Math.max(0, Math.min(100, Math.round(progressPercent)))}%
@@ -50,10 +49,10 @@ export function KanbanDisabledPanel({
               />
             </div>
             <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              {progressMessage?.trim() || "Installing the task-manager skill."}
+              {progressMessage?.trim() || "Đang cài kỹ năng task-manager."}
             </p>
             <p className="mt-2 text-xs leading-relaxed text-slate-500">
-              Once it&apos;s installed, VN AI Agent Office will refresh the task-manager state.
+              Sau khi cài xong, VN AI Agent Office sẽ tự làm mới trạng thái task-manager.
             </p>
           </div>
         ) : null}
@@ -71,7 +70,7 @@ export function KanbanDisabledPanel({
             onClick={onInstall}
             disabled={installing}
           >
-            {installing ? "Installing TASK-MANAGER skill..." : "Install TASK-MANAGER skill"}
+            {installing ? "Đang cài kỹ năng TASK-MANAGER..." : "Cài kỹ năng TASK-MANAGER"}
           </button>
           <button
             type="button"
@@ -79,7 +78,7 @@ export function KanbanDisabledPanel({
             onClick={onClose}
             disabled={installing}
           >
-            Dismiss
+            Bỏ qua
           </button>
         </div>
       </div>

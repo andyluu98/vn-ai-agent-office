@@ -99,7 +99,7 @@ const DatePickerField = ({
           type="button"
           onClick={() => openNativeDatePicker(inputRef.current)}
           className="absolute inset-y-0 right-0 flex w-8 items-center justify-center text-white/40 transition-colors hover:text-cyan-200"
-          aria-label={`Open ${label.toLowerCase()} calendar`}
+          aria-label={`Mở lịch ${label.toLowerCase()}`}
         >
           <CalendarDays className="h-3.5 w-3.5" />
         </button>
@@ -169,31 +169,31 @@ export function AnalyticsPanel({
     <section className="flex h-full min-h-0 flex-col">
       <div className="border-b border-cyan-500/10 px-4 py-3">
         <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/70">
-          Analytics
+          Phân tích
         </div>
         <div className="mt-1 font-mono text-[11px] text-white/40">
-          Real usage, spend, and agent trust metrics for headquarters.
+          Dữ liệu sử dụng, chi phí và độ tin cậy tác nhân.
         </div>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
         <div className="grid grid-cols-2 gap-2">
-          <DatePickerField label="Start" value={startDate} onChange={setStartDate} />
-          <DatePickerField label="End" value={endDate} onChange={setEndDate} />
+          <DatePickerField label="Bắt đầu" value={startDate} onChange={setStartDate} />
+          <DatePickerField label="Kết thúc" value={endDate} onChange={setEndDate} />
         </div>
 
         <div className="mt-2 flex items-center justify-between gap-2">
           <div className="font-mono text-[10px] text-white/35">
             {usage.lastRefreshedAt
-              ? `Last refresh ${new Date(usage.lastRefreshedAt).toLocaleTimeString()}`
-              : "No analytics snapshot yet"}
+              ? `Làm mới lần cuối lúc ${new Date(usage.lastRefreshedAt).toLocaleTimeString()}`
+              : "Chưa có dữ liệu phân tích"}
           </div>
           <button
             type="button"
             onClick={() => void usage.refresh()}
             className="rounded border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-100"
           >
-            Refresh
+            Làm mới
           </button>
         </div>
 
@@ -213,76 +213,76 @@ export function AnalyticsPanel({
           </div>
         ) : settingsLoaded ? (
           <div className="mt-3 rounded border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 font-mono text-[11px] text-emerald-100">
-            Budgets are within threshold.
+            Ngân sách trong ngưỡng cho phép.
           </div>
         ) : null}
 
         <div className="mt-4 grid grid-cols-2 gap-2">
           <StatCard
-            label="Total Spend"
+            label="Tổng chi phí"
             value={formatCurrency(usage.totals.totalCost)}
-            hint="Selected range."
+            hint="Khoảng thời gian đã chọn."
           />
           <StatCard
-            label="Total Tokens"
+            label="Tổng token"
             value={formatNumber(usage.totals.totalTokens)}
             hint="Input + output + cache."
           />
           <StatCard
-            label="Success Rate"
+            label="Tỷ lệ thành công"
             value={formatPercent(performance.fleet.successRate)}
-            hint="Completed runs only."
+            hint="Chỉ tính lượt chạy hoàn thành."
           />
           <StatCard
-            label="Avg Runtime"
+            label="Thời gian TB"
             value={formatDuration(performance.fleet.avgRuntimeMs)}
-            hint="Session-local run history."
+            hint="Lịch sử chạy trong phiên."
           />
         </div>
 
         <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-            Budget Limits
+            Giới hạn ngân sách
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">Daily USD</span>
+              <span className="font-mono text-[10px] text-white/35">USD mỗi ngày</span>
               <input
                 value={formatBudgetInput(budgets.dailySpendLimitUsd)}
                 onChange={(event) =>
                   updateBudget("dailySpendLimitUsd", parseBudgetInput(event.target.value))
                 }
-                placeholder="No limit"
+                placeholder="Không giới hạn"
                 inputMode="decimal"
                 className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">Monthly USD</span>
+              <span className="font-mono text-[10px] text-white/35">USD mỗi tháng</span>
               <input
                 value={formatBudgetInput(budgets.monthlySpendLimitUsd)}
                 onChange={(event) =>
                   updateBudget("monthlySpendLimitUsd", parseBudgetInput(event.target.value))
                 }
-                placeholder="No limit"
+                placeholder="Không giới hạn"
                 inputMode="decimal"
                 className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">Per-agent USD</span>
+              <span className="font-mono text-[10px] text-white/35">USD mỗi tác nhân</span>
               <input
                 value={formatBudgetInput(budgets.perAgentSoftLimitUsd)}
                 onChange={(event) =>
                   updateBudget("perAgentSoftLimitUsd", parseBudgetInput(event.target.value))
                 }
-                placeholder="Soft limit"
+                placeholder="Giới hạn mềm"
                 inputMode="decimal"
                 className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">Alert threshold %</span>
+              <span className="font-mono text-[10px] text-white/35">Ngưỡng cảnh báo %</span>
               <input
                 value={String(budgets.alertThresholdPct)}
                 onChange={(event) =>
@@ -300,13 +300,13 @@ export function AnalyticsPanel({
 
         <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-            Daily Cost
+            Chi phí hàng ngày
           </div>
           {usage.loading ? (
-            <div className="mt-3 font-mono text-[11px] text-white/40">Loading usage data.</div>
+            <div className="mt-3 font-mono text-[11px] text-white/40">Đang tải dữ liệu sử dụng.</div>
           ) : usage.costDaily.length === 0 ? (
             <div className="mt-3 font-mono text-[11px] text-white/35">
-              No cost data in the selected range.
+              Không có dữ liệu chi phí trong khoảng thời gian đã chọn.
             </div>
           ) : (
             <div className="mt-3 flex items-end gap-1">
@@ -335,20 +335,20 @@ export function AnalyticsPanel({
 
           <div className="mt-4 rounded border border-white/8 bg-black/25 px-3 py-3">
             <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-              Cost Breakdown
+              Chi tiết chi phí
             </div>
             <div className="mt-2 space-y-1 font-mono text-[11px] text-white/70">
               <div>Input: {formatCurrency(usage.totals.inputCost)}.</div>
               <div>Output: {formatCurrency(usage.totals.outputCost)}.</div>
-              <div>Cache read: {formatCurrency(usage.totals.cacheReadCost)}.</div>
-              <div>Cache write: {formatCurrency(usage.totals.cacheWriteCost)}.</div>
+              <div>Đọc cache: {formatCurrency(usage.totals.cacheReadCost)}.</div>
+              <div>Ghi cache: {formatCurrency(usage.totals.cacheWriteCost)}.</div>
             </div>
           </div>
         </div>
 
         <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-            Top Agents By Spend
+            Tác nhân chi nhiều nhất
           </div>
           <div className="mt-3 space-y-2">
             {usage.aggregates.byAgent.slice(0, 6).map((entry) => (
@@ -365,14 +365,14 @@ export function AnalyticsPanel({
               </button>
             ))}
             {usage.aggregates.byAgent.length === 0 ? (
-              <div className="font-mono text-[11px] text-white/35">No agent spend data yet.</div>
+              <div className="font-mono text-[11px] text-white/35">Chưa có dữ liệu chi phí tác nhân.</div>
             ) : null}
           </div>
         </div>
 
         <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-            Model Breakdown
+            Chi tiết theo model
           </div>
           <div className="mt-3 space-y-2">
             {usage.aggregates.byModel.slice(0, 6).map((entry) => (
@@ -389,35 +389,35 @@ export function AnalyticsPanel({
               </div>
             ))}
             {usage.aggregates.byModel.length === 0 ? (
-              <div className="font-mono text-[11px] text-white/35">No model usage data yet.</div>
+              <div className="font-mono text-[11px] text-white/35">Chưa có dữ liệu sử dụng model.</div>
             ) : null}
           </div>
         </div>
 
         <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-            Performance
+            Hiệu suất
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <StatCard
-              label="Approvals"
+              label="Phê duyệt"
               value={formatNumber(approvalMetrics.totals.requestedCount)}
-              hint="Session-local approval requests."
+              hint="Yêu cầu phê duyệt trong phiên."
             />
             <StatCard
-              label="Intervention Rate"
+              label="Tỷ lệ can thiệp"
               value={formatPercent(performance.fleet.interventionRate)}
-              hint="Approvals per observed run."
+              hint="Phê duyệt trên mỗi lượt chạy."
             />
             <StatCard
-              label="Tool Calls"
+              label="Gọi công cụ"
               value={formatNumber(performance.fleet.totalToolCalls)}
-              hint="Current transcript state."
+              hint="Trạng thái transcript hiện tại."
             />
             <StatCard
-              label="Completed Runs"
+              label="Lượt chạy hoàn thành"
               value={formatNumber(performance.fleet.completedRuns)}
-              hint="In-memory office run log."
+              hint="Nhật ký chạy trong văn phòng."
             />
           </div>
 
@@ -434,20 +434,20 @@ export function AnalyticsPanel({
                     {row.agentName}
                   </span>
                   <span className="font-mono text-[10px] text-white/40">
-                    {row.totalRuns} runs
+                    {row.totalRuns} lượt chạy
                   </span>
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2 font-mono text-[10px] text-white/55">
-                  <div>Success: {formatPercent(row.successRate)}.</div>
-                  <div>Avg runtime: {formatDuration(row.avgRuntimeMs)}.</div>
-                  <div>Tool calls: {formatNumber(row.toolCalls)}.</div>
-                  <div>Approvals: {formatNumber(row.approvalRequestedCount)}.</div>
+                  <div>Thành công: {formatPercent(row.successRate)}.</div>
+                  <div>Thời gian TB: {formatDuration(row.avgRuntimeMs)}.</div>
+                  <div>Gọi công cụ: {formatNumber(row.toolCalls)}.</div>
+                  <div>Phê duyệt: {formatNumber(row.approvalRequestedCount)}.</div>
                 </div>
               </button>
             ))}
             {performance.rows.length === 0 ? (
               <div className="font-mono text-[11px] text-white/35">
-                No performance data is available yet.
+                Chưa có dữ liệu hiệu suất.
               </div>
             ) : null}
           </div>
