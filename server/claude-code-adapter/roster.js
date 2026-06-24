@@ -46,26 +46,46 @@ const DEFAULT_ROSTER = [
   },
 ];
 
-// Load a user-defined roster from claude-agents.json if present; else seed default.
-function loadRoster() {
-  const file =
-    process.env.CLAUDE_ADAPTER_ROSTER || path.join(process.cwd(), "claude-agents.json");
+// Two roster files, by design:
+//   RUNTIME file = where live hire/fire is PERSISTED (gitignored, per-machine).
+//                  Defaults to claude-agents.local.json (override via CLAUDE_ADAPTER_ROSTER).
+//   SEED file    = the committed default roster shipped with the repo (claude-agents.json).
+// Precedence on load: RUNTIME (if it exists — even an empty list, so "delete all" sticks)
+//                     → else SEED → else built-in DEFAULT_ROSTER.
+const RUNTIME_FILE =
+  process.env.CLAUDE_ADAPTER_ROSTER || path.join(process.cwd(), "claude-agents.local.json");
+const SEED_FILE = path.join(process.cwd(), "claude-agents.json");
+
+function normalizeAgents(list) {
+  return list.map((a, i) => ({
+    id: a.id || `agent-${i + 1}`,
+    name: a.name || a.role || `Agent ${i + 1}`,
+    role: a.role || a.name || `Agent${i + 1}`,
+    emoji: a.emoji || "🤖",
+    seed: true,
+    system: a.system || `You are the ${a.name || a.role} agent in a virtual office.`,
+  }));
+}
+
+// Read an agents array from a roster file. Returns the array (possibly empty)
+// when the file exists & parses, or null when it is missing/invalid.
+function readRosterFile(file) {
   try {
     const raw = JSON.parse(fs.readFileSync(file, "utf8"));
     const list = Array.isArray(raw) ? raw : Array.isArray(raw.agents) ? raw.agents : null;
-    if (list && list.length) {
-      return list.map((a, i) => ({
-        id: a.id || `agent-${i + 1}`,
-        name: a.name || a.role || `Agent ${i + 1}`,
-        role: a.role || a.name || `Agent${i + 1}`,
-        emoji: a.emoji || "🤖",
-        seed: true,
-        system: a.system || `You are the ${a.name || a.role} agent in a virtual office.`,
-      }));
-    }
+    return list ? normalizeAgents(list) : null;
   } catch {
-    // no/invalid config -> fall back to default roster
+    return null; // missing or invalid
   }
+}
+
+function loadRoster() {
+  // Runtime file wins if present — an explicit empty list means the user
+  // cleared the roster and will re-hire, so respect it (do NOT fall back to seed).
+  const runtime = readRosterFile(RUNTIME_FILE);
+  if (runtime !== null) return runtime;
+  const seed = readRosterFile(SEED_FILE);
+  if (seed && seed.length) return seed;
   return DEFAULT_ROSTER;
 }
 
@@ -84,8 +104,7 @@ function buildRegistryPayload(model) {
  * @param {string} [file]  - optional override path (defaults to CLAUDE_ADAPTER_ROSTER env / cwd/claude-agents.json)
  */
 function saveRoster(agents, file) {
-  const filePath =
-    file || process.env.CLAUDE_ADAPTER_ROSTER || path.join(process.cwd(), "claude-agents.json");
+  const filePath = file || RUNTIME_FILE;
   const payload = {
     agents: agents.map((a) => ({
       id: a.id,

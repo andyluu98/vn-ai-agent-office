@@ -89,3 +89,6 @@ test-results
 
 # subagent-driven-development scratch
 .superpowers/
+
+# Runtime agent roster (live hire/fire persistence — per machine)
+claude-agents.local.json
