@@ -127,6 +127,11 @@ const OPENCLAW_WEBCHAT_UI_CLIENT_ID = "webchat-ui";
 const isAutoManagedAdapter = (adapterType: StudioGatewayAdapterType) =>
   adapterType === "openclaw" || adapterType === "hermes" || adapterType === "demo";
 
+// Direct runtime adapters (custom HTTP probe, no WebSocket) that support
+// zero-config auto-connect when a URL is available.
+const isDirectRuntimeAdapter = (adapterType: StudioGatewayAdapterType) =>
+  adapterType === "custom" || adapterType === "local" || adapterType === "claw3d";
+
 export const resolveGatewayClientName = (
   adapterType: StudioGatewayAdapterType,
   gatewayUrl: string
@@ -801,9 +806,13 @@ export const useGatewayConnection = (
         // gateway.lastKnownGood.adapterType doesn't match the currently
         // selected adapter. Without this, switching to Hermes never
         // auto-connects because lastKnownGood is still "openclaw".
+        // Also extend to direct runtime adapters (custom/local/claw3d) so that
+        // the default URL (e.g. http://localhost:7770) triggers auto-connect on
+        // first load without requiring the user to click Connect.
         const hasPersistedProfileForSelected =
           Boolean(resolvedGatewayProfiles.lastKnownGoodForSelected?.url) ||
-          (isAutoManagedAdapter(nextAdapterType) && nextGatewayUrl.trim().length > 0);
+          ((isAutoManagedAdapter(nextAdapterType) || isDirectRuntimeAdapter(nextAdapterType)) &&
+            nextGatewayUrl.trim().length > 0);
         loadedGatewaySettings.current = {
           gatewayUrl: nextGatewayUrl.trim(),
           token: nextToken,
@@ -999,7 +1008,7 @@ export const useGatewayConnection = (
     if (!settingsLoaded) return;
     if (!hasLastKnownGoodState) return;
     if (!gatewayUrl.trim()) return;
-    if (!isAutoManagedAdapter(selectedAdapterType)) return;
+    if (!isAutoManagedAdapter(selectedAdapterType) && !isDirectRuntimeAdapter(selectedAdapterType)) return;
     didAutoConnect.current = true;
     const delayMs = resolveInitialGatewayAutoConnectDelayMs(selectedAdapterType);
     gatewayDebugLog("auto-connect", {
@@ -1210,10 +1219,7 @@ export const useGatewayConnection = (
   const shouldPromptForConnect =
     settingsLoaded &&
     status !== "connected" &&
-    (selectedAdapterType === "custom" ||
-      selectedAdapterType === "local" ||
-      selectedAdapterType === "claw3d" ||
-      !hasLastKnownGoodState ||
+    (!hasLastKnownGoodState ||
       !(gatewayUrl ?? "").trim() ||
       (selectedAdapterType === "openclaw" && !(token ?? "").trim()) ||
       wasManualDisconnectRef.current ||
