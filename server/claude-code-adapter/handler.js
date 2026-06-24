@@ -5,6 +5,11 @@
 
 const { buildRegistryPayload } = require("./roster");
 const { parseSpawnDirectives } = require("./spawn-directive");
+const { decomposeGoal: _decomposeGoal } = require("./orchestrator");
+const { runTasks: _runTasks } = require("./execution-loop");
+const { upsertTask: _upsertTask } = require("./task-store-client");
+
+const DEFAULT_MAX_TASKS = Number(process.env.CLAUDE_ADAPTER_MAX_TASKS_PER_COMMAND || 8);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -52,10 +57,26 @@ function buildStateFromRegistry(agents, model) {
 /**
  * handleRequest — pure, side-effect-free (aside from mutating `registry`).
  *
- * @param {{ method, pathname, body, runner, registry, model, now? }} opts
- *   now – injectable clock fn `() => number`; defaults to `() => Date.now()`
+ * @param {{
+ *   method: string,
+ *   pathname: string,
+ *   body: unknown,
+ *   runner: Function,
+ *   registry: object,
+ *   model: string,
+ *   now?: () => number,
+ *   decompose?: Function,   injectable for tests (default: decomposeGoal)
+ *   runTasksFn?: Function,  injectable for tests (default: runTasks)
+ *   upsert?: Function,      injectable for tests (default: upsertTask)
+ * }} opts
  */
-async function handleRequest({ method, pathname, body, runner, registry, model, now: nowFn }) {
+async function handleRequest({
+  method, pathname, body, runner, registry, model,
+  now: nowFn,
+  decompose,
+  runTasksFn,
+  upsert,
+}) {
   const now = typeof nowFn === "function" ? nowFn() : Date.now();
 
   // ── Health ────────────────────────────────────────────────────────────────
@@ -208,6 +229,57 @@ async function handleRequest({ method, pathname, body, runner, registry, model, 
         choices: [
           { index: 0, message: { role: "assistant", content }, finish_reason: "stop" },
         ],
+      },
+    };
+  }
+
+  // ── Orchestrator command ──────────────────────────────────────────────────
+  // POST /command { goal } → decompose goal into tasks → write to kanban →
+  // fire execution loop in background → respond immediately with task list.
+  if (method === "POST" && pathname === "/command") {
+    const goal = body && typeof body.goal === "string" ? body.goal.trim() : "";
+    if (!goal) {
+      return { status: 400, body: { error: "body.goal is required and must be a non-empty string." } };
+    }
+
+    // Resolve injectable dependencies (production defaults)
+    const decomposeFn = typeof decompose === "function" ? decompose : _decomposeGoal;
+    const runFn = typeof runTasksFn === "function" ? runTasksFn : _runTasks;
+    const upsertFn = typeof upsert === "function" ? upsert : _upsertTask;
+    const maxTasks = DEFAULT_MAX_TASKS;
+
+    // Build role list from live registry
+    const roles = registry.list().map((a) => a.role);
+
+    // Decompose goal → task list (one claude -p call; can throw on error/empty)
+    let tasks;
+    try {
+      tasks = await decomposeFn({ goal, roles, runner, model, maxTasks });
+    } catch (err) {
+      return {
+        status: 500,
+        body: { error: `Decompose failed: ${(err && err.message) || String(err)}` },
+      };
+    }
+
+    // Fire execution loop in background — do NOT await; respond immediately
+    runFn({
+      tasks,
+      registry,
+      runner,
+      model,
+      upsert: upsertFn,
+      now: () => Date.now(),
+      maxTasks,
+    }).catch((err) => {
+      console.error("[command] execution loop error:", (err && err.message) || err);
+    });
+
+    return {
+      status: 200,
+      body: {
+        created: tasks.length,
+        tasks: tasks.map((t) => t.title),
       },
     };
   }
