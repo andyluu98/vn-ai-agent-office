@@ -4,7 +4,10 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 
 const ORIGINAL_ENV = { ...process.env };
 
-const setupAndImportHook = async (gatewayUrl: string | null) => {
+const setupAndImportHook = async (
+  gatewayUrl: string | null,
+  opts?: { mockProbeCustomRuntime?: "succeed" | "hang" }
+) => {
   process.env = { ...ORIGINAL_ENV };
   if (gatewayUrl === null) {
     delete process.env.NEXT_PUBLIC_GATEWAY_URL;
@@ -14,6 +17,24 @@ const setupAndImportHook = async (gatewayUrl: string | null) => {
 
   vi.resetModules();
   vi.spyOn(console, "info").mockImplementation(() => {});
+
+  // Mock probeCustomRuntime so custom adapter auto-connect tests don't
+  // fire real HTTP requests or leave pending promises after cleanup.
+  if (opts?.mockProbeCustomRuntime === "succeed") {
+    vi.doMock("../../src/lib/runtime/custom/http", () => ({
+      probeCustomRuntime: vi.fn(async () => {}),
+      normalizeCustomBaseUrl: (v: string) => v,
+      requestCustomRuntime: vi.fn(async () => ({})),
+      fetchCustomRuntimeJson: vi.fn(async () => ({})),
+    }));
+  } else if (opts?.mockProbeCustomRuntime === "hang") {
+    vi.doMock("../../src/lib/runtime/custom/http", () => ({
+      probeCustomRuntime: vi.fn(() => new Promise<void>(() => {})),
+      normalizeCustomBaseUrl: (v: string) => v,
+      requestCustomRuntime: vi.fn(() => new Promise(() => {})),
+      fetchCustomRuntimeJson: vi.fn(() => new Promise(() => {})),
+    }));
+  }
 
   const captured: {
     url: string | null;
@@ -611,7 +632,11 @@ describe("useGatewayConnection", () => {
   });
 
   it("loads_custom_adapter_type_without_requiring_a_token", async () => {
-    const { useGatewayConnection } = await setupAndImportHook(null);
+    // NEW behavior (commit 58da092): custom adapter with a usable URL auto-connects
+    // on load without requiring a token — shouldPromptForConnect starts false.
+    const { useGatewayConnection } = await setupAndImportHook(null, {
+      mockProbeCustomRuntime: "succeed",
+    });
     const coordinator = {
       loadSettingsEnvelope: async () => ({
         settings: {
@@ -660,11 +685,17 @@ describe("useGatewayConnection", () => {
     });
     expect(screen.getByTestId("selectedAdapterType")).toHaveTextContent("custom");
     expect(screen.getByTestId("activeAdapterType")).toHaveTextContent("custom");
-    expect(screen.getByTestId("shouldPromptForConnect")).toHaveTextContent("yes");
+    // Custom adapter with a URL auto-connects (no token needed) — connect screen is suppressed.
+    expect(screen.getByTestId("shouldPromptForConnect")).toHaveTextContent("no");
   });
 
-  it("still_prompts_to_reconnect_for_custom_with_last_known_good_state", async () => {
-    const { useGatewayConnection } = await setupAndImportHook(null);
+  it("does_not_prompt_when_custom_has_healthy_last_known_good", async () => {
+    // NEW behavior (commit 58da092): custom adapter with a last-known-good URL
+    // auto-connects silently — shouldPromptForConnect stays false (no connect screen).
+    // SAFETY is covered by separate tests: error state and manual disconnect DO show prompt.
+    const { useGatewayConnection } = await setupAndImportHook(null, {
+      mockProbeCustomRuntime: "succeed",
+    });
     const coordinator = {
       loadSettingsEnvelope: async () => ({
         settings: {
@@ -714,7 +745,8 @@ describe("useGatewayConnection", () => {
     await waitFor(() => {
       expect(screen.getByTestId("selectedAdapterType")).toHaveTextContent("custom");
     });
-    expect(screen.getByTestId("shouldPromptForConnect")).toHaveTextContent("yes");
+    // Healthy last-known-good → auto-connect fires → no connect prompt needed.
+    expect(screen.getByTestId("shouldPromptForConnect")).toHaveTextContent("no");
   });
 
   it("persists_the_detected_backend_identity_in_last_known_good", async () => {
