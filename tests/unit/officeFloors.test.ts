@@ -33,7 +33,7 @@ describe("office floor registry", () => {
       provider: "hermes",
       kind: "runtime",
       zone: "building",
-      enabled: true,
+      enabled: false,
       sortOrder: 20,
       runtimeProfileId: "hermes-default",
     });
@@ -42,9 +42,6 @@ describe("office floor registry", () => {
   it("lists only enabled floors by default", () => {
     expect(listEnabledOfficeFloors().map((floor) => floor.id)).toEqual([
       "lobby",
-      "openclaw-ground",
-      "hermes-first",
-      "local-runtime",
       "claw3d-runtime",
       "custom-second",
     ]);
@@ -75,13 +72,13 @@ describe("office floor registry", () => {
 
   it("resolves active floor ids against enabled floors", () => {
     expect(DEFAULT_ACTIVE_FLOOR_ID).toBe("lobby");
-    expect(resolveActiveOfficeFloorId("hermes-first")).toBe("hermes-first");
+    expect(resolveActiveOfficeFloorId("hermes-first")).toBe("lobby");
     expect(resolveActiveOfficeFloorId("training")).toBe("lobby");
     expect(resolveActiveOfficeFloorId(null)).toBe("lobby");
   });
 
   it("cycles across enabled floors only", () => {
-    expect(getAdjacentEnabledOfficeFloorId("lobby", 1)).toBe("openclaw-ground");
+    expect(getAdjacentEnabledOfficeFloorId("lobby", 1)).toBe("claw3d-runtime");
     expect(getAdjacentEnabledOfficeFloorId("lobby", -1)).toBe("custom-second");
   });
 });

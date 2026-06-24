@@ -170,7 +170,7 @@ describe("studio settings normalization", () => {
     );
     expect(normalized.office.bad).toEqual(
       expect.objectContaining({
-        title: "Luke Headquarters",
+        title: "VN AI Agent Office",
       }),
     );
   });
@@ -179,7 +179,7 @@ describe("studio settings normalization", () => {
     const current = normalizeStudioSettings({
       office: {
         "ws://localhost:18789": {
-          title: "Luke Headquarters",
+          title: "VN AI Agent Office",
         },
       },
     });
@@ -273,7 +273,7 @@ describe("studio settings normalization", () => {
     const normalized = normalizeStudioSettings({
       activeFloorId: "hermes-first",
     });
-    expect(resolveStudioActiveFloorId(normalized)).toBe("hermes-first");
+    expect(resolveStudioActiveFloorId(normalized)).toBe("lobby");
 
     const merged = mergeStudioSettings(normalized, {
       activeFloorId: "training",
