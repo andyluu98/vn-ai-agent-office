@@ -7,6 +7,7 @@ const { buildRegistryPayload } = require("./roster");
 const { parseSpawnDirectives } = require("./spawn-directive");
 const { decomposeGoal: _decomposeGoal } = require("./orchestrator");
 const { runTasks: _runTasks } = require("./execution-loop");
+const { runDiscussion: _runDiscussion } = require("./discussion");
 const { upsertTask: _upsertTask } = require("./task-store-client");
 
 const DEFAULT_MAX_TASKS = Number(process.env.CLAUDE_ADAPTER_MAX_TASKS_PER_COMMAND || 8);
@@ -14,6 +15,12 @@ const DEFAULT_MAX_TASKS = Number(process.env.CLAUDE_ADAPTER_MAX_TASKS_PER_COMMAN
 // Must be <= CLAUDE_ADAPTER_MAX_CONCURRENT (runtime gate, default 4) or the gate will
 // reject overflow tasks with "Too many concurrent…".  Default 3 ≤ gate default 4.
 const DEFAULT_MEETING_CONCURRENCY = Number(process.env.CLAUDE_ADAPTER_MEETING_CONCURRENCY || 3);
+
+// Discussion phase defaults (env-configurable, M3.3)
+const DISCUSSION_ENABLED = process.env.CLAUDE_ADAPTER_DISCUSSION !== "0";
+const DISCUSSION_ROUNDS = Number(process.env.CLAUDE_ADAPTER_DISCUSSION_ROUNDS || 2);
+const DISCUSSION_TURN_MS = Number(process.env.CLAUDE_ADAPTER_DISCUSSION_TURN_MS || 2500);
+const DISCUSSION_MAX_PARTICIPANTS = Number(process.env.CLAUDE_ADAPTER_DISCUSSION_MAX_PARTICIPANTS || 4);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -69,9 +76,10 @@ function buildStateFromRegistry(agents, model) {
  *   registry: object,
  *   model: string,
  *   now?: () => number,
- *   decompose?: Function,   injectable for tests (default: decomposeGoal)
- *   runTasksFn?: Function,  injectable for tests (default: runTasks)
- *   upsert?: Function,      injectable for tests (default: upsertTask)
+ *   decompose?: Function,          injectable for tests (default: decomposeGoal)
+ *   runTasksFn?: Function,         injectable for tests (default: runTasks)
+ *   runDiscussionFn?: Function,    injectable for tests (default: runDiscussion)
+ *   upsert?: Function,             injectable for tests (default: upsertTask)
  * }} opts
  */
 async function handleRequest({
@@ -79,6 +87,7 @@ async function handleRequest({
   now: nowFn,
   decompose,
   runTasksFn,
+  runDiscussionFn,
   upsert,
 }) {
   const now = typeof nowFn === "function" ? nowFn() : Date.now();
@@ -249,9 +258,11 @@ async function handleRequest({
     // Resolve injectable dependencies (production defaults)
     const decomposeFn = typeof decompose === "function" ? decompose : _decomposeGoal;
     const runFn = typeof runTasksFn === "function" ? runTasksFn : _runTasks;
+    const discussFn = typeof runDiscussionFn === "function" ? runDiscussionFn : _runDiscussion;
     const upsertFn = typeof upsert === "function" ? upsert : _upsertTask;
     const maxTasks = DEFAULT_MAX_TASKS;
     const concurrency = DEFAULT_MEETING_CONCURRENCY;
+    const nowFnResolved = typeof nowFn === "function" ? nowFn : () => Date.now();
 
     // Build role list from live registry
     const roles = registry.list().map((a) => a.role);
@@ -267,20 +278,51 @@ async function handleRequest({
       };
     }
 
-    // Fire execution loop in background — do NOT await; respond immediately.
+    // Fire execution loop + optional discussion in background — do NOT await here;
+    // respond immediately with the task list.
     // C-2: Thread the injected nowFn so task IDs are deterministic in tests.
-    runFn({
-      tasks,
-      registry,
-      runner,
-      model,
-      upsert: upsertFn,
-      now: typeof nowFn === "function" ? nowFn : () => Date.now(),
-      maxTasks,
-      concurrency,
-    }).catch((err) => {
-      console.error("[command] execution loop error:", (err && err.message) || err);
-    });
+    (async () => {
+      let taskResults;
+      try {
+        taskResults = await runFn({
+          tasks,
+          registry,
+          runner,
+          model,
+          upsert: upsertFn,
+          now: nowFnResolved,
+          maxTasks,
+          concurrency,
+        });
+      } catch (err) {
+        console.error("[command] execution loop error:", (err && err.message) || err);
+        return;
+      }
+
+      // M3.2 — Discussion phase: run after tasks if ≥2 distinct participants
+      if (DISCUSSION_ENABLED && Array.isArray(taskResults)) {
+        const participants = [...new Set(taskResults.map((r) => r.role).filter(Boolean))];
+        if (participants.length >= 2) {
+          try {
+            await discussFn({
+              goal,
+              participants,
+              taskResults,
+              registry,
+              runner,
+              model,
+              upsert: upsertFn,
+              now: nowFnResolved,
+              rounds: DISCUSSION_ROUNDS,
+              turnMs: DISCUSSION_TURN_MS,
+              maxParticipants: DISCUSSION_MAX_PARTICIPANTS,
+            });
+          } catch (err) {
+            console.error("[command] discussion phase error:", (err && err.message) || err);
+          }
+        }
+      }
+    })();
 
     return {
       status: 200,

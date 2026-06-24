@@ -42,7 +42,7 @@ const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  *   maxRetries?:  number,
  *   sleep?:       (ms:number) => Promise<void>,
  * }} opts
- * @returns {Promise<Array<{id:string, status:string, role:string}>>}
+ * @returns {Promise<Array<{id:string, status:string, role:string, title:string, note:string}>>}
  */
 async function runTasks({
   tasks,
@@ -122,7 +122,7 @@ async function runTasks({
           card.status = "blocked";
           card.notes = [note];
           await safeUpsert({ ...card });
-          return { id, status: "blocked", role: task.role };
+          return { id, status: "blocked", role: task.role, title: task.title, note };
         }
 
         // Success — append result text as note
@@ -130,7 +130,7 @@ async function runTasks({
         card.status = "done";
         card.notes = note ? [note] : [];
         await safeUpsert({ ...card });
-        return { id, status: "done", role: task.role };
+        return { id, status: "done", role: task.role, title: task.title, note };
       } catch (err) {
         const msg = (err && err.message) ? err.message : String(err);
 
@@ -146,7 +146,7 @@ async function runTasks({
         card.status = "blocked";
         card.notes = [note];
         await safeUpsert({ ...card });
-        return { id, status: "blocked", role: task.role };
+        return { id, status: "blocked", role: task.role, title: task.title, note };
       }
     }
   }
