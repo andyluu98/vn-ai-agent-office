@@ -871,6 +871,8 @@ function useAgentTick(
   qaHoldByAgentId: Record<string, boolean> = {},
   githubReviewByAgentId: Record<string, boolean> = {},
   standupMeeting: StandupMeeting | null = null,
+  orchestrationMeetingActive: boolean = false,
+  orchestrationParticipants: string[] = [],
 ) {
   const renderAgentsRef = useRef<RenderAgent[]>([]);
   const renderAgentLookupRef = useRef<Map<string, RenderAgent>>(new Map());
@@ -922,21 +924,30 @@ function useAgentTick(
   const standupActive =
     standupMeeting?.phase === "gathering" ||
     standupMeeting?.phase === "in_progress";
-  const meetingParticipants = useMemo(
+  // Unified meeting: standup wins; orchestration activates only when standup is not running.
+  const meetingActive = standupActive || orchestrationMeetingActive;
+  const meetingParticipantOrder = useMemo(
     () =>
-      new Set(standupActive ? (standupMeeting?.participantOrder ?? []) : []),
-    [standupActive, standupMeeting?.participantOrder],
+      standupActive
+        ? (standupMeeting?.participantOrder ?? [])
+        : orchestrationMeetingActive
+          ? orchestrationParticipants
+          : [],
+    [standupActive, standupMeeting?.participantOrder, orchestrationMeetingActive, orchestrationParticipants],
+  );
+  const meetingParticipants = useMemo(
+    () => new Set(meetingParticipantOrder),
+    [meetingParticipantOrder],
   );
   const resolveMeetingTarget = useCallback(
     (agentId: string) => {
-      const participantOrder = standupMeeting?.participantOrder ?? [];
-      const targetIndex = participantOrder.indexOf(agentId);
+      const targetIndex = meetingParticipantOrder.indexOf(agentId);
       const seats = [...meetingSeatLocations, ...MEETING_OVERFLOW_LOCATIONS];
       const fallbackSeat = seats[0] ?? { x: 145, y: 118, facing: Math.PI };
       if (targetIndex < 0) return fallbackSeat;
       return seats[targetIndex] ?? fallbackSeat;
     },
-    [meetingSeatLocations, standupMeeting?.participantOrder],
+    [meetingSeatLocations, meetingParticipantOrder],
   );
 
   useEffect(() => {
@@ -1064,7 +1075,7 @@ function useAgentTick(
         stationType: "console" as const,
       };
       const explicitMeetingHold =
-        standupActive && meetingParticipants.has(agent.id);
+        meetingActive && meetingParticipants.has(agent.id);
       const meetingTarget = explicitMeetingHold
         ? resolveMeetingTarget(agent.id)
         : null;
@@ -1738,6 +1749,7 @@ function useAgentTick(
     qaHoldByAgentId,
     qaLabStations,
     githubReviewByAgentId,
+    meetingActive,
     meetingParticipants,
     meetingSeatLocations,
     pickRoamPoint,
@@ -2262,6 +2274,9 @@ export function RetroOffice3D({
   qaTestingAgentId = null,
   standupMeeting = null,
   standupAutoOpenBoard = true,
+  orchestrationMeetingActive = false,
+  orchestrationParticipants = [],
+  orchestrationSpeechByAgentId = {},
   monitorAgentId = null,
   monitorByAgentId = EMPTY_MONITOR_MAP,
   githubSkill = null,
@@ -2376,6 +2391,9 @@ export function RetroOffice3D({
   qaTestingAgentId?: string | null;
   standupMeeting?: StandupMeeting | null;
   standupAutoOpenBoard?: boolean;
+  orchestrationMeetingActive?: boolean;
+  orchestrationParticipants?: string[];
+  orchestrationSpeechByAgentId?: Record<string, string>;
   monitorAgentId?: string | null;
   monitorByAgentId?: OfficeDeskMonitorMap;
   githubSkill?: SkillStatusEntry | null;
@@ -2602,9 +2620,20 @@ export function RetroOffice3D({
     if (!currentCard) return {};
     return { [currentCard.agentId]: currentCard.speech };
   }, [standupMeeting]);
+  // Unified speech map: standup wins when active; fall back to orchestration.
+  const meetingSpeechByAgentId: Record<string, string> = useMemo(
+    () =>
+      standupMeeting?.phase === "in_progress"
+        ? standupSpeechTextByAgentId
+        : orchestrationMeetingActive
+          ? orchestrationSpeechByAgentId
+          : {},
+    [standupMeeting, standupSpeechTextByAgentId, orchestrationMeetingActive, orchestrationSpeechByAgentId],
+  );
   const suppressSceneSpeechBubbles =
     standupMeeting?.phase === "gathering" ||
-    standupMeeting?.phase === "in_progress";
+    standupMeeting?.phase === "in_progress" ||
+    orchestrationMeetingActive;
   // New Idea 2: camera preset target ref (shared into Canvas).
   const cameraPresetRef = useRef<{
     pos: [number, number, number];
@@ -2861,6 +2890,8 @@ export function RetroOffice3D({
     resolvedQaHoldByAgentId,
     resolvedGithubReviewByAgentId,
     standupMeeting,
+    orchestrationMeetingActive,
+    orchestrationParticipants,
   );
   useEffect(() => {
     const syncRenderAgentUi = () => {
@@ -5733,23 +5764,23 @@ export function RetroOffice3D({
                   showSpeech={
                     isJanitor
                       ? false
-                      : standupMeeting?.phase === "in_progress"
-                        ? Boolean(standupSpeechTextByAgentId[agent.id])
+                      : suppressSceneSpeechBubbles
+                        ? Boolean(meetingSpeechByAgentId[agent.id])
                         : speechAgentIds.has(agent.id) ||
                           Boolean(streamingTextByAgentId[agent.id])
                   }
                   speechText={
                     isJanitor
                       ? null
-                      : standupMeeting?.phase === "in_progress"
-                        ? (standupSpeechTextByAgentId[agent.id] ?? null)
+                      : suppressSceneSpeechBubbles
+                        ? (meetingSpeechByAgentId[agent.id] ?? null)
                         : (speechTextByAgentId[agent.id] ??
                             streamingTextByAgentId[agent.id] ??
                             null)
                   }
                   suppressSpeechBubble={
                     suppressSceneSpeechBubbles &&
-                    standupMeeting?.currentSpeakerAgentId !== agent.id
+                    !meetingSpeechByAgentId[agent.id]
                   }
                 />
               );
@@ -5867,6 +5898,16 @@ export function RetroOffice3D({
               </button>
             ))}
           </div>
+          {orchestrationMeetingActive && !standupMeeting ? (
+            <div className="rounded-xl border border-green-500/20 bg-white/90 dark:bg-[#091409]/90 px-3 py-2 text-left shadow-lg backdrop-blur-sm">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-green-300/80">
+                🟢 Đang họp
+              </div>
+              <div className="mt-1 text-[11px] font-semibold text-neutral-800 dark:text-white/90">
+                {orchestrationParticipants.length} việc đang chạy
+              </div>
+            </div>
+          ) : null}
           {standupMeeting ? (
             <button
               type="button"

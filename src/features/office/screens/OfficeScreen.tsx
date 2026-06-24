@@ -3152,6 +3152,38 @@ export function OfficeScreen({
     await taskBoard.refreshSharedTasks();
     await taskBoard.refreshRemoteTasks();
   };
+
+  // M2.1 — orchestration meeting state derived from in_progress tasks.
+  const agentIdSet = useMemo(
+    () => new Set(state.agents.map((a) => a.agentId)),
+    [state.agents],
+  );
+  const {
+    orchestrationMeetingActive,
+    orchestrationParticipants,
+    orchestrationSpeechByAgentId,
+  } = useMemo(() => {
+    const inProgressCards = taskBoard.cardsByStatus.in_progress ?? [];
+    const seen = new Set<string>();
+    const participants: string[] = [];
+    const speech: Record<string, string> = {};
+    for (const card of inProgressCards) {
+      if (!card.assignedAgentId) continue;
+      if (!agentIdSet.has(card.assignedAgentId)) continue;
+      if (!seen.has(card.assignedAgentId)) {
+        seen.add(card.assignedAgentId);
+        participants.push(card.assignedAgentId);
+      }
+      // Last card per agent wins (de-dup keeps first occurrence for seat, but speech can be any)
+      speech[card.assignedAgentId] = card.title;
+    }
+    return {
+      orchestrationMeetingActive: participants.length > 0,
+      orchestrationParticipants: participants,
+      orchestrationSpeechByAgentId: speech,
+    };
+  }, [taskBoard.cardsByStatus.in_progress, agentIdSet]);
+
   const handleMarketplaceGymStart = useCallback((agentId: string) => {
     setMarketplaceGymHoldByAgentId((previous) => ({
       ...previous,
@@ -4832,6 +4864,9 @@ export function OfficeScreen({
           streamingTextByAgentId={streamingTextByAgentId}
           standupMeeting={standupController.meeting}
           standupAutoOpenBoard={standupController.openBoardByDefault}
+          orchestrationMeetingActive={orchestrationMeetingActive}
+          orchestrationParticipants={orchestrationParticipants}
+          orchestrationSpeechByAgentId={orchestrationSpeechByAgentId}
           onStandupArrivalsChange={(arrivedAgentIds) => {
             void standupController.reportArrivals(arrivedAgentIds);
           }}
