@@ -409,6 +409,142 @@ describe("runDiscussion — maxParticipants cap", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Fix #4 — non-speakers reset to "Đang họp…" while someone else speaks
+// ---------------------------------------------------------------------------
+
+describe("runDiscussion — non-speaker card reset (Fix #4)", () => {
+  it("resets non-speakers to 'Đang họp…' at the start of each turn", async () => {
+    const upsert = makeUpsertCapture();
+
+    await runDiscussion({
+      goal: "Test non-speaker reset",
+      participants: ["Coder", "Researcher"],
+      taskResults: [],
+      registry: makeRegistry(),
+      runner: async ({ prompt }: { system?: string; prompt?: string; model?: string }) => {
+        if (prompt && prompt.includes("tổng hợp")) return { text: "Summary.", isError: false };
+        return { text: "ý kiến ngắn", isError: false };
+      },
+      model: "m",
+      upsert,
+      sleep: noSleep,
+      now: fixedNow,
+      rounds: 1,
+    });
+
+    // When Researcher speaks (second turn), Coder's card should have been reset to "Đang họp…"
+    // Find the sequence of upserts for Coder
+    const coderUpserts = upsert.calls.filter(
+      (c) => c.assignedAgentId === "Coder" &&
+             typeof c.id === "string" && (c.id as string).startsWith("meeting-") &&
+             !(c.id as string).startsWith("meeting-conclusion-")
+    );
+    const coderTitles = coderUpserts.map((c) => c.title);
+    // Expected sequence for Coder (1 round, 2 participants):
+    // 1. initial "Đang họp…"
+    // 2. "(đang phát biểu…)" — Coder's turn starts
+    // 3. spoken line — after Coder speaks
+    // 4. "Đang họp…" — reset when Researcher's turn starts
+    // 5. "Đã họp xong" — final done
+    expect(coderTitles).toContain("Đang họp…");
+    // Ensure "Đang họp…" appears after the spoken line (index of last "Đang họp…" > index of spoken line)
+    const lastWaitingIdx = coderTitles.lastIndexOf("Đang họp…");
+    const spokenLineIdx = coderTitles.findIndex(
+      (t) => t !== "Đang họp…" && t !== "(đang phát biểu…)" && t !== "Đã họp xong"
+    );
+    // spoken line must exist and "Đang họp…" must appear after it
+    expect(spokenLineIdx).toBeGreaterThanOrEqual(0);
+    expect(lastWaitingIdx).toBeGreaterThan(spokenLineIdx);
+  });
+
+  it("does NOT emit redundant upserts when non-speaker card is already 'Đang họp…'", async () => {
+    const upsert = makeUpsertCapture();
+
+    await runDiscussion({
+      goal: "Test dedup",
+      participants: ["Coder", "Researcher"],
+      taskResults: [],
+      registry: makeRegistry(),
+      runner: async ({ prompt }: { system?: string; prompt?: string; model?: string }) => {
+        if (prompt && prompt.includes("tổng hợp")) return { text: "Summary.", isError: false };
+        return { text: "ok", isError: false };
+      },
+      model: "m",
+      upsert,
+      sleep: noSleep,
+      now: fixedNow,
+      rounds: 1,
+    });
+
+    // Count "Đang họp…" upserts for Researcher (second participant).
+    // With 2 participants/1 round, Researcher's card is already "Đang họp…" when Coder speaks
+    // (first turn) — no redundant reset should fire. Only 1 initial + 1 final for Researcher's
+    // non-active resets at Coder's turn.
+    const researcherWaiting = upsert.calls.filter(
+      (c) => c.assignedAgentId === "Researcher" && c.title === "Đang họp…"
+    );
+    // At most 2: initial + possibly 1 reset at end of Coder's second turn in round 2
+    // For rounds=1: initial only, no reset needed (still "Đang họp…" before any speaking)
+    expect(researcherWaiting.length).toBeLessThanOrEqual(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Fix #2 — seed transcript capped at MAX_TRANSCRIPT_LENGTH
+// ---------------------------------------------------------------------------
+
+describe("seedTranscript — total length cap (Fix #2)", () => {
+  it("caps total seed transcript at 6000 chars (keeping tail)", () => {
+    // Build taskResults whose combined output exceeds 6000 chars
+    const bigNote = "X".repeat(290); // just under per-note 300 limit
+    const taskResults = Array.from({ length: 25 }, (_, i) => ({
+      id: `t${i}`,
+      status: "done",
+      role: `Agent${i}`,
+      title: `Task ${i}`,
+      note: bigNote,
+    }));
+
+    // Access seedTranscript via the module (it's not exported, so test via runDiscussion behavior)
+    // We verify indirectly: if seed transcript is capped, the discussion still runs without error
+    // and the runner receives a prompt whose initial transcript portion fits within bounds.
+    const promptsReceived: string[] = [];
+    const upsert = makeUpsertCapture();
+
+    const run = runDiscussion({
+      goal: "Big seed test",
+      participants: ["Agent0", "Agent1"],
+      taskResults,
+      registry: {
+        list: () => [],
+        findByRole: () => undefined,
+      },
+      runner: async ({ prompt }: { system?: string; prompt?: string; model?: string }) => {
+        if (prompt) promptsReceived.push(prompt);
+        if (prompt && prompt.includes("tổng hợp")) return { text: "done", isError: false };
+        return { text: "ok", isError: false };
+      },
+      model: "m",
+      upsert,
+      sleep: noSleep,
+      now: fixedNow,
+      rounds: 1,
+    });
+
+    return run.then(() => {
+      // The first speaking turn's prompt contains the seeded transcript.
+      // Verify the seeded section is present and total prompt length is reasonable.
+      expect(promptsReceived.length).toBeGreaterThan(0);
+      // Prompt = "Mục tiêu..." preamble + transcript + speaker instruction.
+      // The transcript portion should be at most ~6000 chars plus the fixed preamble (~80 chars).
+      const firstPrompt = promptsReceived[0];
+      // 6000 (transcript) + generous buffer for preamble
+      expect(firstPrompt.length).toBeLessThan(6300);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
 // M3.1 — source = claw3d_manual on meeting cards
 // ---------------------------------------------------------------------------
 

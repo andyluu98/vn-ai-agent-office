@@ -17,10 +17,14 @@ const DEFAULT_MAX_TASKS = Number(process.env.CLAUDE_ADAPTER_MAX_TASKS_PER_COMMAN
 const DEFAULT_MEETING_CONCURRENCY = Number(process.env.CLAUDE_ADAPTER_MEETING_CONCURRENCY || 3);
 
 // Discussion phase defaults (env-configurable, M3.3)
+// Fix #1: clamp rounds/maxParticipants so operators can't multiply token cost arbitrarily.
+// Guard against NaN (non-numeric env values fall back to the default).
 const DISCUSSION_ENABLED = process.env.CLAUDE_ADAPTER_DISCUSSION !== "0";
-const DISCUSSION_ROUNDS = Number(process.env.CLAUDE_ADAPTER_DISCUSSION_ROUNDS || 2);
+const _rawRounds = Number(process.env.CLAUDE_ADAPTER_DISCUSSION_ROUNDS || 2);
+const DISCUSSION_ROUNDS = Number.isNaN(_rawRounds) ? 2 : Math.max(1, Math.min(_rawRounds, 5));
 const DISCUSSION_TURN_MS = Number(process.env.CLAUDE_ADAPTER_DISCUSSION_TURN_MS || 2500);
-const DISCUSSION_MAX_PARTICIPANTS = Number(process.env.CLAUDE_ADAPTER_DISCUSSION_MAX_PARTICIPANTS || 4);
+const _rawMaxParticipants = Number(process.env.CLAUDE_ADAPTER_DISCUSSION_MAX_PARTICIPANTS || 4);
+const DISCUSSION_MAX_PARTICIPANTS = Number.isNaN(_rawMaxParticipants) ? 4 : Math.max(2, Math.min(_rawMaxParticipants, 8));
 
 // ---------------------------------------------------------------------------
 // Helpers

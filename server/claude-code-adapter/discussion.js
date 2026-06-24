@@ -41,6 +41,8 @@ function appendTranscript(transcript, line) {
 
 /**
  * Seed transcript from task results.
+ * Each note is truncated to 300 chars; the total seed is also capped at
+ * MAX_TRANSCRIPT_LENGTH (keeping the tail) to prevent oversized initial context.
  * @param {Array<{role:string, title?:string, note?:string}>} taskResults
  * @returns {string}
  */
@@ -52,7 +54,10 @@ function seedTranscript(taskResults) {
     const note = r.note ? trunc(String(r.note), 300) : "";
     return title ? `${role} (${title}): ${note}` : `${role}: ${note}`;
   });
-  return lines.join("\n");
+  const full = lines.join("\n");
+  // Fix #2: cap total seed length same as appendTranscript, keeping tail (most recent)
+  if (full.length <= MAX_TRANSCRIPT_LENGTH) return full;
+  return full.slice(full.length - MAX_TRANSCRIPT_LENGTH);
 }
 
 /**
@@ -125,6 +130,10 @@ async function runDiscussion({
     });
   }
 
+  // Track latest card title per role to avoid redundant upserts (Fix #4)
+  const cardTitles = {};
+  for (const role of capped) cardTitles[role] = "Đang họp…";
+
   // Seed transcript from task results
   let transcript = seedTranscript(taskResults);
 
@@ -133,6 +142,20 @@ async function runDiscussion({
   // Discussion rounds
   for (let round = 1; round <= rounds; round++) {
     for (const role of capped) {
+      // Fix #4: reset non-speakers to "Đang họp…" so the UI doesn't retain stale spoken lines
+      for (const other of capped) {
+        if (other !== role && cardTitles[other] !== "Đang họp…") {
+          await upsert({
+            id: cardIds[other],
+            title: "Đang họp…",
+            status: "in_progress",
+            source: "claw3d_manual",
+            assignedAgentId: other,
+          });
+          cardTitles[other] = "Đang họp…";
+        }
+      }
+
       // Signal this participant is about to speak
       await upsert({
         id: cardIds[role],
@@ -141,6 +164,7 @@ async function runDiscussion({
         source: "claw3d_manual",
         assignedAgentId: role,
       });
+      cardTitles[role] = "(đang phát biểu…)";
 
       const agent = registry.findByRole(role);
       const agentSystem = agent ? agent.system : undefined;
@@ -176,6 +200,7 @@ async function runDiscussion({
         source: "claw3d_manual",
         assignedAgentId: role,
       });
+      cardTitles[role] = cardTitle;
 
       // Delay so office poll can render this speaker's bubble
       await sleep(turnMs);
