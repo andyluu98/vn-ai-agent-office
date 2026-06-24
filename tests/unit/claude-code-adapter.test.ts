@@ -308,8 +308,8 @@ describe("agent-registry remove (updated: any agent removable; last-agent guard)
     expect(roles).not.toContain(ROSTER[0].role);
   });
 
-  it("DELETE last remaining agent returns 409 with 'cuối cùng' message", async () => {
-    // Single-entry registry — cannot remove the last agent.
+  it("DELETE last remaining agent succeeds and leaves registry empty", async () => {
+    // Last-agent guard removed: deleting the final agent is now allowed.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const registry = createRegistry({ seed: [ROSTER[0]], maxAgents: 5, ttlMs: 1_800_000 }) as any;
     const seedId = ROSTER[0].id || "seed-1";
@@ -317,9 +317,14 @@ describe("agent-registry remove (updated: any agent removable; last-agent guard)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       method: "DELETE", pathname: `/agents/${seedId}`, body: undefined as any, runner: okRunner, registry, model: MODEL,
     });
-    expect(r.status).toBe(409);
+    expect(r.status).toBe(200);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((r.body as any).error).toMatch(/cuối cùng/i);
+    expect((r.body as any).removed).toBe(true);
+    // Registry is now empty
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const listRes = await handleRequest({ method: "GET", pathname: "/agents", body: undefined as any, runner: okRunner, registry, model: MODEL });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((listRes.body as any).agents).toHaveLength(0);
   });
 
   it("DELETE /agents/:id on a spawned (non-seed) agent succeeds", async () => {
@@ -364,7 +369,8 @@ describe("agent-registry remove (updated: any agent removable; last-agent guard)
     expect(roles).not.toContain("ToRemove");
   });
 
-  it("POST /agents/remove when only one agent remains returns 409", async () => {
+  it("POST /agents/remove when only one agent remains succeeds (registry may become empty)", async () => {
+    // Last-agent guard removed: deleting the final agent is now allowed.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const registry = createRegistry({ seed: [ROSTER[0]], maxAgents: 5, ttlMs: 1_800_000 }) as any;
     const seedId = ROSTER[0].id || "seed-1";
@@ -372,9 +378,14 @@ describe("agent-registry remove (updated: any agent removable; last-agent guard)
       method: "POST", pathname: "/agents/remove", runner: okRunner, registry, model: MODEL,
       body: { id: seedId },
     });
-    expect(r.status).toBe(409);
+    expect(r.status).toBe(200);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((r.body as any).error).toMatch(/cuối cùng/i);
+    expect((r.body as any).removed).toBe(true);
+    // Registry is now empty
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const listRes = await handleRequest({ method: "GET", pathname: "/agents", body: undefined as any, runner: okRunner, registry, model: MODEL });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((listRes.body as any).agents).toHaveLength(0);
   });
 
   it("POST /agents/remove with unknown id returns 404", async () => {

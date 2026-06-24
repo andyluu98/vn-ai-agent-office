@@ -9,13 +9,14 @@ const DEFAULT_MAX_AGENTS = 5;
 const DEFAULT_TTL_MS = 1_800_000; // 30 minutes
 
 /**
- * createRegistry({ seed, maxAgents, ttlMs }) -> registry
+ * createRegistry({ seed, maxAgents, ttlMs, onChange }) -> registry
  *
  * seed      – Array of agent descriptor objects (will be marked seed:true)
  * maxAgents – Hard cap on total agent count (default 5)
  * ttlMs     – Idle TTL for non-seed agents in milliseconds (default 30 min)
+ * onChange  – Optional callback(agents[]) called after every successful add/remove
  */
-function createRegistry({ seed = [], maxAgents = DEFAULT_MAX_AGENTS, ttlMs = DEFAULT_TTL_MS } = {}) {
+function createRegistry({ seed = [], maxAgents = DEFAULT_MAX_AGENTS, ttlMs = DEFAULT_TTL_MS, onChange } = {}) {
   // Normalise seed entries: ensure required fields, mark seed:true
   const agents = seed.map((a, i) => ({
     id: a.id || `seed-${i + 1}`,
@@ -58,20 +59,21 @@ function createRegistry({ seed = [], maxAgents = DEFAULT_MAX_AGENTS, ttlMs = DEF
       lastActive: now,
     };
     agents.push(agent);
+    if (typeof onChange === "function") onChange(list());
     return { ok: true, agent };
   }
 
   /**
    * Remove an agent by id.
-   * Any agent can be removed EXCEPT when it is the last one — removing the
-   * last agent would leave the registry empty and break routing.
-   * @returns {{ removed: true } | { removed: false, reason: 'notfound' | 'last' }}
+   * Any agent can be removed, including the last one (registry may become empty).
+   * An empty registry is safe: /state returns {} active map, chat returns 503.
+   * @returns {{ removed: true } | { removed: false, reason: 'notfound' }}
    */
   function remove(id) {
     const idx = agents.findIndex((a) => a.id === id);
     if (idx === -1) return { removed: false, reason: "notfound" };
-    if (agents.length === 1) return { removed: false, reason: "last" };
     agents.splice(idx, 1);
+    if (typeof onChange === "function") onChange(list());
     return { removed: true };
   }
 

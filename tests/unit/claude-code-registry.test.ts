@@ -4,7 +4,7 @@ import { describe, it, expect } from "vitest";
 // CJS interop
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const registryMod = require("../../server/claude-code-adapter/agent-registry");
-const createRegistry: (opts: { seed: unknown[]; maxAgents?: number; ttlMs?: number }) => unknown =
+const createRegistry: (opts: { seed: unknown[]; maxAgents?: number; ttlMs?: number; onChange?: (agents: unknown[]) => void }) => unknown =
   registryMod.default ?? registryMod.createRegistry ?? registryMod;
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -78,14 +78,53 @@ describe("AgentRegistry", () => {
     expect(reg.list()).toHaveLength(1);
   });
 
-  it("remove() blocks deletion of the last remaining agent (last-agent guard)", () => {
+  it("remove() allows deletion of the last remaining agent (empty registry is valid)", () => {
+    // Last-agent guard removed: registry may become empty after deleting the final agent.
+    // An empty registry is handled safely: /state returns empty active map, chat returns 503.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const reg = createRegistry({ seed: [BASE_SEEDS[0]], maxAgents: 5 }) as any;
     const result = reg.remove("orch");
-    expect(result.removed).toBe(false);
-    expect(result.reason).toBe("last");
-    // Still present
+    expect(result.removed).toBe(true);
+    expect(reg.list()).toHaveLength(0);
+  });
+
+  it("remove() all agents leaves empty list, then add() works", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const reg = createRegistry({ seed: [BASE_SEEDS[0]], maxAgents: 5 }) as any;
+    reg.remove("orch");
+    expect(reg.list()).toHaveLength(0);
+    const result = reg.add({ name: "Marketing", role: "Marketing" }, 1_000_000);
+    expect(result.ok).toBe(true);
     expect(reg.list()).toHaveLength(1);
+    expect(reg.list()[0].role).toBe("Marketing");
+  });
+
+  it("onChange callback is fired after add()", () => {
+    const calls: unknown[][] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const reg = createRegistry({ seed: BASE_SEEDS, maxAgents: 5, onChange: (agents: unknown[]) => calls.push(agents) }) as any;
+    reg.add({ name: "Designer", role: "Designer" }, 1_000_000);
+    expect(calls).toHaveLength(1);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((calls[0] as any[]).some((a: any) => a.role === "Designer")).toBe(true);
+  });
+
+  it("onChange callback is fired after remove()", () => {
+    const calls: unknown[][] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const reg = createRegistry({ seed: BASE_SEEDS, maxAgents: 5, onChange: (agents: unknown[]) => calls.push(agents) }) as any;
+    reg.remove("coder");
+    expect(calls).toHaveLength(1);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((calls[0] as any[]).some((a: any) => a.role === "Coder")).toBe(false);
+  });
+
+  it("onChange is NOT fired when remove() returns notfound", () => {
+    const calls: unknown[][] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const reg = createRegistry({ seed: BASE_SEEDS, maxAgents: 5, onChange: (agents: unknown[]) => calls.push(agents) }) as any;
+    reg.remove("nonexistent-id");
+    expect(calls).toHaveLength(0);
   });
 
   it("pruneIdle removes non-seed agent with expired lastActive, keeps seed", () => {

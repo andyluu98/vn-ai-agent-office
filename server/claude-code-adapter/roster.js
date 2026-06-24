@@ -75,4 +75,27 @@ function buildRegistryPayload(model) {
   return { models: { [model]: { name: model, provider: "anthropic" } } };
 }
 
-module.exports = { ROSTER, DEFAULT_ROSTER, loadRoster, DEFAULT_MODEL, buildRegistryPayload };
+/**
+ * Persist the current agent list to the roster file.
+ * Only writes the public fields (id, name, role, emoji, system) — no runtime state.
+ * An empty list is valid and writes `{ "agents": [] }` (allows delete-to-zero).
+ *
+ * @param {Array} agents - current agent list from registry.list()
+ * @param {string} [file]  - optional override path (defaults to CLAUDE_ADAPTER_ROSTER env / cwd/claude-agents.json)
+ */
+function saveRoster(agents, file) {
+  const filePath =
+    file || process.env.CLAUDE_ADAPTER_ROSTER || path.join(process.cwd(), "claude-agents.json");
+  const payload = {
+    agents: agents.map((a) => ({
+      id: a.id,
+      name: a.name,
+      role: a.role,
+      emoji: a.emoji,
+      system: a.system,
+    })),
+  };
+  fs.writeFileSync(filePath, JSON.stringify(payload, null, 2) + "\n", "utf8");
+}
+
+module.exports = { ROSTER, DEFAULT_ROSTER, loadRoster, saveRoster, DEFAULT_MODEL, buildRegistryPayload };

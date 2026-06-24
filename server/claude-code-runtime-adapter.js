@@ -5,7 +5,7 @@
 const http = require("node:http");
 const { handleRequest } = require("./claude-code-adapter/handler");
 const { runClaudeCli, checkClaudeAvailable } = require("./claude-code-adapter/claude-runner");
-const { ROSTER, DEFAULT_MODEL } = require("./claude-code-adapter/roster");
+const { ROSTER, DEFAULT_MODEL, saveRoster } = require("./claude-code-adapter/roster");
 const { createRegistry } = require("./claude-code-adapter/agent-registry");
 
 const PORT = Number(process.env.CLAUDE_ADAPTER_PORT || 7770);
@@ -39,7 +39,20 @@ function gatedRunner(opts) {
 const MAX_BODY_BYTES = 1 * 1024 * 1024;
 
 // One shared mutable registry for the lifetime of this process.
-const registry = createRegistry({ seed: ROSTER, maxAgents: MAX_AGENTS, ttlMs: AGENT_TTL_MS });
+// onChange persists the updated agent list to claude-agents.json so restarts
+// reload the current state instead of re-seeding the original 8 defaults.
+const registry = createRegistry({
+  seed: ROSTER,
+  maxAgents: MAX_AGENTS,
+  ttlMs: AGENT_TTL_MS,
+  onChange: (agents) => {
+    try {
+      saveRoster(agents);
+    } catch (err) {
+      console.error("[claude-code-adapter] Failed to persist roster:", (err && err.message) || err);
+    }
+  },
+});
 
 const server = http.createServer((req, res) => {
   const { pathname } = new URL(req.url, `http://${req.headers.host || "localhost"}`);

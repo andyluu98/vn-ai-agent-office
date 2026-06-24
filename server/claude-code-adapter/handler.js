@@ -143,9 +143,6 @@ async function handleRequest({
     }
     const result = registry.remove(id);
     if (!result.removed) {
-      if (result.reason === "last") {
-        return { status: 409, body: { error: "Không thể xoá agent cuối cùng." } };
-      }
       return { status: 404, body: { error: "Agent not found." } };
     }
     return { status: 200, body: { removed: true } };
@@ -156,9 +153,6 @@ async function handleRequest({
     const id = pathname.slice("/agents/".length);
     const result = registry.remove(id);
     if (!result.removed) {
-      if (result.reason === "last") {
-        return { status: 409, body: { error: "Không thể xoá agent cuối cùng." } };
-      }
       return { status: 404, body: { error: `Agent not found: ${id}` } };
     }
     return { status: 200, body: { removed: true } };

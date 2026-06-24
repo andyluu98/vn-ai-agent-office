@@ -312,9 +312,17 @@ export class CustomRuntimeProvider implements RuntimeProvider {
         return ({ ok: true, removed: 0 } as T);
       case "agents.delete":
         return (await this.callAgentsDelete(params)) as T;
+      case "agents.create":
+        return (await this.callAgentsCreate(params)) as T;
       case "exec.approvals.get":
         return ({ file: { agents: {} } } as T);
       case "config.get":
+        // Return a minimal snapshot so createGatewayAgent can compute a workspace path
+        // without throwing. The adapter ignores the workspace field on agents.create.
+        return ({
+          path: "vn-office/config.json",
+          agents: { list: [], defaults: {} },
+        } as T);
       case "config.patch":
       case "config.set":
         throw new Error(`Custom runtime does not support ${method}.`);
@@ -710,6 +718,31 @@ export class CustomRuntimeProvider implements RuntimeProvider {
       body: { id: agentId },
     });
     return { ok: true, removedBindings: 0 };
+  }
+
+  private async callAgentsCreate(rawParams: unknown) {
+    const params = isRecord(rawParams) ? rawParams : {};
+    const name = typeof params.name === "string" ? params.name.trim() : "";
+    if (!name) {
+      throw new Error("Custom runtime requires name for agents.create.");
+    }
+    // workspace is computed by createGatewayAgent but ignored by the adapter — pass along anyway
+    const workspace = typeof params.workspace === "string" ? params.workspace : undefined;
+    // POST /agents — adapter expects { name, role }; role = name so it maps to a desk by role
+    const response = (await requestCustomRuntime({
+      runtimeUrl: this.baseUrl,
+      pathname: "/agents",
+      method: "POST",
+      body: { name, role: name },
+    })) as { agent?: { id?: string; role?: string } };
+    const agentId =
+      typeof response?.agent?.id === "string" && response.agent.id.trim()
+        ? response.agent.id.trim()
+        : "";
+    if (!agentId) {
+      throw new Error("Adapter returned an invalid agents.create response (missing agent.id).");
+    }
+    return { ok: true, agentId, name, workspace };
   }
 
   private async callAgentWait(rawParams: unknown) {
