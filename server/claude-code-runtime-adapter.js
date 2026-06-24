@@ -4,7 +4,7 @@
 // it to the pure handleRequest handler on every request.
 const http = require("node:http");
 const { handleRequest } = require("./claude-code-adapter/handler");
-const { runClaudeCli } = require("./claude-code-adapter/claude-runner");
+const { runClaudeCli, checkClaudeAvailable } = require("./claude-code-adapter/claude-runner");
 const { ROSTER, DEFAULT_MODEL } = require("./claude-code-adapter/roster");
 const { createRegistry } = require("./claude-code-adapter/agent-registry");
 
@@ -51,4 +51,17 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, HOST, () => {
   console.log(`[claude-code-adapter] listening on http://${HOST}:${PORT} (model: ${DEFAULT_MODEL})`);
   console.log(`[claude-code-adapter] maxAgents: ${MAX_AGENTS}, ttlMs: ${AGENT_TTL_MS}`);
+  // Early diagnostic so a misconfigured CLI is obvious at startup, not only on first chat.
+  checkClaudeAvailable().then((status) => {
+    if (status.ok) {
+      console.log(`[claude-code-adapter] claude CLI detected: ${status.version}`);
+    } else if (status.error === "not-found") {
+      console.warn(
+        "[claude-code-adapter] WARNING: 'claude' CLI not found on PATH. Chat will fail until you " +
+          "install Claude Code (https://claude.ai/code) and sign in, or set CLAUDE_BIN / ANTHROPIC_API_KEY."
+      );
+    } else {
+      console.warn(`[claude-code-adapter] WARNING: claude CLI check failed: ${status.error}`);
+    }
+  });
 });

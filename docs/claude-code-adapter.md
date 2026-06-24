@@ -2,6 +2,20 @@
 
 Adapter này là một HTTP runtime "custom" (`server/claude-code-runtime-adapter.js`) cho phép VN AI Agent Office được điều khiển bởi Claude Code headless (`claude -p`). Thay vì kết nối với OpenClaw hay Hermes, văn phòng giao tiếp với CLI `claude` chạy cục bộ — mỗi agent trong roster tương ứng với một lần gọi `claude -p` riêng biệt.
 
+## Yêu cầu (cho người dùng tự host)
+
+Adapter gọi CLI `claude` chạy cục bộ, nên mỗi người dùng cần:
+
+1. **Cài Claude Code CLI** — tải tại https://claude.ai/code (bản native `.exe` hoặc qua `npm i -g @anthropic-ai/claude-code`). Adapter chạy đa nền tảng: trên Windows nó tự dùng shell để gọi cả `claude.cmd` (bản npm) lẫn `claude.exe` (bản native).
+2. **Xác thực một trong hai cách:**
+   - **Đăng nhập gói Claude** (Pro/Max) qua `claude` / Claude Desktop — miễn phí trong gói nhưng **có hạn mức theo tuần**; khi cạn, chat trả 502 kèm thông báo "weekly limit", chờ reset là chạy lại.
+   - **Hoặc đặt `ANTHROPIC_API_KEY`** (lấy ở console.anthropic.com) — dùng API trả tiền theo token, **không dính hạn mức tuần của gói**. Đặt biến này trước khi chạy `npm run claude-adapter`.
+3. **Node.js 20+**.
+
+Adapter kiểm tra CLI ngay khi khởi động và in `claude CLI detected: <version>`; nếu không tìm thấy sẽ cảnh báo rõ cách khắc phục. Nếu `claude` không nằm trong PATH, đặt `CLAUDE_BIN` trỏ tới đường dẫn đầy đủ.
+
+> Lưu ý: `claude -p` kế thừa file `CLAUDE.md` ở thư mục chạy adapter (và `~/.claude/CLAUDE.md`), nên hướng dẫn cá nhân của bạn có thể ảnh hưởng giọng/hành vi agent. Đây là hành vi bình thường của Claude Code.
+
 ## Khởi động adapter
 
 ```bash
