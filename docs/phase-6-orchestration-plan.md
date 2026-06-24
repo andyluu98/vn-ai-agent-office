@@ -46,9 +46,20 @@ Kanban dashboard (office) poll /api/task-store → hiển thị live
 - **M1.6** UI: nút Kanban 3D + nút "KANBAN BOARD" mở thẳng `TaskBoardPanel` (bỏ prompt cài skill cho runtime custom). Bảng poll task-store đã có → tự cập nhật.
 - **Tiêu chí Mốc 1:** chạy `npm run office-command "lên kế hoạch landing bán khoá học"` → thấy N task hiện trên Kanban, chuyển todo→in_progress→done, mỗi task có ghi chú kết quả từ Claude. Agent đang làm sáng "đang chạy" trong office.
 
-### Mốc 2 — Diễn hoạt 3D cuộc họp
-- Khi có lệnh: avatar các agent liên quan tụ về khu họp (dùng hệ movement/presence sẵn có).
-- Bong bóng thoại theo lượt khi agent "phát biểu"/bàn giao. Nối vào event stream của office.
+### Mốc 2 — Diễn hoạt 3D cuộc họp  ✅ thiết kế chốt
+**Tái dùng cơ chế meeting-hold + speech-bubble đã có** (đã chạy tốt cho standup), kích hoạt từ task activity — KHÔNG dựng hệ animation mới.
+
+Phát hiện hạ tầng (RetroOffice3D.tsx):
+- Gom/giữ avatar ở khu họp: `explicitMeetingHold = standupActive && meetingParticipants.has(agent.id)` (dòng ~1066) → `resolveMeetingTarget(agentId)` đặt avatar vào ghế họp.
+- Bong bóng thoại per-agent: render ở ~5737, nuôi từ `standupSpeechTextByAgentId` (khi standup in_progress) hoặc `speechTextByAgentId`/`speechAgentIds` (từ feedEvents).
+- `taskBoard` (OfficeScreen) đã có `cardsByStatus` + `assignedAgentId` + poll task-store live.
+
+**Triển khai:**
+- **M2.1** Trong OfficeScreen, từ `taskBoard.cardsByStatus` suy ra: `orchestrationMeetingActive` (true khi có ≥1 task `in_progress`), `orchestrationParticipants: Set<agentId>` (assignedAgentId của task in_progress), `orchestrationSpeechByAgentId: Record<agentId,string>` (= title task đang làm; task vừa done → "✓ <title>" hiện ngắn). agentId = role string (khớp office agents).
+- **M2.2** Truyền 3 giá trị này xuống `RetroOffice3D`. Mở rộng `explicitMeetingHold` thành `(standupActive && meetingParticipants.has(id)) || (orchestrationMeetingActive && orchestrationParticipants.has(id))`. Mở rộng nguồn bong bóng: khi orchestration meeting active, agent trong participants hiện `orchestrationSpeechByAgentId[id]`. Giữ nguyên hành vi standup.
+- **M2.3** Banner nhỏ "🟢 Đang họp — N việc đang chạy" trên HUD khi `orchestrationMeetingActive`.
+- **M2.4** Khi hết task in_progress → thả hold, avatar về bàn (cơ chế cũ tự lo khi `explicitMeetingHold` về false).
+- **Tiêu chí Mốc 2:** chạy `npm run office-command "..."` → các agent được giao việc **đi về khu họp**, hiện **bong bóng** = việc đang làm; xong việc thì giải tán về bàn. Banner "Đang họp" hiện trong lúc chạy.
 
 ### Mốc 3 — Cộng tác sâu
 - Orchestrator điều phối nhiều lượt: agent đọc kết quả nhau, phản biện, handoff; lead tổng hợp.
