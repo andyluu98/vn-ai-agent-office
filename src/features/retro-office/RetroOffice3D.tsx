@@ -2267,7 +2267,7 @@ export function RetroOffice3D({
   githubSkill = null,
   taskManagerEnabled = false,
   soundclawEnabled = false,
-  officeTitle = "Luke Headquarters",
+  officeTitle = "VN AI Agent Office",
   officeTitleLoaded = false,
   remoteOfficeEnabled = false,
   remoteOfficeSourceKind = "presence_endpoint",

@@ -114,7 +114,7 @@ export function SettingsPanel({
           maxLength={48}
           disabled={!officeTitleLoaded}
           onChange={(event) => onOfficeTitleChange(event.target.value)}
-          placeholder="Luke Headquarters"
+          placeholder="VN AI Agent Office"
           className="mt-3 w-full rounded-md border border-cyan-500/20 dark:border-cyan-500/10 bg-black/5 dark:bg-black/25 px-3 py-2 text-[11px] uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-100 outline-none transition-colors placeholder:text-cyan-700/30 dark:placeholder:text-cyan-100/30 focus:border-cyan-400/30 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <div className="mt-2 text-[10px] text-neutral-500 dark:text-white/50">
