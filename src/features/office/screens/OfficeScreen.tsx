@@ -4877,7 +4877,14 @@ export function OfficeScreen({
             setJukeboxOpen(true);
           }}
           onKanbanInteract={() => {
-            setKanbanInstallPromptOpen(true);
+            // Chỉ hiển thị prompt cài đặt skill khi đang dùng OpenClaw và skill chưa sẵn sàng.
+            // Với runtime custom/local/claw3d/demo, mở thẳng bảng nhiệm vụ thực.
+            if (activeAdapterType === "openclaw" && !taskManagerReady) {
+              setKanbanInstallPromptOpen(true);
+            } else {
+              setSidebarOpen(true);
+              setActiveSidebarTab("kanban");
+            }
           }}
           taskBoardAgents={state.agents}
           taskBoardCardsByStatus={taskBoard.cardsByStatus}
