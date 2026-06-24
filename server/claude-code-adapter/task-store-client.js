@@ -22,8 +22,9 @@ async function upsertTask(task, fetchImpl) {
     body: JSON.stringify({ task }),
   });
   if (!res.ok) {
-    const text = await res.json().catch(() => ({}));
-    throw new Error(`task-store upsert failed (${res.status}): ${JSON.stringify(text)}`);
+    // I-2: renamed from `text` — variable holds parsed JSON body, not raw text.
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(`task-store upsert failed (${res.status}): ${JSON.stringify(errBody)}`);
   }
   const data = await res.json();
   return data.task ?? task;
@@ -43,8 +44,9 @@ async function listTasks(fetchImpl) {
     headers: { "Content-Type": "application/json" },
   });
   if (!res.ok) {
-    const text = await res.json().catch(() => ({}));
-    throw new Error(`task-store list failed (${res.status}): ${JSON.stringify(text)}`);
+    // I-2: consistent naming — errBody holds parsed JSON error, not raw text.
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(`task-store list failed (${res.status}): ${JSON.stringify(errBody)}`);
   }
   const data = await res.json();
   return Array.isArray(data.tasks) ? data.tasks : [];

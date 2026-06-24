@@ -262,14 +262,15 @@ async function handleRequest({
       };
     }
 
-    // Fire execution loop in background — do NOT await; respond immediately
+    // Fire execution loop in background — do NOT await; respond immediately.
+    // C-2: Thread the injected nowFn so task IDs are deterministic in tests.
     runFn({
       tasks,
       registry,
       runner,
       model,
       upsert: upsertFn,
-      now: () => Date.now(),
+      now: typeof nowFn === "function" ? nowFn : () => Date.now(),
       maxTasks,
     }).catch((err) => {
       console.error("[command] execution loop error:", (err && err.message) || err);

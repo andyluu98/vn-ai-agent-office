@@ -17,8 +17,12 @@ const ORCHESTRATOR_SYSTEM =
  * @returns {string}
  */
 function buildDecomposePrompt(goal, roles) {
+  // I-1: Sanitize goal to prevent prompt injection — strip CR/LF, cap length,
+  // and embed inside XML tags so injected text cannot bleed into instructions.
+  const safeGoal = String(goal).replace(/[\r\n]+/g, " ").slice(0, 2000);
   return (
-    `Goal: ${goal}\n\n` +
+    `The user goal is inside <goal> tags below:\n` +
+    `<goal>${safeGoal}</goal>\n\n` +
     `Available roles: ${roles.join(", ")}\n\n` +
     "Return ONLY a JSON array — exactly like this example (1–8 items):\n" +
     '[\n' +

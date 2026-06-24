@@ -34,7 +34,8 @@ async function runTasks({ tasks, registry, runner, model, upsert, now, maxTasks 
   for (let index = 0; index < capped.length; index++) {
     const task = capped[index];
     const ts = now();
-    const id = `task-${ts}-${index}`;
+    // C-2: Random suffix prevents id collisions when two commands fire in the same ms.
+    const id = `task-${ts}-${index}-${Math.floor(Math.random() * 1e6)}`;
 
     // Resolve agent: by role first, then fall back to first in registry
     const agent = registry.findByRole(task.role) || registry.list()[0];
@@ -51,12 +52,21 @@ async function runTasks({ tasks, registry, runner, model, upsert, now, maxTasks 
       notes: [],
     };
 
+    // I-3: safeUpsert — a transient store error on one task must not abort the batch.
+    async function safeUpsert(data) {
+      try {
+        await upsert(data);
+      } catch (upsertErr) {
+        console.error(`[execution-loop] upsert failed for task ${data.id}:`, (upsertErr && upsertErr.message) || upsertErr);
+      }
+    }
+
     // 1. Persist as todo
-    await upsert({ ...card });
+    await safeUpsert({ ...card });
 
     // 2. Mark in_progress
     card.status = "in_progress";
-    await upsert({ ...card });
+    await safeUpsert({ ...card });
 
     // 3. Run the agent
     try {
@@ -71,14 +81,14 @@ async function runTasks({ tasks, registry, runner, model, upsert, now, maxTasks 
         const note = String(result.text || "Agent returned an error").slice(0, MAX_NOTE_LENGTH);
         card.status = "blocked";
         card.notes = [note];
-        await upsert({ ...card });
+        await safeUpsert({ ...card });
         results.push({ id, status: "blocked", role: task.role });
       } else {
         // Success — append result text as note
         const note = String((result && result.text) || "").slice(0, MAX_NOTE_LENGTH);
         card.status = "done";
         card.notes = note ? [note] : [];
-        await upsert({ ...card });
+        await safeUpsert({ ...card });
         results.push({ id, status: "done", role: task.role });
       }
     } catch (err) {
@@ -86,7 +96,7 @@ async function runTasks({ tasks, registry, runner, model, upsert, now, maxTasks 
       const note = (err && err.message ? err.message : String(err)).slice(0, MAX_NOTE_LENGTH);
       card.status = "blocked";
       card.notes = [note];
-      await upsert({ ...card });
+      await safeUpsert({ ...card });
       results.push({ id, status: "blocked", role: task.role });
     }
   }

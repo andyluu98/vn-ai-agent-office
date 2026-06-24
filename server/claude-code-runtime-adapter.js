@@ -13,11 +13,27 @@ const HOST = process.env.CLAUDE_ADAPTER_HOST || "127.0.0.1";
 const MAX_AGENTS = Number(process.env.CLAUDE_ADAPTER_MAX_AGENTS || 12);
 const AGENT_TTL_MS = Number(process.env.CLAUDE_ADAPTER_AGENT_TTL_MS || 1_800_000);
 
-// C-2: Concurrency gate — cap simultaneous in-flight handleRequest calls so that
+// C-1: Concurrency gate — cap simultaneous in-flight claude spawns so that
 // the machine is not saturated by many claude child processes at once.
+// gatedRunner is passed as the runner to handleRequest so that both the chat
+// path and the /command execution loop share the same counter.
 // Default 4; tune via CLAUDE_ADAPTER_MAX_CONCURRENT.
 const MAX_CONCURRENT = Number(process.env.CLAUDE_ADAPTER_MAX_CONCURRENT || 4);
 let inFlight = 0;
+
+/**
+ * Gate-aware wrapper around runClaudeCli.
+ * Increments inFlight only when a real claude spawn is about to start so that
+ * both the chat path and the fire-and-forget /command execution loop share the
+ * same counter.  Rejects immediately when the cap is reached.
+ */
+function gatedRunner(opts) {
+  if (inFlight >= MAX_CONCURRENT) {
+    return Promise.reject(new Error("Too many concurrent claude processes."));
+  }
+  inFlight++;
+  return runClaudeCli(opts).finally(() => { inFlight--; });
+}
 
 // I-3: Reject request bodies larger than 1 MB to prevent OOM via huge POSTs.
 const MAX_BODY_BYTES = 1 * 1024 * 1024;
@@ -56,28 +72,21 @@ const server = http.createServer((req, res) => {
       }
     }
 
-    // C-2: Concurrency gate — reject with 429 when too many claude processes in flight.
-    if (inFlight >= MAX_CONCURRENT) {
-      res.writeHead(429, { "Content-Type": "application/json", "Cache-Control": "no-store" });
-      res.end(JSON.stringify({ error: "Too many concurrent requests." }));
-      return;
-    }
-
-    inFlight++;
+    // C-1: Pass gatedRunner so both chat path and /command execution loop
+    // share the inFlight counter.  When the gate rejects, the chat runner-error
+    // handler maps it to a 502; the /command loop logs and continues.
     let result;
     try {
       result = await handleRequest({
         method: req.method,
         pathname,
         body,
-        runner: runClaudeCli,
+        runner: gatedRunner,
         registry,
         model: DEFAULT_MODEL,
       });
     } catch (err) {
       result = { status: 500, body: { error: (err && err.message) || "Adapter error." } };
-    } finally {
-      inFlight--;
     }
     res.writeHead(result.status, { "Content-Type": "application/json", "Cache-Control": "no-store" });
     res.end(JSON.stringify(result.body));
