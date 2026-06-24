@@ -28,6 +28,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { SettingsPanel } from "@/features/office/components/panels/SettingsPanel";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { AtmImmersiveScreen } from "@/features/office/screens/AtmImmersiveScreen";
 import { GithubImmersiveScreen } from "@/features/office/screens/GithubImmersiveScreen";
 import { KanbanImmersiveScreen } from "@/features/office/screens/KanbanImmersiveScreen";
@@ -7026,6 +7027,7 @@ export function RetroOffice3D({
           >
             <Settings2 size={12} />
           </button>
+          <ThemeToggle />
           {editMode && (
             <>
               {drag.kind === "placing" && (

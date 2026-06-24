@@ -183,31 +183,33 @@ export const GatewayConnectScreen = ({
         </p>
       </div>
 
-      <label className="flex flex-col gap-1 text-[11px] font-medium text-foreground/90">
-        {tokenOptional ? "Token nguồn (tuỳ chọn)" : "Token nguồn"}
-        <div className="relative">
-          <input
-            className="ui-input h-10 w-full rounded-md px-4 pr-10 font-sans text-sm text-foreground outline-none"
-            type={showToken ? "text" : "password"}
-            value={token}
-            onChange={(event) => onTokenChange(event.target.value)}
-            placeholder={tokenOptional ? "token tuỳ chọn" : "token cổng kết nối"}
-            spellCheck={false}
-          />
-          <button
-            type="button"
-            className="ui-btn-icon absolute inset-y-0 right-1 my-auto h-8 w-8 border-transparent bg-transparent text-muted-foreground hover:bg-transparent hover:text-foreground"
-            aria-label={showToken ? "Ẩn token" : "Hiện token"}
-            onClick={() => setShowToken((prev) => !prev)}
-          >
-            {showToken ? (
-              <EyeOff className="h-4 w-4 transition-transform duration-150" />
-            ) : (
-              <Eye className="h-4 w-4 transition-transform duration-150" />
-            )}
-          </button>
-        </div>
-      </label>
+      {!tokenOptional ? (
+        <label className="flex flex-col gap-1 text-[11px] font-medium text-foreground/90">
+          Token nguồn
+          <div className="relative">
+            <input
+              className="ui-input h-10 w-full rounded-md px-4 pr-10 font-sans text-sm text-foreground outline-none"
+              type={showToken ? "text" : "password"}
+              value={token}
+              onChange={(event) => onTokenChange(event.target.value)}
+              placeholder="token cổng kết nối"
+              spellCheck={false}
+            />
+            <button
+              type="button"
+              className="ui-btn-icon absolute inset-y-0 right-1 my-auto h-8 w-8 border-transparent bg-transparent text-muted-foreground hover:bg-transparent hover:text-foreground"
+              aria-label={showToken ? "Ẩn token" : "Hiện token"}
+              onClick={() => setShowToken((prev) => !prev)}
+            >
+              {showToken ? (
+                <EyeOff className="h-4 w-4 transition-transform duration-150" />
+              ) : (
+                <Eye className="h-4 w-4 transition-transform duration-150" />
+              )}
+            </button>
+          </div>
+        </label>
+      ) : null}
 
       <button
         type="button"

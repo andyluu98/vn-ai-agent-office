@@ -850,7 +850,7 @@ const mergeGatewaySettings = (
     patch.token === undefined ? current?.token ?? "" : coerceString(patch.token);
   const nextAdapterType =
     patch.adapterType === undefined
-      ? current?.adapterType ?? "openclaw"
+      ? current?.adapterType ?? "custom"
       : normalizeGatewayAdapterType(patch.adapterType);
   const nextProfiles = mergeGatewayProfiles(current?.profiles, patch.profiles);
   const nextLastKnownGood = mergeGatewayConnectionState(
@@ -921,7 +921,7 @@ const mergeGatewayConnectionState = (
   const nextToken = patchedToken || (current?.token ?? "");
   const nextAdapterType =
     patch.adapterType === undefined
-      ? current?.adapterType ?? "openclaw"
+      ? current?.adapterType ?? "custom"
       : normalizeGatewayAdapterType(patch.adapterType);
   return {
     url: nextUrl,
@@ -932,7 +932,7 @@ const mergeGatewayConnectionState = (
 
 const normalizeGatewayAdapterType = (
   value: unknown,
-  fallback: StudioGatewayAdapterType = "openclaw"
+  fallback: StudioGatewayAdapterType = "custom"
 ): StudioGatewayAdapterType => {
   const adapterType = coerceString(value).toLowerCase();
   if (
@@ -994,7 +994,7 @@ export const resolveStudioGatewayProfiles = ({
     gateway?.adapterType ??
     gateway?.lastKnownGood?.adapterType ??
     localDefaults?.adapterType ??
-    "openclaw";
+    "custom";
 
   const profiles: Partial<Record<StudioGatewayAdapterType, StudioGatewayProfile>> = {
     ...(localDefaults?.profiles ?? {}),
