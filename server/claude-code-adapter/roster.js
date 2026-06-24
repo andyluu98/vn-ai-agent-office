@@ -71,24 +71,8 @@ function loadRoster() {
 
 const ROSTER = loadRoster();
 
-function buildStatePayload(roster, model) {
-  const active = {};
-  for (const entry of roster) active[entry.role] = model;
-  return {
-    identity: { name: roster[0].name, role: roster[0].role, model_id: model },
-    runtime: {
-      name: "Claude Code",
-      version: process.env.CLAUDE_ADAPTER_VERSION || "cli",
-      vendor: "Anthropic",
-      status: "healthy",
-      active_model: model,
-    },
-    active,
-  };
-}
-
 function buildRegistryPayload(model) {
   return { models: { [model]: { name: model, provider: "anthropic" } } };
 }
 
-module.exports = { ROSTER, DEFAULT_ROSTER, loadRoster, DEFAULT_MODEL, buildStatePayload, buildRegistryPayload };
+module.exports = { ROSTER, DEFAULT_ROSTER, loadRoster, DEFAULT_MODEL, buildRegistryPayload };

@@ -131,6 +131,17 @@ describe("claude-code adapter handler", () => {
     expect((stateRes.body as any).active["Designer"]).toBeTruthy();
   });
 
+  it("POST /agents with missing role -> 400", async () => {
+    const registry = makeDefaultRegistry();
+    const r = await handleRequest({
+      method: "POST", pathname: "/agents", runner: okRunner, registry, model: MODEL,
+      body: { name: "NoRole" },
+    });
+    expect(r.status).toBe(400);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((r.body as any).error).toMatch(/role/);
+  });
+
   it("POST /agents beyond cap -> 409", async () => {
     // seed has 3 entries; cap = 3 → immediate cap
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

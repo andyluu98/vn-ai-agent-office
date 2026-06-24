@@ -113,6 +113,9 @@ async function handleRequest({ method, pathname, body, runner, registry, model, 
     const agents = registry.list();
     const entry = registry.findByRole(role) || agents[0];
 
+    // Guard: no agents available (all were deleted)
+    if (!entry) return { status: 503, body: { error: "No agents available." } };
+
     // Touch the routed agent so it isn't pruned immediately after active use
     if (entry) registry.touch(entry.role, now);
 
@@ -147,7 +150,7 @@ async function handleRequest({ method, pathname, body, runner, registry, model, 
       if (!spec.role) continue;
       const addResult = registry.add(
         { name: spec.name || spec.role, role: spec.role, system: spec.system, emoji: spec.emoji },
-        now,
+        Date.now(),
       );
       if (addResult.ok) {
         created.push(spec.role);

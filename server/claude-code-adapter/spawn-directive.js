@@ -4,9 +4,6 @@
 // Malformed directives are left in the text untouched.
 "use strict";
 
-// Matches [[SPAWN: <json-object>]] — non-greedy, single-line JSON expected.
-const DIRECTIVE_RE = /\[\[SPAWN:\s*(\{.*?\})\s*\]\]/g;
-
 /**
  * Parse spawn directives from assistant reply text.
  *
@@ -16,13 +13,14 @@ const DIRECTIVE_RE = /\[\[SPAWN:\s*(\{.*?\})\s*\]\]/g;
 function parseSpawnDirectives(text) {
   if (typeof text !== "string") return { agents: [], cleanedText: String(text ?? "") };
 
+  // Matches [[SPAWN: <json-object>]] — non-greedy, single-line JSON expected.
+  const DIRECTIVE_RE = /\[\[SPAWN:\s*(\{.*?\})\s*\]\]/g;
+
   const agents = [];
   // Track which full match strings to remove (only valid ones)
   const toStrip = [];
 
   let match;
-  // Reset lastIndex before iterating
-  DIRECTIVE_RE.lastIndex = 0;
   while ((match = DIRECTIVE_RE.exec(text)) !== null) {
     const fullMatch = match[0];
     const jsonStr = match[1];
