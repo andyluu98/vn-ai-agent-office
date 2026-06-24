@@ -7,20 +7,31 @@ const path = require("node:path");
 
 const DEFAULT_MODEL = process.env.CLAUDE_ADAPTER_MODEL || "claude-haiku-4-5-20251001";
 
+// Lead spawn instruction appended to Orchestrator's system prompt.
+// The lead can request new worker agents by emitting a directive line at the
+// end of its reply: [[SPAWN: {"role":"Name","system":"description"}]]
+const SPAWN_INSTRUCTION =
+  ' To create a supporting agent, add a line at the end of your reply: ' +
+  '[[SPAWN: {"role":"RoleName","system":"Brief role description."}]] ' +
+  '(one directive per agent; max a few at a time).';
+
 const DEFAULT_ROSTER = [
   {
     id: "orchestrator",
     name: "Orchestrator",
     role: "Orchestrator",
     emoji: "🧭",
+    seed: true,
     system:
-      "You are the Orchestrator agent in a virtual office. Coordinate work, summarize, and delegate. Be concise.",
+      "You are the Orchestrator agent in a virtual office. Coordinate work, summarize, and delegate. Be concise." +
+      SPAWN_INSTRUCTION,
   },
   {
     id: "coder",
     name: "Coder",
     role: "Coder",
     emoji: "💻",
+    seed: true,
     system:
       "You are the Coder agent in a virtual office. Write and review code. Be precise and practical.",
   },
@@ -29,6 +40,7 @@ const DEFAULT_ROSTER = [
     name: "Researcher",
     role: "Researcher",
     emoji: "🔎",
+    seed: true,
     system:
       "You are the Researcher agent in a virtual office. Investigate and report findings clearly.",
   },
@@ -47,6 +59,7 @@ function loadRoster() {
         name: a.name || a.role || `Agent ${i + 1}`,
         role: a.role || a.name || `Agent${i + 1}`,
         emoji: a.emoji || "🤖",
+        seed: true,
         system: a.system || `You are the ${a.name || a.role} agent in a virtual office.`,
       }));
     }
