@@ -55,7 +55,7 @@ const renderFloorButton = (params: {
         "w-full rounded-xl border px-3 py-2 text-left transition-colors",
         active
           ? "border-cyan-400/45 bg-cyan-950/40 shadow-[0_0_0_1px_rgba(34,211,238,0.16)]"
-          : "border-white/10 bg-black/45 hover:border-white/25 hover:bg-black/55",
+          : "border-black/10 bg-black/10 hover:border-white/25 hover:bg-black/55 dark:border-white/10 dark:bg-black/45",
         floor.enabled ? "cursor-pointer" : "cursor-not-allowed opacity-45",
       ].join(" ")}
       aria-pressed={active}
@@ -63,23 +63,23 @@ const renderFloorButton = (params: {
     >
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
-          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">
+          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-400 dark:text-white/45">
             {floor.zone === "outside" ? "Điểm đến" : "Tầng"}
           </div>
-          <div className="truncate text-sm font-semibold text-white">{floor.label}</div>
+          <div className="truncate text-sm font-semibold text-neutral-900 dark:text-white">{floor.label}</div>
         </div>
         <span
           className={[
             "shrink-0 rounded border px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em]",
             active
-              ? "border-cyan-400/30 bg-cyan-950/35 text-cyan-100/85"
-              : "border-white/10 bg-white/5 text-white/55",
+              ? "border-cyan-400/30 bg-cyan-950/35 text-cyan-700/85 dark:text-cyan-100/85"
+              : "border-black/10 bg-black/5 text-neutral-500 dark:border-white/10 dark:bg-white/5 dark:text-white/55",
           ].join(" ")}
         >
           {PROVIDER_LABEL[floor.provider]}
         </span>
       </div>
-      <div className="mt-2 flex items-center justify-between gap-2 font-mono text-[10px] text-white/45">
+      <div className="mt-2 flex items-center justify-between gap-2 font-mono text-[10px] text-neutral-400 dark:text-white/45">
         <span>{floor.shortLabel}</span>
         {floor.enabled ? (
           <span>
@@ -139,11 +139,11 @@ export function OfficeFloorNav({
 
   return (
     <aside className="pointer-events-none fixed left-4 top-24 z-40 flex w-[240px] max-w-[calc(100vw-2rem)] flex-col gap-3">
-      <section className="pointer-events-auto rounded-2xl border border-amber-400/20 bg-black/78 p-3 shadow-2xl backdrop-blur">
+      <section className="pointer-events-auto rounded-2xl border border-amber-400/35 bg-black/78 p-3 shadow-2xl backdrop-blur dark:border-amber-400/20">
         <button
           type="button"
           onClick={toggleDirectoryCollapsed}
-          className="flex w-full items-center justify-between gap-2 rounded font-mono text-[10px] uppercase tracking-[0.18em] text-amber-200/70 transition-colors hover:text-amber-100"
+          className="flex w-full items-center justify-between gap-2 rounded font-mono text-[10px] uppercase tracking-[0.18em] text-amber-700/70 transition-colors hover:text-amber-100 dark:text-amber-200/70"
           aria-expanded={!directoryCollapsed}
           aria-controls="office-floor-directory-body"
           aria-label={
@@ -162,7 +162,7 @@ export function OfficeFloorNav({
             <div className="mt-3 flex items-center gap-2">
               <button
                 type="button"
-                className="rounded border border-amber-500/20 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-100/80 transition-colors hover:border-amber-400/45 hover:text-amber-50"
+                className="rounded border border-amber-500/30 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-700/80 transition-colors hover:border-amber-400/45 hover:text-amber-50 dark:border-amber-500/20 dark:text-amber-100/80"
                 onClick={() => onSelectFloor(getAdjacentEnabledOfficeFloorId(activeFloor.id, -1))}
                 aria-label="Chuyển tới tầng trước"
               >
@@ -170,7 +170,7 @@ export function OfficeFloorNav({
               </button>
               <button
                 type="button"
-                className="rounded border border-amber-500/20 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-100/80 transition-colors hover:border-amber-400/45 hover:text-amber-50"
+                className="rounded border border-amber-500/30 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-700/80 transition-colors hover:border-amber-400/45 hover:text-amber-50 dark:border-amber-500/20 dark:text-amber-100/80"
                 onClick={() => onSelectFloor(getAdjacentEnabledOfficeFloorId(activeFloor.id, 1))}
                 aria-label="Chuyển tới tầng tiếp theo"
               >
@@ -178,7 +178,7 @@ export function OfficeFloorNav({
               </button>
             </div>
             <div className="mt-3 flex flex-col gap-2">
-              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                 Toà nhà
               </div>
               {buildingFloors.map((floor) =>
@@ -192,7 +192,7 @@ export function OfficeFloorNav({
             </div>
             {outsideFloors.length > 0 ? (
               <div className="mt-4 flex flex-col gap-2">
-                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                   Bên ngoài
                 </div>
                 {outsideFloors.map((floor) =>
@@ -209,12 +209,12 @@ export function OfficeFloorNav({
         ) : null}
       </section>
 
-      <section className="pointer-events-auto rounded-2xl border border-white/10 bg-black/68 px-3 py-2 shadow-xl backdrop-blur">
-        <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/45">
+      <section className="pointer-events-auto rounded-2xl border border-black/10 bg-black/68 px-3 py-2 shadow-xl backdrop-blur dark:border-white/10">
+        <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/45">
           Tầng hiện tại
         </div>
-        <div className="mt-1 text-sm font-semibold text-white">{activeFloor.label}</div>
-        <div className="mt-1 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-white/45">
+        <div className="mt-1 text-sm font-semibold text-neutral-900 dark:text-white">{activeFloor.label}</div>
+        <div className="mt-1 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/45">
           <span>{PROVIDER_LABEL[activeFloor.provider]}</span>
           <span>
             danh sách {activeRoster?.entries.length ?? 0} | {activeRoster?.status ?? "idle"}

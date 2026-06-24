@@ -388,13 +388,13 @@ export function PlaybooksPanel({
 
   return (
     <section className="flex h-full min-h-0 flex-col">
-      <div className="border-b border-cyan-500/10 px-4 py-3">
+      <div className="border-b border-cyan-500/20 dark:border-cyan-500/10 px-4 py-3">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/70">
+            <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-neutral-600 dark:text-white/70">
               Kịch bản
             </div>
-            <div className="mt-1 font-mono text-[11px] text-white/40">
+            <div className="mt-1 font-mono text-[11px] text-neutral-400 dark:text-white/40">
               Khởi động các lịch có thể tái sử dụng cho toàn bộ trụ sở.
             </div>
           </div>
@@ -402,13 +402,13 @@ export function PlaybooksPanel({
             type="button"
             onClick={() => void loadJobs()}
             disabled={!cronEnabled}
-            className="rounded border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-100"
+            className="rounded border border-cyan-500/30 dark:border-cyan-500/20 bg-cyan-500/15 dark:bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-700 dark:hover:text-cyan-100"
           >
             Làm mới
           </button>
         </div>
         {!cronEnabled ? (
-          <div className="mt-2 font-mono text-[11px] text-white/35">
+          <div className="mt-2 font-mono text-[11px] text-neutral-400 dark:text-white/35">
             Runtime này không hỗ trợ kịch bản theo lịch.
           </div>
         ) : null}
@@ -419,36 +419,36 @@ export function PlaybooksPanel({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="border-b border-cyan-500/10 px-4 py-3">
-          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+        <div className="border-b border-cyan-500/20 dark:border-cyan-500/10 px-4 py-3">
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
             Công việc đang chạy
           </div>
           <div className="mt-3 space-y-2">
             {loading ? (
-              <div className="font-mono text-[11px] text-white/40">Đang tải công việc theo lịch.</div>
+              <div className="font-mono text-[11px] text-neutral-400 dark:text-white/40">Đang tải công việc theo lịch.</div>
             ) : jobs.length === 0 ? (
-              <div className="font-mono text-[11px] text-white/35">Chưa có kịch bản nào đang chạy.</div>
+              <div className="font-mono text-[11px] text-neutral-400 dark:text-white/35">Chưa có kịch bản nào đang chạy.</div>
             ) : (
               jobs.map((job) => {
                 const agentName = agentById.get(job.agentId ?? "")?.name || job.agentId || "Unknown";
                 return (
                   <div
                     key={job.id}
-                    className="rounded border border-white/8 bg-white/[0.03] px-3 py-3"
+                    className="rounded border border-black/10 dark:border-white/8 bg-black/[0.03] dark:bg-white/[0.03] px-3 py-3"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <div className="truncate font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-white/85">
+                        <div className="truncate font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-800 dark:text-white/85">
                           {job.name}
                         </div>
-                        <div className="mt-1 font-mono text-[11px] text-white/45">{agentName}</div>
+                        <div className="mt-1 font-mono text-[11px] text-neutral-400 dark:text-white/45">{agentName}</div>
                       </div>
-                      <div className="shrink-0 rounded border border-cyan-500/20 bg-cyan-500/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-cyan-200">
+                      <div className="shrink-0 rounded border border-cyan-500/30 dark:border-cyan-500/20 bg-cyan-500/15 dark:bg-cyan-500/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-cyan-700 dark:text-cyan-200">
                         {job.state.lastStatus ?? "ready"}
                       </div>
                     </div>
 
-                    <div className="mt-3 space-y-1 font-mono text-[11px] text-white/65">
+                    <div className="mt-3 space-y-1 font-mono text-[11px] text-neutral-600 dark:text-white/65">
                       <div>{formatCronSchedule(job.schedule)}</div>
                       <div>Lần tiếp: {formatRelativeDateTime(job.state.nextRunAtMs)}</div>
                       <div>Lần trước: {formatRelativeDateTime(job.state.lastRunAtMs)}</div>
@@ -459,7 +459,7 @@ export function PlaybooksPanel({
                         type="button"
                         onClick={() => void handleRunNow(job.id)}
                         disabled={runBusyJobId === job.id || deleteBusyJobId === job.id}
-                        className="rounded border border-amber-500/25 bg-amber-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-200 transition-colors hover:border-amber-400/50 hover:text-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded border border-amber-500/35 dark:border-amber-500/25 bg-amber-500/15 dark:bg-amber-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-amber-700 dark:text-amber-200 transition-colors hover:border-amber-400/50 hover:text-amber-800 dark:hover:text-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {runBusyJobId === job.id ? "Đang chạy" : "Chạy ngay"}
                       </button>
@@ -467,7 +467,7 @@ export function PlaybooksPanel({
                         type="button"
                         onClick={() => void handleDelete(job.id)}
                         disabled={deleteBusyJobId === job.id || runBusyJobId === job.id}
-                        className="rounded border border-rose-500/25 bg-rose-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-rose-200 transition-colors hover:border-rose-400/50 hover:text-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded border border-rose-500/35 dark:border-rose-500/25 bg-rose-500/15 dark:bg-rose-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-rose-700 dark:text-rose-200 transition-colors hover:border-rose-400/50 hover:text-rose-800 dark:hover:text-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {deleteBusyJobId === job.id ? "Đang xoá" : "Xoá"}
                       </button>
@@ -480,27 +480,27 @@ export function PlaybooksPanel({
         </div>
 
         <div className="px-4 py-3">
-          <div className="rounded border border-emerald-500/15 bg-emerald-500/[0.05] px-3 py-3">
+          <div className="rounded border border-emerald-500/25 dark:border-emerald-500/15 bg-emerald-500/[0.05] px-3 py-3">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-200/85">
+                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-700/85 dark:text-emerald-200/85">
                   Họp standup tự động
                 </div>
-                <div className="mt-1 font-mono text-[11px] leading-5 text-white/50">
+                <div className="mt-1 font-mono text-[11px] leading-5 text-neutral-500 dark:text-white/50">
                   Cấu hình cuộc họp hằng ngày, nguồn Jira và bảng ghi chú thủ công.
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => void standup.startMeeting("manual")}
-                className="rounded border border-emerald-500/25 bg-emerald-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-100 transition-colors hover:border-emerald-400/50 hover:text-white"
+                className="rounded border border-emerald-500/35 dark:border-emerald-500/25 bg-emerald-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-100 transition-colors hover:border-emerald-400/50 hover:text-neutral-900 dark:hover:text-white"
               >
                 Bắt đầu ngay
               </button>
             </div>
 
             <div className="mt-3 grid gap-3">
-              <label className="flex items-center gap-2 font-mono text-[11px] text-white/75">
+              <label className="flex items-center gap-2 font-mono text-[11px] text-neutral-700 dark:text-white/75">
                 <input
                   type="checkbox"
                   checked={standupScheduleEnabled}
@@ -510,39 +510,39 @@ export function PlaybooksPanel({
               </label>
 
               <label className="flex flex-col gap-1">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                   Biểu thức Cron
                 </span>
                 <input
                   value={standupCronExpr}
                   onChange={(event) => setStandupCronExpr(event.target.value)}
-                  className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                  className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                 />
               </label>
 
               <label className="flex flex-col gap-1">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                   Múi giờ
                 </span>
                 <input
                   value={standupTimezone}
                   onChange={(event) => setStandupTimezone(event.target.value)}
-                  className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                  className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                 />
               </label>
 
               <label className="flex flex-col gap-1">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                   Giây mỗi người nói
                 </span>
                 <input
                   value={standupSpeakerSeconds}
                   onChange={(event) => setStandupSpeakerSeconds(event.target.value)}
-                  className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                  className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                 />
               </label>
 
-              <label className="flex items-center gap-2 font-mono text-[11px] text-white/75">
+              <label className="flex items-center gap-2 font-mono text-[11px] text-neutral-700 dark:text-white/75">
                 <input
                   type="checkbox"
                   checked={standupAutoOpenBoard}
@@ -551,7 +551,7 @@ export function PlaybooksPanel({
                 Tự động mở bảng standup khi họp bắt đầu.
               </label>
 
-              <label className="flex items-center gap-2 font-mono text-[11px] text-white/75">
+              <label className="flex items-center gap-2 font-mono text-[11px] text-neutral-700 dark:text-white/75">
                 <input
                   type="checkbox"
                   checked={jiraEnabled}
@@ -561,30 +561,30 @@ export function PlaybooksPanel({
               </label>
 
               <label className="flex flex-col gap-1">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                   URL nguồn Jira
                 </span>
                 <input
                   value={jiraBaseUrl}
                   onChange={(event) => setJiraBaseUrl(event.target.value)}
                   placeholder="https://company.atlassian.net"
-                  className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
+                  className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none placeholder:text-neutral-300 dark:placeholder:text-white/20"
                 />
               </label>
 
               <label className="flex flex-col gap-1">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                   Email Jira
                 </span>
                 <input
                   value={jiraEmail}
                   onChange={(event) => setJiraEmail(event.target.value)}
-                  className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                  className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                 />
               </label>
 
               <label className="flex flex-col gap-1">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                   Token API Jira
                 </span>
                 <input
@@ -597,35 +597,35 @@ export function PlaybooksPanel({
                   placeholder={
                     jiraApiTokenConfigured ? "Đã lưu trên máy chủ Studio. Nhập để thay thế." : ""
                   }
-                  className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                  className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                 />
                 {jiraApiTokenConfigured ? (
-                  <span className="text-[10px] text-white/45">
+                  <span className="text-[10px] text-neutral-400 dark:text-white/45">
                     Token API Jira đã được lưu trên máy chủ Studio.
                   </span>
                 ) : null}
               </label>
 
               <label className="flex flex-col gap-1">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                   Mã dự án Jira
                 </span>
                 <input
                   value={jiraProjectKey}
                   onChange={(event) => setJiraProjectKey(event.target.value)}
-                  className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                  className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                 />
               </label>
 
               <label className="flex flex-col gap-1">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                   Ghi đè JQL Jira
                 </span>
                 <textarea
                   value={jiraJql}
                   onChange={(event) => setJiraJql(event.target.value)}
                   rows={3}
-                  className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                  className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                 />
               </label>
 
@@ -633,25 +633,25 @@ export function PlaybooksPanel({
                 type="button"
                 onClick={() => void handleSaveStandupConfig()}
                 disabled={standup.saving}
-                className="rounded border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-100 transition-colors hover:border-emerald-400/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded border border-emerald-500/35 dark:border-emerald-500/25 bg-emerald-500/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-100 transition-colors hover:border-emerald-400/50 hover:text-neutral-900 dark:hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {standup.saving ? "Đang lưu cài đặt standup" : "Lưu cài đặt standup"}
               </button>
             </div>
 
-            <div className="mt-4 border-t border-white/10 pt-4">
-              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+            <div className="mt-4 border-t border-black/10 dark:border-white/10 pt-4">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                 Nhập liệu bảng thủ công
               </div>
               <div className="mt-3 grid gap-3">
                 <label className="flex flex-col gap-1">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                     Tác nhân
                   </span>
                   <select
                     value={standupAgentId}
                     onChange={(event) => setStandupAgentId(event.target.value)}
-                    className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                    className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                   >
                     <option value="">Chọn tác nhân</option>
                     {agents.map((agent) => (
@@ -663,55 +663,55 @@ export function PlaybooksPanel({
                 </label>
 
                 <label className="flex flex-col gap-1">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                     Gợi ý người được giao Jira
                   </span>
                   <input
                     value={manualJiraAssignee}
                     onChange={(event) => setManualJiraAssignee(event.target.value)}
-                    className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                    className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                   />
                 </label>
 
                 <label className="flex flex-col gap-1">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                     Nhiệm vụ hiện tại
                   </span>
                   <input
                     value={manualTask}
                     onChange={(event) => setManualTask(event.target.value)}
-                    className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                    className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                   />
                 </label>
 
                 <label className="flex flex-col gap-1">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                     Vướng mắc
                   </span>
                   <textarea
                     value={manualBlockers}
                     onChange={(event) => setManualBlockers(event.target.value)}
                     rows={3}
-                    className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                    className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                   />
                 </label>
 
                 <label className="flex flex-col gap-1">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                     Ghi chú thủ công
                   </span>
                   <textarea
                     value={manualNote}
                     onChange={(event) => setManualNote(event.target.value)}
                     rows={4}
-                    className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                    className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                   />
                 </label>
 
                 <button
                   type="button"
                   onClick={() => void handleSaveManualNotes()}
-                  className="rounded border border-cyan-500/25 bg-cyan-500/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-100 transition-colors hover:border-cyan-400/50 hover:text-white"
+                  className="rounded border border-cyan-500/35 dark:border-cyan-500/25 bg-cyan-500/15 dark:bg-cyan-500/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-100 transition-colors hover:border-cyan-400/50 hover:text-neutral-900 dark:hover:text-white"
                 >
                   Lưu ghi chú thủ công
                 </button>
@@ -719,7 +719,7 @@ export function PlaybooksPanel({
             </div>
 
             {standup.meeting ? (
-              <div className="mt-4 rounded border border-white/8 bg-white/[0.03] px-3 py-3 font-mono text-[11px] text-white/65">
+              <div className="mt-4 rounded border border-black/10 dark:border-white/8 bg-black/[0.03] dark:bg-white/[0.03] px-3 py-3 font-mono text-[11px] text-neutral-600 dark:text-white/65">
                 <div>Giai đoạn họp: {standup.meeting.phase}</div>
                 <div>Người tham dự: {standup.meeting.participantOrder.length}</div>
                 <div>
@@ -729,7 +729,7 @@ export function PlaybooksPanel({
             ) : null}
           </div>
 
-          <div className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+          <div className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
             Mẫu kịch bản
           </div>
           <div className="mt-3 space-y-2">
@@ -741,7 +741,7 @@ export function PlaybooksPanel({
                   className={`rounded border px-3 py-3 transition-colors ${
                     isSelected
                       ? "border-cyan-400/30 bg-cyan-500/[0.06]"
-                      : "border-white/8 bg-white/[0.03]"
+                      : "border-black/10 dark:border-white/8 bg-black/[0.03] dark:bg-white/[0.03]"
                   }`}
                 >
                   <button
@@ -755,24 +755,24 @@ export function PlaybooksPanel({
                     }}
                     className="w-full text-left"
                   >
-                    <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-white/85">
+                    <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-800 dark:text-white/85">
                       {template.name}
                     </div>
-                    <div className="mt-1 font-mono text-[11px] leading-5 text-white/50">
+                    <div className="mt-1 font-mono text-[11px] leading-5 text-neutral-500 dark:text-white/50">
                       {template.description}
                     </div>
                   </button>
 
                   {isSelected ? (
-                    <div className="mt-3 space-y-3 border-t border-cyan-500/10 pt-3">
+                    <div className="mt-3 space-y-3 border-t border-cyan-500/20 dark:border-cyan-500/10 pt-3">
                       <label className="flex flex-col gap-1">
-                        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                           Tác nhân
                         </span>
                         <select
                           value={selectedAgentId}
                           onChange={(event) => setSelectedAgentId(event.target.value)}
-                          className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                          className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
                         >
                           <option value="">Chọn tác nhân</option>
                           {agents.map((agent) => (
@@ -784,14 +784,14 @@ export function PlaybooksPanel({
                       </label>
 
                       <label className="flex flex-col gap-1">
-                        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+                        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
                           Ghi đè tên
                         </span>
                         <input
                           value={nameOverride}
                           onChange={(event) => setNameOverride(event.target.value)}
                           placeholder={template.name}
-                          className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
+                          className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none placeholder:text-neutral-300 dark:placeholder:text-white/20"
                         />
                       </label>
 
@@ -799,7 +799,7 @@ export function PlaybooksPanel({
                         type="button"
                         onClick={() => void handleCreate()}
                         disabled={createBusy}
-                        className="w-full rounded border border-cyan-500/25 bg-cyan-500/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-100 transition-colors hover:border-cyan-400/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                        className="w-full rounded border border-cyan-500/35 dark:border-cyan-500/25 bg-cyan-500/15 dark:bg-cyan-500/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-100 transition-colors hover:border-cyan-400/50 hover:text-neutral-900 dark:hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {createBusy ? "Đang tạo kịch bản" : "Khởi động kịch bản"}
                       </button>

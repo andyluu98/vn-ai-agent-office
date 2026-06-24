@@ -106,18 +106,18 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-[#0e0a04]">
-      <div className="border-b border-white/10 px-4 py-3">
-        <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-300/70">
+    <div className="flex min-h-0 flex-1 flex-col bg-[#f5f0e8] dark:bg-[#0e0a04]">
+      <div className="border-b border-black/10 px-4 py-3 dark:border-white/10">
+        <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-700/70 dark:text-cyan-300/70">
           Tác nhân từ xa
         </div>
-        <div className="mt-1 text-sm font-medium text-white">{agentName}</div>
-        <div className="mt-2 font-mono text-[11px] text-white/45">{helperText}</div>
+        <div className="mt-1 text-sm font-medium text-neutral-900 dark:text-white">{agentName}</div>
+        <div className="mt-2 font-mono text-[11px] text-neutral-400 dark:text-white/45">{helperText}</div>
       </div>
 
       <div ref={feedRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
         {messages.length === 0 ? (
-          <div className="rounded border border-dashed border-white/10 bg-black/10 px-3 py-3 font-mono text-[11px] text-white/35">
+          <div className="rounded border border-dashed border-black/10 bg-black/4 px-3 py-3 font-mono text-[11px] text-neutral-400 dark:border-white/10 dark:bg-black/10 dark:text-white/35">
             Gửi ghi chú văn bản tới tác nhân từ xa này.
           </div>
         ) : (
@@ -126,16 +126,16 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
               key={message.id}
               className={`max-w-[85%] rounded px-3 py-2 ${
                 message.role === "user"
-                  ? "ml-auto bg-cyan-500/15 text-cyan-50"
+                  ? "ml-auto bg-cyan-500/20 text-cyan-50 dark:bg-cyan-500/15"
                   : message.role === "assistant"
                     ? "bg-emerald-500/12 text-emerald-50"
-                  : "bg-white/6 text-white/80"
+                  : "bg-white/6 text-neutral-700 dark:text-white/80"
               }`}
             >
               <div className="whitespace-pre-wrap break-words text-[13px] leading-5">
                 {message.text}
               </div>
-              <div className="mt-2 font-mono text-[10px] text-white/35">
+              <div className="mt-2 font-mono text-[10px] text-neutral-400 dark:text-white/35">
                 {formatTimestamp(message.timestampMs)}
               </div>
             </div>
@@ -143,7 +143,7 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
         )}
       </div>
 
-      <div className="border-t border-white/10 px-4 py-3">
+      <div className="border-t border-black/10 px-4 py-3 dark:border-white/10">
         {error ? (
           <div className="mb-3 rounded border border-red-500/35 bg-red-500/10 px-3 py-2 font-mono text-[11px] text-red-100">
             {error}
@@ -159,8 +159,8 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
                 onClick={() => onModeChange(entry)}
                 className={`rounded border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] transition ${
                   selected
-                    ? "border-cyan-400/40 bg-cyan-500/12 text-cyan-100"
-                    : "border-white/10 bg-black/10 text-white/55 hover:border-cyan-400/25 hover:text-cyan-50"
+                    ? "border-cyan-400/40 bg-cyan-500/12 text-cyan-700 dark:text-cyan-100"
+                    : "border-black/10 bg-black/4 text-neutral-500 hover:border-cyan-400/25 hover:text-cyan-50 dark:border-white/10 dark:bg-black/10 dark:text-white/55"
                 }`}
               >
                 {entry}
@@ -177,30 +177,30 @@ export const RemoteAgentChatPanel = memo(function RemoteAgentChatPanel({
           }}
           onKeyDown={handleKeyDown}
           placeholder="Nhắn tin tới tác nhân từ xa."
-          className="min-h-[92px] w-full resize-none rounded border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-400/50"
+          className="min-h-[92px] w-full resize-none rounded border border-black/10 bg-black/5 px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-cyan-400/50 dark:border-white/10 dark:bg-black/20 dark:text-white"
         />
         <div className="mt-3 grid gap-2">
           <textarea
             value={handoffContext}
             onChange={(event) => onHandoffContextChange(event.target.value)}
             placeholder="Bối cảnh bàn giao"
-            className="min-h-[68px] w-full resize-none rounded border border-white/10 bg-black/20 px-3 py-2 text-xs text-white outline-none transition focus:border-amber-400/40"
+            className="min-h-[68px] w-full resize-none rounded border border-black/10 bg-black/5 px-3 py-2 text-xs text-neutral-900 outline-none transition focus:border-amber-400/40 dark:border-white/10 dark:bg-black/20 dark:text-white"
           />
           <input
             value={handoffDeliverables}
             onChange={(event) => onHandoffDeliverablesChange(event.target.value)}
             placeholder="Kết quả bàn giao, phân cách bằng dấu phẩy"
-            className="h-10 w-full rounded border border-white/10 bg-black/20 px-3 text-xs text-white outline-none transition focus:border-amber-400/40"
+            className="h-10 w-full rounded border border-black/10 bg-black/5 px-3 text-xs text-neutral-900 outline-none transition focus:border-amber-400/40 dark:border-white/10 dark:bg-black/20 dark:text-white"
           />
           <input
             value={handoffAcceptance}
             onChange={(event) => onHandoffAcceptanceChange(event.target.value)}
             placeholder="Tiêu chí nghiệm thu"
-            className="h-10 w-full rounded border border-white/10 bg-black/20 px-3 text-xs text-white outline-none transition focus:border-amber-400/40"
+            className="h-10 w-full rounded border border-black/10 bg-black/5 px-3 text-xs text-neutral-900 outline-none transition focus:border-amber-400/40 dark:border-white/10 dark:bg-black/20 dark:text-white"
           />
         </div>
         <div className="mt-3 flex items-center justify-between gap-3">
-          <div className="font-mono text-[10px] text-white/35">Enter gửi. Shift+Enter xuống dòng.</div>
+          <div className="font-mono text-[10px] text-neutral-400 dark:text-white/35">Enter gửi. Shift+Enter xuống dòng.</div>
           <div className="flex items-center gap-2">
             <button
               type="button"

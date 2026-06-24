@@ -20,35 +20,35 @@ export function KanbanDisabledPanel({
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 p-6">
       <div className="w-full max-w-sm rounded-3xl border border-slate-700/40 bg-slate-950/95 p-8 text-center shadow-2xl">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-700/40 bg-slate-800/60 px-2 text-center text-sm font-semibold uppercase tracking-[0.12em] text-slate-200">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-700/40 bg-slate-800/60 px-2 text-center text-sm font-semibold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-200">
           Kanban
         </div>
 
         <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-slate-500">
           Task Manager
         </div>
-        <h2 className="mt-1 text-xl font-semibold text-white">Chưa cài kỹ năng Kanban</h2>
+        <h2 className="mt-1 text-xl font-semibold text-neutral-900 dark:text-white">Chưa cài kỹ năng Kanban</h2>
         <p className="mt-3 text-sm leading-relaxed text-slate-400">
           Cài kỹ năng <span className="text-cyan-400">TASK-MANAGER</span> để tác nhân ghi lại công việc dưới dạng task và mở bảng Kanban.
         </p>
 
         {installing ? (
-          <div className="mt-5 rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4 text-left">
+          <div className="mt-5 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-left dark:border-cyan-500/20 dark:bg-cyan-500/5">
             <div className="flex items-center justify-between gap-3">
-              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-300/80">
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-700/80 dark:text-cyan-300/80">
                 Đang cài
               </span>
-              <span className="font-mono text-[10px] text-cyan-100/70">
+              <span className="font-mono text-[10px] text-cyan-700/70 dark:text-cyan-100/70">
                 {Math.max(0, Math.min(100, Math.round(progressPercent)))}%
               </span>
             </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-800/90">
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200/90 dark:bg-slate-800/90">
               <div
                 className="h-full rounded-full bg-cyan-400 transition-[width] duration-500 ease-out"
                 style={{ width: `${Math.max(6, Math.min(100, progressPercent))}%` }}
               />
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
               {progressMessage?.trim() || "Đang cài kỹ năng task-manager."}
             </p>
             <p className="mt-2 text-xs leading-relaxed text-slate-500">
@@ -58,7 +58,7 @@ export function KanbanDisabledPanel({
         ) : null}
 
         {errorMessage ? (
-          <div className="mt-4 rounded-2xl border border-rose-500/20 bg-rose-500/8 px-4 py-3 text-sm text-rose-200">
+          <div className="mt-4 rounded-2xl border border-rose-500/20 bg-rose-500/8 px-4 py-3 text-sm text-rose-700 dark:text-rose-200">
             {errorMessage}
           </div>
         ) : null}
@@ -74,7 +74,7 @@ export function KanbanDisabledPanel({
           </button>
           <button
             type="button"
-            className="rounded-xl border border-slate-700/40 px-5 py-2.5 text-sm text-slate-400 transition hover:bg-slate-800/50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-xl border border-slate-700/40 px-5 py-2.5 text-sm text-slate-500 transition hover:bg-slate-800/50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400"
             onClick={onClose}
             disabled={installing}
           >

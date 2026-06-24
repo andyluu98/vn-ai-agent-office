@@ -54,10 +54,10 @@ const StatCard = ({
   value: string;
   hint: string;
 }) => (
-  <div className="rounded border border-white/8 bg-white/[0.03] px-3 py-3">
-    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">{label}</div>
-    <div className="mt-2 font-mono text-[18px] font-semibold text-white/90">{value}</div>
-    <div className="mt-1 font-mono text-[10px] text-white/35">{hint}</div>
+  <div className="rounded border border-black/10 dark:border-white/8 bg-black/[0.03] dark:bg-white/[0.03] px-3 py-3">
+    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-400 dark:text-white/35">{label}</div>
+    <div className="mt-2 font-mono text-[18px] font-semibold text-neutral-800 dark:text-white/90">{value}</div>
+    <div className="mt-1 font-mono text-[10px] text-neutral-400 dark:text-white/35">{hint}</div>
   </div>
 );
 
@@ -83,7 +83,7 @@ const DatePickerField = ({
 
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
         {label}
       </span>
       <div className="relative">
@@ -93,12 +93,12 @@ const DatePickerField = ({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           onFocus={() => openNativeDatePicker(inputRef.current)}
-          className="w-full rounded border border-white/10 bg-black/50 px-2 py-2 pr-9 font-mono text-[11px] text-white/80 outline-none"
+          className="w-full rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 pr-9 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
         />
         <button
           type="button"
           onClick={() => openNativeDatePicker(inputRef.current)}
-          className="absolute inset-y-0 right-0 flex w-8 items-center justify-center text-white/40 transition-colors hover:text-cyan-200"
+          className="absolute inset-y-0 right-0 flex w-8 items-center justify-center text-neutral-400 dark:text-white/40 transition-colors hover:text-cyan-700 dark:hover:text-cyan-200"
           aria-label={`Mở lịch ${label.toLowerCase()}`}
         >
           <CalendarDays className="h-3.5 w-3.5" />
@@ -162,16 +162,16 @@ export function AnalyticsPanel({
 
   const alertBannerClass =
     usage.budgetAlerts.some((alert) => alert.severity === "danger")
-      ? "border-rose-500/30 bg-rose-500/10 text-rose-100"
-      : "border-amber-500/30 bg-amber-500/10 text-amber-100";
+      ? "border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/10 text-rose-700 dark:text-rose-100"
+      : "border-amber-500/30 bg-amber-500/15 dark:bg-amber-500/10 text-amber-800 dark:text-amber-100";
 
   return (
     <section className="flex h-full min-h-0 flex-col">
-      <div className="border-b border-cyan-500/10 px-4 py-3">
-        <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/70">
+      <div className="border-b border-cyan-500/20 dark:border-cyan-500/10 px-4 py-3">
+        <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-neutral-600 dark:text-white/70">
           Phân tích
         </div>
-        <div className="mt-1 font-mono text-[11px] text-white/40">
+        <div className="mt-1 font-mono text-[11px] text-neutral-400 dark:text-white/40">
           Dữ liệu sử dụng, chi phí và độ tin cậy tác nhân.
         </div>
       </div>
@@ -183,7 +183,7 @@ export function AnalyticsPanel({
         </div>
 
         <div className="mt-2 flex items-center justify-between gap-2">
-          <div className="font-mono text-[10px] text-white/35">
+          <div className="font-mono text-[10px] text-neutral-400 dark:text-white/35">
             {usage.lastRefreshedAt
               ? `Làm mới lần cuối lúc ${new Date(usage.lastRefreshedAt).toLocaleTimeString()}`
               : "Chưa có dữ liệu phân tích"}
@@ -191,14 +191,14 @@ export function AnalyticsPanel({
           <button
             type="button"
             onClick={() => void usage.refresh()}
-            className="rounded border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-100"
+            className="rounded border border-cyan-500/30 dark:border-cyan-500/20 bg-cyan-500/15 dark:bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-700 dark:hover:text-cyan-100"
           >
             Làm mới
           </button>
         </div>
 
         {usage.error ? (
-          <div className="mt-3 rounded border border-rose-500/30 bg-rose-500/10 px-3 py-2 font-mono text-[11px] text-rose-100">
+          <div className="mt-3 rounded border border-rose-500/30 bg-rose-500/15 dark:bg-rose-500/10 px-3 py-2 font-mono text-[11px] text-rose-700 dark:text-rose-100">
             {usage.error}
           </div>
         ) : null}
@@ -212,7 +212,7 @@ export function AnalyticsPanel({
             ))}
           </div>
         ) : settingsLoaded ? (
-          <div className="mt-3 rounded border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 font-mono text-[11px] text-emerald-100">
+          <div className="mt-3 rounded border border-emerald-500/30 dark:border-emerald-500/20 bg-emerald-500/10 px-3 py-2 font-mono text-[11px] text-emerald-700 dark:text-emerald-100">
             Ngân sách trong ngưỡng cho phép.
           </div>
         ) : null}
@@ -240,13 +240,13 @@ export function AnalyticsPanel({
           />
         </div>
 
-        <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
-          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
+        <div className="mt-5 rounded border border-black/10 dark:border-white/8 bg-black/[0.03] dark:bg-white/[0.03] px-3 py-3">
+          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-400 dark:text-white/35">
             Giới hạn ngân sách
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">USD mỗi ngày</span>
+              <span className="font-mono text-[10px] text-neutral-400 dark:text-white/35">USD mỗi ngày</span>
               <input
                 value={formatBudgetInput(budgets.dailySpendLimitUsd)}
                 onChange={(event) =>
@@ -254,11 +254,11 @@ export function AnalyticsPanel({
                 }
                 placeholder="Không giới hạn"
                 inputMode="decimal"
-                className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
+                className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none placeholder:text-neutral-300 dark:placeholder:text-white/20"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">USD mỗi tháng</span>
+              <span className="font-mono text-[10px] text-neutral-400 dark:text-white/35">USD mỗi tháng</span>
               <input
                 value={formatBudgetInput(budgets.monthlySpendLimitUsd)}
                 onChange={(event) =>
@@ -266,11 +266,11 @@ export function AnalyticsPanel({
                 }
                 placeholder="Không giới hạn"
                 inputMode="decimal"
-                className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
+                className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none placeholder:text-neutral-300 dark:placeholder:text-white/20"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">USD mỗi tác nhân</span>
+              <span className="font-mono text-[10px] text-neutral-400 dark:text-white/35">USD mỗi tác nhân</span>
               <input
                 value={formatBudgetInput(budgets.perAgentSoftLimitUsd)}
                 onChange={(event) =>
@@ -278,11 +278,11 @@ export function AnalyticsPanel({
                 }
                 placeholder="Giới hạn mềm"
                 inputMode="decimal"
-                className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
+                className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none placeholder:text-neutral-300 dark:placeholder:text-white/20"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">Ngưỡng cảnh báo %</span>
+              <span className="font-mono text-[10px] text-neutral-400 dark:text-white/35">Ngưỡng cảnh báo %</span>
               <input
                 value={String(budgets.alertThresholdPct)}
                 onChange={(event) =>
@@ -292,20 +292,20 @@ export function AnalyticsPanel({
                   )
                 }
                 inputMode="numeric"
-                className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
+                className="rounded border border-black/10 dark:border-white/10 bg-black/10 dark:bg-black/50 px-2 py-2 font-mono text-[11px] text-neutral-700 dark:text-white/80 outline-none"
               />
             </label>
           </div>
         </div>
 
-        <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
-          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
+        <div className="mt-5 rounded border border-black/10 dark:border-white/8 bg-black/[0.03] dark:bg-white/[0.03] px-3 py-3">
+          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-400 dark:text-white/35">
             Chi phí hàng ngày
           </div>
           {usage.loading ? (
-            <div className="mt-3 font-mono text-[11px] text-white/40">Đang tải dữ liệu sử dụng.</div>
+            <div className="mt-3 font-mono text-[11px] text-neutral-400 dark:text-white/40">Đang tải dữ liệu sử dụng.</div>
           ) : usage.costDaily.length === 0 ? (
-            <div className="mt-3 font-mono text-[11px] text-white/35">
+            <div className="mt-3 font-mono text-[11px] text-neutral-400 dark:text-white/35">
               Không có dữ liệu chi phí trong khoảng thời gian đã chọn.
             </div>
           ) : (
@@ -314,17 +314,17 @@ export function AnalyticsPanel({
                 const heightPct = dailyChartMax > 0 ? (entry.totalCost / dailyChartMax) * 100 : 0;
                 return (
                   <div key={entry.date} className="flex min-w-0 flex-1 flex-col items-center gap-1">
-                    <div className="font-mono text-[9px] text-white/35">
+                    <div className="font-mono text-[9px] text-neutral-400 dark:text-white/35">
                       {formatCurrency(entry.totalCost)}
                     </div>
-                    <div className="flex h-28 w-full items-end rounded bg-black/40 px-1">
+                    <div className="flex h-28 w-full items-end rounded bg-black/10 dark:bg-black/40 px-1">
                       <div
                         className="w-full rounded-t bg-rose-400/80"
                         style={{ height: `${Math.max(4, heightPct)}%` }}
                         title={`${entry.date} · ${formatCurrency(entry.totalCost)}`}
                       />
                     </div>
-                    <div className="font-mono text-[9px] text-white/35">
+                    <div className="font-mono text-[9px] text-neutral-400 dark:text-white/35">
                       {entry.date.slice(5)}
                     </div>
                   </div>
@@ -333,11 +333,11 @@ export function AnalyticsPanel({
             </div>
           )}
 
-          <div className="mt-4 rounded border border-white/8 bg-black/25 px-3 py-3">
-            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+          <div className="mt-4 rounded border border-black/10 dark:border-white/8 bg-black/5 dark:bg-black/25 px-3 py-3">
+            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-white/35">
               Chi tiết chi phí
             </div>
-            <div className="mt-2 space-y-1 font-mono text-[11px] text-white/70">
+            <div className="mt-2 space-y-1 font-mono text-[11px] text-neutral-600 dark:text-white/70">
               <div>Đầu vào: {formatCurrency(usage.totals.inputCost)}.</div>
               <div>Đầu ra: {formatCurrency(usage.totals.outputCost)}.</div>
               <div>Đọc cache: {formatCurrency(usage.totals.cacheReadCost)}.</div>
@@ -346,8 +346,8 @@ export function AnalyticsPanel({
           </div>
         </div>
 
-        <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
-          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
+        <div className="mt-5 rounded border border-black/10 dark:border-white/8 bg-black/[0.03] dark:bg-white/[0.03] px-3 py-3">
+          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-400 dark:text-white/35">
             Tác nhân chi nhiều nhất
           </div>
           <div className="mt-3 space-y-2">
@@ -356,46 +356,46 @@ export function AnalyticsPanel({
                 key={entry.agentId}
                 type="button"
                 onClick={() => onSelectAgent(entry.agentId)}
-                className="flex w-full items-center justify-between rounded border border-white/8 bg-black/25 px-3 py-2 text-left transition-colors hover:border-cyan-400/25 hover:bg-cyan-500/[0.04]"
+                className="flex w-full items-center justify-between rounded border border-black/10 dark:border-white/8 bg-black/5 dark:bg-black/25 px-3 py-2 text-left transition-colors hover:border-cyan-400/25 hover:bg-cyan-500/[0.04]"
               >
-                <span className="font-mono text-[11px] text-white/80">{entry.agentName}</span>
-                <span className="font-mono text-[11px] text-white/55">
+                <span className="font-mono text-[11px] text-neutral-700 dark:text-white/80">{entry.agentName}</span>
+                <span className="font-mono text-[11px] text-neutral-500 dark:text-white/55">
                   {formatCurrency(entry.totals.totalCost)}
                 </span>
               </button>
             ))}
             {usage.aggregates.byAgent.length === 0 ? (
-              <div className="font-mono text-[11px] text-white/35">Chưa có dữ liệu chi phí tác nhân.</div>
+              <div className="font-mono text-[11px] text-neutral-400 dark:text-white/35">Chưa có dữ liệu chi phí tác nhân.</div>
             ) : null}
           </div>
         </div>
 
-        <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
-          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
+        <div className="mt-5 rounded border border-black/10 dark:border-white/8 bg-black/[0.03] dark:bg-white/[0.03] px-3 py-3">
+          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-400 dark:text-white/35">
             Chi tiết theo model
           </div>
           <div className="mt-3 space-y-2">
             {usage.aggregates.byModel.slice(0, 6).map((entry) => (
               <div
                 key={`${entry.provider ?? "unknown"}:${entry.model ?? "unknown"}`}
-                className="flex items-center justify-between rounded border border-white/8 bg-black/25 px-3 py-2"
+                className="flex items-center justify-between rounded border border-black/10 dark:border-white/8 bg-black/5 dark:bg-black/25 px-3 py-2"
               >
-                <span className="font-mono text-[11px] text-white/80">
+                <span className="font-mono text-[11px] text-neutral-700 dark:text-white/80">
                   {entry.provider ?? "unknown"} / {entry.model ?? "unknown"}
                 </span>
-                <span className="font-mono text-[11px] text-white/55">
+                <span className="font-mono text-[11px] text-neutral-500 dark:text-white/55">
                   {formatCurrency(entry.totals.totalCost)}
                 </span>
               </div>
             ))}
             {usage.aggregates.byModel.length === 0 ? (
-              <div className="font-mono text-[11px] text-white/35">Chưa có dữ liệu sử dụng model.</div>
+              <div className="font-mono text-[11px] text-neutral-400 dark:text-white/35">Chưa có dữ liệu sử dụng model.</div>
             ) : null}
           </div>
         </div>
 
-        <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
-          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
+        <div className="mt-5 rounded border border-black/10 dark:border-white/8 bg-black/[0.03] dark:bg-white/[0.03] px-3 py-3">
+          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-400 dark:text-white/35">
             Hiệu suất
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
@@ -427,17 +427,17 @@ export function AnalyticsPanel({
                 key={row.agentId}
                 type="button"
                 onClick={() => onSelectAgent(row.agentId)}
-                className="w-full rounded border border-white/8 bg-black/25 px-3 py-3 text-left transition-colors hover:border-cyan-400/25 hover:bg-cyan-500/[0.04]"
+                className="w-full rounded border border-black/10 dark:border-white/8 bg-black/5 dark:bg-black/25 px-3 py-3 text-left transition-colors hover:border-cyan-400/25 hover:bg-cyan-500/[0.04]"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-white/85">
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-800 dark:text-white/85">
                     {row.agentName}
                   </span>
-                  <span className="font-mono text-[10px] text-white/40">
+                  <span className="font-mono text-[10px] text-neutral-400 dark:text-white/40">
                     {row.totalRuns} lượt chạy
                   </span>
                 </div>
-                <div className="mt-3 grid grid-cols-2 gap-2 font-mono text-[10px] text-white/55">
+                <div className="mt-3 grid grid-cols-2 gap-2 font-mono text-[10px] text-neutral-500 dark:text-white/55">
                   <div>Thành công: {formatPercent(row.successRate)}.</div>
                   <div>Thời gian TB: {formatDuration(row.avgRuntimeMs)}.</div>
                   <div>Gọi công cụ: {formatNumber(row.toolCalls)}.</div>
@@ -446,7 +446,7 @@ export function AnalyticsPanel({
               </button>
             ))}
             {performance.rows.length === 0 ? (
-              <div className="font-mono text-[11px] text-white/35">
+              <div className="font-mono text-[11px] text-neutral-400 dark:text-white/35">
                 Chưa có dữ liệu hiệu suất.
               </div>
             ) : null}
