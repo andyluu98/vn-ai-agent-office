@@ -2277,6 +2277,7 @@ export function RetroOffice3D({
   orchestrationMeetingActive = false,
   orchestrationParticipants = [],
   orchestrationSpeechByAgentId = {},
+  orchestrationTaskCount = 0,
   monitorAgentId = null,
   monitorByAgentId = EMPTY_MONITOR_MAP,
   githubSkill = null,
@@ -2394,6 +2395,7 @@ export function RetroOffice3D({
   orchestrationMeetingActive?: boolean;
   orchestrationParticipants?: string[];
   orchestrationSpeechByAgentId?: Record<string, string>;
+  orchestrationTaskCount?: number;
   monitorAgentId?: string | null;
   monitorByAgentId?: OfficeDeskMonitorMap;
   githubSkill?: SkillStatusEntry | null;
@@ -2611,6 +2613,10 @@ export function RetroOffice3D({
     }
     return { speechTextByAgentId: texts, speechImageUrlByAgentId: images };
   }, [feedEvents]);
+  // Component-scope standupActive: covers both gathering and in_progress phases.
+  const standupActive =
+    standupMeeting?.phase === "gathering" ||
+    standupMeeting?.phase === "in_progress";
   const standupSpeechTextByAgentId = useMemo(() => {
     if (!standupMeeting || standupMeeting.phase !== "in_progress") return {};
     const currentCard =
@@ -2620,15 +2626,15 @@ export function RetroOffice3D({
     if (!currentCard) return {};
     return { [currentCard.agentId]: currentCard.speech };
   }, [standupMeeting]);
-  // Unified speech map: standup wins when active; fall back to orchestration.
+  // Unified speech map: standup wins (gathering OR in_progress); fall back to orchestration.
   const meetingSpeechByAgentId: Record<string, string> = useMemo(
     () =>
-      standupMeeting?.phase === "in_progress"
+      standupActive
         ? standupSpeechTextByAgentId
         : orchestrationMeetingActive
           ? orchestrationSpeechByAgentId
           : {},
-    [standupMeeting, standupSpeechTextByAgentId, orchestrationMeetingActive, orchestrationSpeechByAgentId],
+    [standupActive, standupSpeechTextByAgentId, orchestrationMeetingActive, orchestrationSpeechByAgentId],
   );
   const suppressSceneSpeechBubbles =
     standupMeeting?.phase === "gathering" ||
@@ -3130,9 +3136,6 @@ export function RetroOffice3D({
     0,
     agents.length - compactRosterAgents.length,
   );
-  const standupActive =
-    standupMeeting?.phase === "gathering" ||
-    standupMeeting?.phase === "in_progress";
   const standupSpeakerCard =
     standupMeeting?.cards.find(
       (card) => card.agentId === standupMeeting.currentSpeakerAgentId,
@@ -5898,13 +5901,13 @@ export function RetroOffice3D({
               </button>
             ))}
           </div>
-          {orchestrationMeetingActive && !standupMeeting ? (
+          {orchestrationMeetingActive && !standupActive ? (
             <div className="rounded-xl border border-green-500/20 bg-white/90 dark:bg-[#091409]/90 px-3 py-2 text-left shadow-lg backdrop-blur-sm">
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-green-300/80">
                 🟢 Đang họp
               </div>
               <div className="mt-1 text-[11px] font-semibold text-neutral-800 dark:text-white/90">
-                {orchestrationParticipants.length} việc đang chạy
+                {orchestrationTaskCount} việc đang chạy
               </div>
             </div>
           ) : null}

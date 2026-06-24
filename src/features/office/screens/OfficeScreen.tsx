@@ -3162,6 +3162,7 @@ export function OfficeScreen({
     orchestrationMeetingActive,
     orchestrationParticipants,
     orchestrationSpeechByAgentId,
+    orchestrationTaskCount,
   } = useMemo(() => {
     const inProgressCards = taskBoard.cardsByStatus.in_progress ?? [];
     const seen = new Set<string>();
@@ -3181,6 +3182,8 @@ export function OfficeScreen({
       orchestrationMeetingActive: participants.length > 0,
       orchestrationParticipants: participants,
       orchestrationSpeechByAgentId: speech,
+      // Task count = all in_progress cards (not deduplicated by agent)
+      orchestrationTaskCount: inProgressCards.length,
     };
   }, [taskBoard.cardsByStatus.in_progress, agentIdSet]);
 
@@ -4867,6 +4870,7 @@ export function OfficeScreen({
           orchestrationMeetingActive={orchestrationMeetingActive}
           orchestrationParticipants={orchestrationParticipants}
           orchestrationSpeechByAgentId={orchestrationSpeechByAgentId}
+          orchestrationTaskCount={orchestrationTaskCount}
           onStandupArrivalsChange={(arrivedAgentIds) => {
             void standupController.reportArrivals(arrivedAgentIds);
           }}
