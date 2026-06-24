@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, type ReactNode } from "react";
+import * as THREE from "three";
 import {
   CANVAS_H,
   CANVAS_W,
@@ -60,52 +61,36 @@ function FramedPicture({
   );
 }
 
-function UsaFlagArt() {
-  const flagWidth = 0.52;
-  const flagHeight = 0.3;
-  const stripeHeight = flagHeight / 13;
-  const cantonWidth = flagWidth * 0.4;
-  const cantonHeight = stripeHeight * 7;
+// Build a 5-pointed star shape (pointing up) once, reused by the flag mesh.
+function createStarShape(outerRadius: number, innerRadius: number, points = 5): THREE.Shape {
+  const shape = new THREE.Shape();
+  const step = Math.PI / points;
+  for (let i = 0; i < points * 2; i += 1) {
+    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+    const angle = -Math.PI / 2 + i * step; // start at the top point
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    if (i === 0) shape.moveTo(x, y);
+    else shape.lineTo(x, y);
+  }
+  shape.closePath();
+  return shape;
+}
 
+const VIETNAM_STAR_SHAPE = createStarShape(0.082, 0.033);
+
+// Vietnam flag: red field with a centered yellow five-pointed star.
+function VietnamFlagArt() {
   return (
     <>
-      {Array.from({ length: 13 }).map((_, index) => (
-        <mesh
-          key={`usa-stripe-${index}`}
-          position={[0, flagHeight / 2 - stripeHeight / 2 - index * stripeHeight, 0]}
-        >
-          <planeGeometry args={[flagWidth, stripeHeight]} />
-          <meshBasicMaterial
-            color={index % 2 === 0 ? "#b22234" : "#ffffff"}
-            side={2}
-          />
-        </mesh>
-      ))}
-      <mesh
-        position={[
-          -flagWidth / 2 + cantonWidth / 2,
-          flagHeight / 2 - cantonHeight / 2,
-          0.001,
-        ]}
-      >
-        <planeGeometry args={[cantonWidth, cantonHeight]} />
-        <meshBasicMaterial color="#3c3b6e" side={2} />
+      <mesh position={[0, 0, 0]}>
+        <planeGeometry args={[0.52, 0.3]} />
+        <meshBasicMaterial color="#da251d" side={2} />
       </mesh>
-      {Array.from({ length: 5 }).map((_, row) =>
-        Array.from({ length: 6 }).map((__, column) => (
-          <mesh
-            key={`usa-star-${row}-${column}`}
-            position={[
-              -flagWidth / 2 + 0.04 + column * 0.025,
-              flagHeight / 2 - 0.03 - row * 0.035,
-              0.002,
-            ]}
-          >
-            <circleGeometry args={[0.0045, 6]} />
-            <meshBasicMaterial color="#ffffff" side={2} />
-          </mesh>
-        )),
-      )}
+      <mesh position={[0, 0, 0.001]}>
+        <shapeGeometry args={[VIETNAM_STAR_SHAPE]} />
+        <meshBasicMaterial color="#ffff00" side={2} />
+      </mesh>
     </>
   );
 }
@@ -714,7 +699,7 @@ export const WallPictures = memo(function WallPictures({
       <OfficeFlagPole
         position={localFlagPolePosition}
         rotY={0.32}
-        art={<UsaFlagArt />}
+        art={<VietnamFlagArt />}
       />
       {showRemoteOffice ? (
         <OfficeFlagPole
