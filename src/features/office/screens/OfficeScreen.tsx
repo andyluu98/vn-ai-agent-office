@@ -4994,7 +4994,7 @@ export function OfficeScreen({
 
       {showEmptyFleetBanner ? (
         <div className="pointer-events-none fixed left-1/2 top-16 z-40 w-full max-w-xl -translate-x-1/2 px-4">
-          <div className="pointer-events-auto rounded-lg border border-amber-400/35 bg-black/80 px-4 py-3 shadow-2xl backdrop-blur">
+          <div className="pointer-events-auto rounded-lg border border-amber-400/35 bg-amber-50/90 dark:bg-black/80 px-4 py-3 shadow-2xl backdrop-blur">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-amber-200/80">
@@ -5038,7 +5038,7 @@ export function OfficeScreen({
 
       {deleteAgentStatusLine ? (
         <div className="pointer-events-none fixed left-1/2 top-5 z-40 -translate-x-1/2 px-4">
-          <div className="pointer-events-auto rounded-lg border border-red-400/30 bg-black/85 px-4 py-3 shadow-2xl backdrop-blur">
+          <div className="pointer-events-auto rounded-lg border border-red-400/30 bg-red-50/90 dark:bg-black/85 px-4 py-3 shadow-2xl backdrop-blur">
             <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-red-200/75">
               Fleet mutation
             </div>
@@ -5173,11 +5173,11 @@ export function OfficeScreen({
       ) : null}
 
       {showOpenClawConsole ? (
-        <section className="pointer-events-auto fixed bottom-3 left-3 z-30 flex w-[520px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded border border-cyan-500/25 bg-black/78 shadow-2xl backdrop-blur">
-          <div className="flex items-center justify-between border-b border-cyan-500/15 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-cyan-200/80">
+        <section className="pointer-events-auto fixed bottom-3 left-3 z-30 flex w-[520px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded border border-cyan-500/25 bg-white/90 dark:bg-black/78 shadow-2xl backdrop-blur">
+          <div className="flex items-center justify-between border-b border-cyan-500/15 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-cyan-700/80 dark:text-cyan-200/80">
             <span>Bảng điều khiển sự kiện tác nhân</span>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-cyan-100/45">
+              <span className="text-[10px] text-cyan-700/45 dark:text-cyan-100/45">
                 agents {state.agents.length} | events{" "}
                 {filteredOpenClawLogEntries.length}/{openClawLogEntries.length}
               </span>
@@ -5186,7 +5186,7 @@ export function OfficeScreen({
                 onClick={() => {
                   void handleCopyOpenClawConsoleJson();
                 }}
-                className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
+                className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-700/70 dark:text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-900 dark:hover:text-cyan-50"
               >
                 {openClawConsoleCopyStatus === "copied"
                   ? "Đã sao chép"
@@ -5197,14 +5197,14 @@ export function OfficeScreen({
               <button
                 type="button"
                 onClick={handleDownloadOpenClawConsoleJson}
-                className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
+                className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-700/70 dark:text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-900 dark:hover:text-cyan-50"
               >
                 Tải JSON
               </button>
               <button
                 type="button"
                 onClick={handleClearOpenClawConsole}
-                className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
+                className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-700/70 dark:text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-900 dark:hover:text-cyan-50"
               >
                 Xoá
               </button>
@@ -5213,15 +5213,15 @@ export function OfficeScreen({
                 onClick={() =>
                   setOpenClawConsoleCollapsed((previous) => !previous)
                 }
-                className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
+                className="rounded border border-cyan-500/20 px-2 py-0.5 text-[9px] text-cyan-700/70 dark:text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-900 dark:hover:text-cyan-50"
               >
                 {openClawConsoleCollapsed ? "Mở rộng" : "Thu nhỏ"}
               </button>
             </div>
           </div>
           {!openClawConsoleCollapsed ? (
-            <div className="flex h-[320px] flex-col gap-3 overflow-y-auto bg-[#02090b]/96 px-3 py-2 font-mono text-[10px] leading-4">
-            <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2">
+            <div className="flex h-[320px] flex-col gap-3 overflow-y-auto bg-cyan-50/95 dark:bg-[#02090b]/96 px-3 py-2 font-mono text-[10px] leading-4">
+            <div className="rounded border border-cyan-500/20 dark:border-cyan-500/10 bg-cyan-50 dark:bg-cyan-950/10 p-2">
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -5230,13 +5230,13 @@ export function OfficeScreen({
                     setOpenClawConsoleSearch(event.target.value)
                   }
                   placeholder="Tìm kiếm log, payload, suy nghĩ, văn bản người dùng."
-                  className="min-w-0 flex-1 rounded border border-cyan-500/20 bg-black/35 px-2 py-1 text-[10px] normal-case tracking-normal text-cyan-50 placeholder:text-cyan-100/30 focus:border-cyan-400/40 focus:outline-none"
+                  className="min-w-0 flex-1 rounded border border-cyan-500/20 bg-white dark:bg-black/35 px-2 py-1 text-[10px] normal-case tracking-normal text-cyan-900 dark:text-cyan-50 placeholder:text-cyan-700/30 dark:placeholder:text-cyan-100/30 focus:border-cyan-400/40 focus:outline-none"
                 />
                 {openClawConsoleSearch ? (
                   <button
                     type="button"
                     onClick={() => setOpenClawConsoleSearch("")}
-                    className="rounded border border-cyan-500/20 px-2 py-1 text-[9px] uppercase tracking-[0.16em] text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-50"
+                    className="rounded border border-cyan-500/20 px-2 py-1 text-[9px] uppercase tracking-[0.16em] text-cyan-700/70 dark:text-cyan-100/70 transition-colors hover:border-cyan-400/45 hover:text-cyan-900 dark:hover:text-cyan-50"
                   >
                     Đặt lại
                   </button>
@@ -5244,11 +5244,11 @@ export function OfficeScreen({
               </div>
             </div>
             {openClawLiveStateMatchesSearch ? (
-              <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2">
-                <div className="mb-1 text-[9px] uppercase tracking-[0.16em] text-cyan-300/70">
+              <div className="rounded border border-cyan-500/20 dark:border-cyan-500/10 bg-cyan-50 dark:bg-cyan-950/10 p-2">
+                <div className="mb-1 text-[9px] uppercase tracking-[0.16em] text-cyan-700/70 dark:text-cyan-300/70">
                   Trạng thái OpenClaw trực tiếp
                 </div>
-                <pre className="whitespace-pre-wrap break-words text-cyan-100/80">
+                <pre className="whitespace-pre-wrap break-words text-cyan-800/80 dark:text-cyan-100/80">
                   {renderOpenClawHighlightedText(
                     openClawLiveStateText,
                     openClawConsoleSearch,
@@ -5256,15 +5256,15 @@ export function OfficeScreen({
                 </pre>
               </div>
             ) : (
-              <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2 text-cyan-100/45">
+              <div className="rounded border border-cyan-500/20 dark:border-cyan-500/10 bg-cyan-50 dark:bg-cyan-950/10 p-2 text-cyan-700/45 dark:text-cyan-100/45">
                 Trạng thái OpenClaw không khớp tìm kiếm hiện tại.
               </div>
             )}
-            <div className="text-[9px] uppercase tracking-[0.16em] text-cyan-300/70">
+            <div className="text-[9px] uppercase tracking-[0.16em] text-cyan-700/70 dark:text-cyan-300/70">
               Sự kiện cổng kết nối OpenClaw thô
             </div>
             {filteredOpenClawLogEntries.length === 0 ? (
-              <div className="rounded border border-cyan-500/10 bg-cyan-950/10 p-2 text-cyan-100/45">
+              <div className="rounded border border-cyan-500/20 dark:border-cyan-500/10 bg-cyan-50 dark:bg-cyan-950/10 p-2 text-cyan-700/45 dark:text-cyan-100/45">
                 {openClawLogEntries.length === 0
                   ? "Chưa nhận được sự kiện cổng kết nối nào."
                   : "Không có sự kiện OpenClaw nào khớp tìm kiếm."}
@@ -5306,7 +5306,7 @@ export function OfficeScreen({
                         </span>
                       ) : null}
                     </div>
-                    <div className="mt-1 whitespace-pre-wrap break-words text-cyan-100/55">
+                    <div className="mt-1 whitespace-pre-wrap break-words text-cyan-700/55 dark:text-cyan-100/55">
                       {renderOpenClawHighlightedText(
                         entry.summary,
                         openClawConsoleSearch,
@@ -5368,7 +5368,7 @@ export function OfficeScreen({
                       <summary className="cursor-pointer text-[9px] uppercase tracking-[0.16em] text-cyan-300/55">
                         Payload thô
                       </summary>
-                      <pre className="mt-1 whitespace-pre-wrap break-words text-cyan-100/45">
+                      <pre className="mt-1 whitespace-pre-wrap break-words text-cyan-700/45 dark:text-cyan-100/45">
                         {renderOpenClawHighlightedText(
                           entry.payloadText,
                           openClawConsoleSearch,
@@ -5391,7 +5391,7 @@ export function OfficeScreen({
       >
         {chatOpen && (
           <div
-            className="flex overflow-hidden rounded border border-white/10 bg-[#0e0a04] shadow-2xl"
+            className="flex overflow-hidden rounded border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#0e0a04] shadow-2xl"
             style={{
               width: chatRosterCollapsed
                 ? "min(680px, calc(100vw - 1.5rem))"
@@ -5400,22 +5400,22 @@ export function OfficeScreen({
             }}
           >
             <div
-              className={`flex shrink-0 flex-col border-r border-white/10 transition-[width] ${
+              className={`flex shrink-0 flex-col border-r border-neutral-200 dark:border-white/10 transition-[width] ${
                 chatRosterCollapsed ? "w-12" : "w-52"
               }`}
             >
-              <div className="flex items-center justify-between border-b border-white/10 px-3 py-2">
+              <div className="flex items-center justify-between border-b border-neutral-200 dark:border-white/10 px-3 py-2">
                 {!chatRosterCollapsed ? (
                   <>
-                    <span className="font-mono text-[11px] font-semibold uppercase tracking-widest text-white/60">
+                    <span className="font-mono text-[11px] font-semibold uppercase tracking-widest text-neutral-600 dark:text-white/60">
                       Tác nhân
                     </span>
-                    <span className="font-mono text-[10px] text-white/40">
+                    <span className="font-mono text-[10px] text-neutral-500 dark:text-white/40">
                       {chatRosterEntries.length}
                     </span>
                   </>
                 ) : (
-                  <span className="mx-auto font-mono text-[10px] text-white/45">
+                  <span className="mx-auto font-mono text-[10px] text-neutral-500 dark:text-white/45">
                     {chatRosterEntries.length}
                   </span>
                 )}
@@ -5423,7 +5423,7 @@ export function OfficeScreen({
               <button
                 type="button"
                 onClick={() => setChatRosterCollapsed((current) => !current)}
-                className="mx-2 mt-2 inline-flex items-center justify-center rounded border border-white/10 bg-white/5 px-2 py-2 text-white/65 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+                className="mx-2 mt-2 inline-flex items-center justify-center rounded border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-2 py-2 text-neutral-500 dark:text-white/65 transition hover:border-neutral-300 dark:hover:border-white/20 hover:bg-neutral-200 dark:hover:bg-white/10 hover:text-neutral-800 dark:hover:text-white"
                 aria-label={chatRosterCollapsed ? "Mở rộng danh sách tác nhân" : "Thu gọn danh sách tác nhân"}
                 title={chatRosterCollapsed ? "Mở rộng danh sách tác nhân" : "Thu gọn danh sách tác nhân"}
               >
@@ -5446,7 +5446,7 @@ export function OfficeScreen({
                           className={`inline-flex h-8 w-8 items-center justify-center rounded border font-mono text-[10px] transition ${
                             isSelected
                               ? "border-cyan-400/45 bg-cyan-950/50 text-cyan-100"
-                              : "border-white/10 bg-white/5 text-white/55 hover:border-white/20 hover:bg-white/10 hover:text-white/80"
+                              : "border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-neutral-500 dark:text-white/55 hover:border-neutral-300 dark:hover:border-white/20 hover:bg-neutral-100 dark:hover:bg-white/10 hover:text-neutral-800 dark:hover:text-white/80"
                           }`}
                           title={agent.name}
                         >
@@ -5456,7 +5456,7 @@ export function OfficeScreen({
                     })}
                   </div>
                 ) : chatRosterEntries.length === 0 ? (
-                  <div className="px-3 py-4 font-mono text-[11px] text-white/30">
+                  <div className="px-3 py-4 font-mono text-[11px] text-neutral-400 dark:text-white/30">
                     Không có tác nhân.
                   </div>
                 ) : (
@@ -5470,8 +5470,8 @@ export function OfficeScreen({
                         onClick={() => handleOpenAgentChat(agent.id)}
                         className={`flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors ${
                           isSelected
-                            ? "bg-white/10 text-white"
-                            : "text-white/50 hover:bg-white/5 hover:text-white/80"
+                            ? "bg-neutral-100 dark:bg-white/10 text-neutral-900 dark:text-white"
+                            : "text-neutral-500 dark:text-white/50 hover:bg-neutral-50 dark:hover:bg-white/5 hover:text-neutral-800 dark:hover:text-white/80"
                         }`}
                       >
                         <span
@@ -5610,7 +5610,7 @@ export function OfficeScreen({
                   }}
                 />
               ) : (
-                <div className="flex flex-1 items-center justify-center font-mono text-[12px] text-white/30">
+                <div className="flex flex-1 items-center justify-center font-mono text-[12px] text-neutral-400 dark:text-white/30">
                   Chọn một tác nhân để trò chuyện.
                 </div>
               )}
@@ -5621,7 +5621,7 @@ export function OfficeScreen({
         <button
           type="button"
           onClick={() => setChatOpen((prev) => !prev)}
-          className="flex items-center gap-1.5 rounded border border-amber-700/50 bg-[#0e0a04]/90 px-3 py-1.5 font-mono text-[11px] font-medium tracking-wider text-amber-500/80 shadow-lg backdrop-blur transition-colors hover:border-amber-600/70 hover:text-amber-400"
+          className="flex items-center gap-1.5 rounded border border-amber-700/50 bg-amber-50/90 dark:bg-[#0e0a04]/90 px-3 py-1.5 font-mono text-[11px] font-medium tracking-wider text-amber-700/80 dark:text-amber-500/80 shadow-lg backdrop-blur transition-colors hover:border-amber-600/70 hover:text-amber-700 dark:hover:text-amber-400"
         >
           {chatOpen ? (
             <>
@@ -5647,8 +5647,8 @@ export function OfficeScreen({
           <div
             className={`flex min-w-[220px] items-center gap-3 rounded-full border px-4 py-3 font-mono text-[12px] shadow-2xl backdrop-blur ${
               mainVoiceError
-                ? "border-red-500/45 bg-red-950/75 text-red-100"
-                : "border-cyan-400/35 bg-black/70 text-white"
+                ? "border-red-500/45 bg-red-50/90 dark:bg-red-950/75 text-red-700 dark:text-red-100"
+                : "border-cyan-400/35 bg-white/85 dark:bg-black/70 text-neutral-900 dark:text-white"
             }`}
           >
             <div
@@ -5656,17 +5656,17 @@ export function OfficeScreen({
                 mainVoiceState === "recording"
                   ? "bg-red-500/25 text-red-200"
                   : mainVoiceState === "transcribing"
-                    ? "bg-cyan-400/20 text-cyan-100"
-                    : "bg-white/10 text-white"
+                    ? "bg-cyan-400/20 text-cyan-700 dark:text-cyan-100"
+                    : "bg-neutral-100 dark:bg-white/10 text-neutral-700 dark:text-white"
               }`}
             >
               <Mic className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-white/55">
+              <span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500 dark:text-white/55">
                 Tác nhân chính
               </span>
-              <span className="text-[12px] font-medium text-white">
+              <span className="text-[12px] font-medium text-neutral-900 dark:text-white">
                 {mainVoiceError
                   ? mainVoiceError
                   : mainVoiceState === "recording"
@@ -5685,7 +5685,7 @@ export function OfficeScreen({
       ) : null}
 
       {debugEnabled ? (
-        <section className="fixed bottom-3 right-3 z-50 max-h-[45vh] w-[560px] overflow-auto rounded border border-slate-700 bg-black/90 p-3 font-mono text-[11px] text-slate-100">
+        <section className="fixed bottom-3 right-3 z-50 max-h-[45vh] w-[560px] overflow-auto rounded border border-slate-300 dark:border-slate-700 bg-white/95 dark:bg-black/90 p-3 font-mono text-[11px] text-slate-800 dark:text-slate-100">
           <div className="mb-2 font-semibold text-cyan-300">office debug</div>
           <div className="mb-2 text-slate-400">
             status: {status} | agents: {state.agents.length}
