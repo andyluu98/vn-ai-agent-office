@@ -282,6 +282,8 @@ export class CustomRuntimeProvider implements RuntimeProvider {
         return (await this.callAgentsList()) as T;
       case "sessions.list":
         return (await this.callSessionsList(params)) as T;
+      case "sessions.patch":
+        return (await this.callSessionsPatch(params)) as T;
       case "status":
         return (await this.callStatus()) as T;
       case "models.list":
@@ -691,6 +693,35 @@ export class CustomRuntimeProvider implements RuntimeProvider {
     const runId = typeof params.runId === "string" ? params.runId.trim() : "";
     return {
       status: runId && this.activeRunsByRunId.has(runId) ? "running" : "done",
+    };
+  }
+
+  // The custom runtime is stateless (model is sent per chat.send), so sessions.patch
+  // just records the chosen model/thinking on the local session and acks success —
+  // instead of throwing, which previously broke model selection and message sending.
+  private async callSessionsPatch(rawParams: unknown) {
+    const params = isRecord(rawParams) ? rawParams : {};
+    const sessionKey = typeof params.key === "string" ? params.key.trim() : "";
+    if (!sessionKey) {
+      throw new Error("Custom runtime requires a session key for sessions.patch.");
+    }
+    const agentId = parseAgentIdFromSessionKey(sessionKey) ?? "main";
+    const descriptor = await this.describeRuntime();
+    const modelChoices = normalizeModelChoices(descriptor.registry);
+    const session = this.ensureSession(
+      sessionKey,
+      agentId,
+      resolveDefaultModelId(descriptor.state, modelChoices)
+    );
+    if ("model" in params) {
+      session.model = resolveOptionalString(params.model) ?? null;
+    }
+    const thinkingLevel = resolveOptionalString(params.thinkingLevel);
+    return {
+      ok: true as const,
+      key: sessionKey,
+      entry: thinkingLevel ? { thinkingLevel } : undefined,
+      resolved: { modelProvider: "custom", model: session.model ?? undefined },
     };
   }
 

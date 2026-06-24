@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { CURATED_ELEVENLABS_VOICES } from "@/lib/voiceReply/catalog";
 import type { StudioGatewayAdapterType } from "@/lib/studio/settings";
 
@@ -118,6 +119,17 @@ export function SettingsPanel({
         />
         <div className="mt-2 text-[10px] text-white/50">
           Dùng trong thanh tiêu đề của cảnh văn phòng.
+        </div>
+      </div>
+      <div className="mt-3 rounded-lg border border-cyan-500/10 bg-black/20 px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="text-[11px] font-medium text-white">Giao diện</div>
+            <div className="mt-1 text-[10px] text-white/75">
+              Chuyển chế độ sáng / tối cho toàn bộ giao diện.
+            </div>
+          </div>
+          <ThemeToggle />
         </div>
       </div>
       <div className="mt-3 rounded-lg border border-cyan-500/10 bg-black/20 px-4 py-3">

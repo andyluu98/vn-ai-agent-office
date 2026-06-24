@@ -13,7 +13,7 @@ describe("claude-runner not-found handling", () => {
 
   it("runClaudeCli rejects with an actionable install message when CLI is missing", async () => {
     await expect(
-      runner.runClaudeCli({ prompt: "hi", claudeBin: BOGUS })
+      runner.runClaudeCli({ prompt: "hi", model: undefined, system: undefined, claudeBin: BOGUS })
     ).rejects.toThrow(/Install Claude Code|was not found/i);
   });
 });

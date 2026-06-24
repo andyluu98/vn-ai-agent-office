@@ -1,7 +1,9 @@
 // tests/unit/claude-code-adapter.test.ts
 import { describe, it, expect } from "vitest";
 import { handleRequest, buildPrompt } from "../../server/claude-code-adapter/handler";
-import { ROSTER } from "../../server/claude-code-adapter/roster";
+// Use the built-in DEFAULT_ROSTER (3 agents) so tests are deterministic and do
+// NOT depend on a user-provided claude-agents.json at the repo root.
+import { DEFAULT_ROSTER as ROSTER } from "../../server/claude-code-adapter/roster";
 
 // CJS interop for registry
 // eslint-disable-next-line @typescript-eslint/no-require-imports

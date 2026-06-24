@@ -10,7 +10,7 @@ const { createRegistry } = require("./claude-code-adapter/agent-registry");
 
 const PORT = Number(process.env.CLAUDE_ADAPTER_PORT || 7770);
 const HOST = process.env.CLAUDE_ADAPTER_HOST || "127.0.0.1";
-const MAX_AGENTS = Number(process.env.CLAUDE_ADAPTER_MAX_AGENTS || 5);
+const MAX_AGENTS = Number(process.env.CLAUDE_ADAPTER_MAX_AGENTS || 12);
 const AGENT_TTL_MS = Number(process.env.CLAUDE_ADAPTER_AGENT_TTL_MS || 1_800_000);
 
 // One shared mutable registry for the lifetime of this process.
