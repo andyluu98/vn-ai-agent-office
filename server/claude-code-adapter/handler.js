@@ -10,6 +10,10 @@ const { runTasks: _runTasks } = require("./execution-loop");
 const { upsertTask: _upsertTask } = require("./task-store-client");
 
 const DEFAULT_MAX_TASKS = Number(process.env.CLAUDE_ADAPTER_MAX_TASKS_PER_COMMAND || 8);
+// Meeting concurrency: how many agents run tasks simultaneously (avatars gather at once).
+// Must be <= CLAUDE_ADAPTER_MAX_CONCURRENT (runtime gate, default 4) or the gate will
+// reject overflow tasks with "Too many concurrent…".  Default 3 ≤ gate default 4.
+const DEFAULT_MEETING_CONCURRENCY = Number(process.env.CLAUDE_ADAPTER_MEETING_CONCURRENCY || 3);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -247,6 +251,7 @@ async function handleRequest({
     const runFn = typeof runTasksFn === "function" ? runTasksFn : _runTasks;
     const upsertFn = typeof upsert === "function" ? upsert : _upsertTask;
     const maxTasks = DEFAULT_MAX_TASKS;
+    const concurrency = DEFAULT_MEETING_CONCURRENCY;
 
     // Build role list from live registry
     const roles = registry.list().map((a) => a.role);
@@ -272,6 +277,7 @@ async function handleRequest({
       upsert: upsertFn,
       now: typeof nowFn === "function" ? nowFn : () => Date.now(),
       maxTasks,
+      concurrency,
     }).catch((err) => {
       console.error("[command] execution loop error:", (err && err.message) || err);
     });

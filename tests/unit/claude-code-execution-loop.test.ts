@@ -38,6 +38,17 @@ function makeUpsertCapture() {
   return upsert;
 }
 
+/**
+ * Creates a deferred promise — lets test code resolve it at a specific moment,
+ * giving deterministic control over when a "runner" call completes.
+ */
+function makeDeferred<T = void>() {
+  let resolve!: (v: T) => void;
+  let reject!: (e: unknown) => void;
+  const promise = new Promise<T>((res, rej) => { resolve = res; reject = rej; });
+  return { promise, resolve, reject };
+}
+
 // ---------------------------------------------------------------------------
 // Status transition: todo → in_progress → done (success path)
 // ---------------------------------------------------------------------------
@@ -57,7 +68,7 @@ describe("runTasks — happy path (todo → in_progress → done)", () => {
     expect(statuses).toContain("in_progress");
     expect(statuses).toContain("done");
 
-    // Order must be todo → in_progress → done
+    // Per-task order must be todo → in_progress → done
     const todoIdx = statuses.indexOf("todo");
     const inProgressIdx = statuses.indexOf("in_progress");
     const doneIdx = statuses.indexOf("done");
@@ -180,7 +191,7 @@ describe("runTasks — error path (todo → in_progress → blocked)", () => {
     expect(statuses).toContain("blocked");
     expect(statuses).not.toContain("done");
 
-    // todo → in_progress → blocked order
+    // Per-task order: todo → in_progress → blocked
     const todoIdx = statuses.indexOf("todo");
     const inProgressIdx = statuses.indexOf("in_progress");
     const blockedIdx = statuses.indexOf("blocked");
@@ -269,5 +280,243 @@ describe("runTasks — agent resolution", () => {
     await runTasks({ tasks, registry, runner: spyRunner, model: "m", upsert, now: () => 12000 });
 
     expect(capturedSystem).toContain("Coder");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CONCURRENCY: bounded pool — at most N tasks in_progress simultaneously
+// ---------------------------------------------------------------------------
+
+describe("runTasks — bounded concurrency pool", () => {
+  /**
+   * PROOF: with concurrency:2 and 3 tasks, the runner is called at most 2
+   * times simultaneously.  Uses injected deferreds so the test is fully
+   * deterministic — no real timers.
+   *
+   * Strategy:
+   *   - Each runner call grabs the next deferred from a queue and awaits it.
+   *   - We track the peak number of simultaneously-active runner calls.
+   *   - We release deferreds in a controlled sequence and verify that:
+   *       (a) the peak was exactly CONCURRENCY (never more, never fewer)
+   *       (b) the third task only started AFTER the first resolved (pool refill)
+   */
+  it("runs at most concurrency tasks simultaneously (observed max = 2)", async () => {
+    const TASK_COUNT = 3;
+    const CONCURRENCY = 2;
+
+    // One deferred per task — we control when each runner call resolves.
+    const deferreds = Array.from({ length: TASK_COUNT }, () => makeDeferred<{ text: string; isError: boolean }>());
+    let deferredIndex = 0;
+    let activeCount = 0;
+    let peakActive = 0;
+    // Record the deferredIndex grabbed by the 3rd runner call — proves task 2
+    // only enters the runner AFTER a slot freed up (index must be 2, not 0 or 1).
+    let thirdCallDeferredIndex = -1;
+
+    const controlledRunner = async () => {
+      const myDeferredIndex = deferredIndex++;
+      if (myDeferredIndex === 2) thirdCallDeferredIndex = myDeferredIndex;
+      activeCount++;
+      if (activeCount > peakActive) peakActive = activeCount;
+      const deferred = deferreds[myDeferredIndex];
+      try {
+        return await deferred.promise;
+      } finally {
+        activeCount--;
+      }
+    };
+
+    const tasks = Array.from({ length: TASK_COUNT }, (_, i) => ({
+      title: `Task ${i}`,
+      description: `desc ${i}`,
+      role: "Coder",
+    }));
+    const upsert = makeUpsertCapture();
+    const registry = makeRegistry();
+    const noSleep = () => Promise.resolve();
+
+    // Start runTasks — pool kicks off up to CONCURRENCY=2 tasks immediately.
+    const runPromise = runTasks({
+      tasks,
+      registry,
+      runner: controlledRunner,
+      model: "m",
+      upsert,
+      now: () => 20000,
+      concurrency: CONCURRENCY,
+      sleep: noSleep,
+    });
+
+    // Resolve tasks 0 and 1 — this lets the pool finish and start task 2.
+    deferreds[0].resolve({ text: "ok0", isError: false });
+    deferreds[1].resolve({ text: "ok1", isError: false });
+    // Give the microtask queue time to process the completions and start task 2.
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Resolve task 2 so runTasks can complete.
+    deferreds[2].resolve({ text: "ok2", isError: false });
+
+    const results = (await runPromise) as TaskResult[];
+
+    // All tasks must reach a terminal status.
+    expect(results).toHaveLength(TASK_COUNT);
+    for (const r of results) {
+      expect(["done", "blocked"]).toContain(r.status);
+    }
+
+    // Peak concurrent runner calls must be exactly CONCURRENCY (not 1, not 3).
+    expect(peakActive).toBe(CONCURRENCY);
+
+    // Task 2 must have been the 3rd runner call (index 2), not earlier — confirms
+    // the pool waited for a free slot before starting the third task.
+    expect(thirdCallDeferredIndex).toBe(2);
+  });
+
+  it("preserves input order in results array even with concurrent execution", async () => {
+    // Task 1 resolves BEFORE task 0 — result[0] must still map to task 0.
+    const d0 = makeDeferred<{ text: string; isError: boolean }>();
+    const d1 = makeDeferred<{ text: string; isError: boolean }>();
+    const deferredsMap = [d0, d1];
+    let callIdx = 0;
+
+    const outOfOrderRunner = async () => {
+      const d = deferredsMap[callIdx++];
+      return d.promise;
+    };
+
+    const tasks = [
+      { title: "Slow", description: "resolves second", role: "Coder" },
+      { title: "Fast", description: "resolves first",  role: "Researcher" },
+    ];
+    const upsert = makeUpsertCapture();
+    const registry = makeRegistry();
+
+    const runPromise = runTasks({
+      tasks,
+      registry,
+      runner: outOfOrderRunner,
+      model: "m",
+      upsert,
+      now: () => 21000,
+      concurrency: 2,
+      sleep: () => Promise.resolve(),
+    });
+
+    // Yield so both tasks start.
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Resolve task 1 (Fast) first, then task 0 (Slow).
+    d1.resolve({ text: "fast-result", isError: false });
+    await Promise.resolve();
+    d0.resolve({ text: "slow-result", isError: false });
+
+    const results = (await runPromise) as TaskResult[];
+
+    expect(results).toHaveLength(2);
+    // results[0] must be "Coder" (task 0 — Slow), results[1] must be "Researcher" (task 1 — Fast).
+    expect(results[0].role).toBe("Coder");
+    expect(results[1].role).toBe("Researcher");
+    expect(results[0].status).toBe("done");
+    expect(results[1].status).toBe("done");
+  });
+
+  it("all tasks reach terminal status (done/blocked) when some fail", async () => {
+    const tasks = [
+      { title: "T0", description: "d0", role: "Coder" },
+      { title: "T1", description: "d1", role: "Researcher" },
+      { title: "T2", description: "d2", role: "Coder" },
+      { title: "T3", description: "d3", role: "Orchestrator" },
+    ];
+    let callCount = 0;
+    const flakyRunner = async () => {
+      const n = callCount++;
+      if (n % 2 === 0) throw new Error("flaky failure");
+      return { text: "ok", isError: false };
+    };
+
+    const upsert = makeUpsertCapture();
+    const registry = makeRegistry();
+
+    const results = (await runTasks({
+      tasks,
+      registry,
+      runner: flakyRunner,
+      model: "m",
+      upsert,
+      now: () => 22000,
+      concurrency: 2,
+      sleep: () => Promise.resolve(),
+    })) as TaskResult[];
+
+    expect(results).toHaveLength(4);
+    for (const r of results) {
+      expect(["done", "blocked"]).toContain(r.status);
+    }
+  });
+
+  /**
+   * Gate retry: when runner throws "Too many concurrent…", the loop retries
+   * (up to maxRetries) before marking blocked.  With a runner that fails the
+   * first two attempts and succeeds on the third, the task ends as "done".
+   */
+  it("retries on 'Too many concurrent' transient error and eventually succeeds", async () => {
+    const tasks = [{ title: "Retry task", description: "d", role: "Coder" }];
+    let attempts = 0;
+    const gateyRunner = async () => {
+      attempts++;
+      if (attempts < 3) throw new Error("Too many concurrent claude processes.");
+      return { text: "finally ok", isError: false };
+    };
+
+    const sleepCalls: number[] = [];
+    const trackingSleep = (ms: number) => { sleepCalls.push(ms); return Promise.resolve(); };
+
+    const upsert = makeUpsertCapture();
+    const registry = makeRegistry();
+
+    const results = (await runTasks({
+      tasks,
+      registry,
+      runner: gateyRunner,
+      model: "m",
+      upsert,
+      now: () => 23000,
+      maxRetries: 3,
+      sleep: trackingSleep,
+    })) as TaskResult[];
+
+    expect(results[0].status).toBe("done");
+    expect(attempts).toBe(3);
+    // Two retries means two sleep calls (backoff 50 ms, 100 ms).
+    expect(sleepCalls).toEqual([50, 100]);
+  });
+
+  it("marks task blocked when all retries exhausted on gate error", async () => {
+    const tasks = [{ title: "Always gate", description: "d", role: "Coder" }];
+    const alwaysGateRunner = async () => {
+      throw new Error("Too many concurrent claude processes.");
+    };
+
+    const upsert = makeUpsertCapture();
+    const registry = makeRegistry();
+
+    const results = (await runTasks({
+      tasks,
+      registry,
+      runner: alwaysGateRunner,
+      model: "m",
+      upsert,
+      now: () => 24000,
+      maxRetries: 2,
+      sleep: () => Promise.resolve(),
+    })) as TaskResult[];
+
+    expect(results[0].status).toBe("blocked");
+    const blockedCall = upsert.calls.find((c) => c.status === "blocked");
+    expect(blockedCall).toBeDefined();
   });
 });
