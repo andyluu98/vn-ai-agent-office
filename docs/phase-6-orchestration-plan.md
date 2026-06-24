@@ -61,9 +61,28 @@ Phát hiện hạ tầng (RetroOffice3D.tsx):
 - **M2.4** Khi hết task in_progress → thả hold, avatar về bàn (cơ chế cũ tự lo khi `explicitMeetingHold` về false).
 - **Tiêu chí Mốc 2:** chạy `npm run office-command "..."` → các agent được giao việc **đi về khu họp**, hiện **bong bóng** = việc đang làm; xong việc thì giải tán về bàn. Banner "Đang họp" hiện trong lúc chạy.
 
-### Mốc 3 — Cộng tác sâu
-- Orchestrator điều phối nhiều lượt: agent đọc kết quả nhau, phản biện, handoff; lead tổng hợp.
-- Chặn: số lượt tối đa / task, tổng token; dừng khi hội tụ.
+### Mốc 3 — Cộng tác nhiều lượt (thảo luận thật)  ✅ thiết kế chốt
+Sau khi các task của 1 lệnh chạy xong (Mốc 1) và có **≥2 agent tham gia**, chạy thêm **pha thảo luận**: agent đọc kết quả của nhau, phát biểu/phản biện theo lượt, rồi **Orchestrator tổng hợp kết luận**. **Tái dùng hiển thị M2** (gather + bong bóng từ card in_progress) — KHÔNG thêm vòng poll office mới.
+
+**Cơ chế hiển thị turn-by-turn (mấu chốt):** giữ MỖI agent tham gia một **card họp `in_progress`** suốt pha thảo luận → tất cả tụ ở khu họp (M2). Mỗi lượt, agent đang phát biểu được cập nhật **title card = câu phát biểu** → bong bóng hiện câu đó; agent khác title = "Đang họp…". Giữa các lượt có **delay** (`CLAUDE_ADAPTER_DISCUSSION_TURN_MS`, default 2500) để office (poll task-store mỗi vài giây) kịp render từng lượt. Hết thảo luận → set các card done.
+
+**Triển khai (adapter, server-side, sau `runTasks`):**
+- **M3.1** `server/claude-code-adapter/discussion.js` (TDD, pure, inject runner/upsert/sleep/now):
+  - `runDiscussion({ goal, participants, taskResults, registry, runner, model, upsert, sleep, now, rounds, maxParticipants })`.
+  - `participants` = các agent (role) đã làm task; nếu `<2` → return null (bỏ qua, single agent không có gì để bàn). Cap `maxParticipants` (default 4).
+  - Seed transcript từ `taskResults` (title + note rút gọn).
+  - Tạo 1 card họp in_progress cho mỗi participant (title "Đang họp…", source claw3d_manual, assignedAgentId=role).
+  - Vòng `rounds` (default 2): mỗi participant theo thứ tự → set title card = "(đang phát biểu…)" → gọi runner(system=agent.system, prompt=goal+transcript+"góp ý/phản biện 2-3 câu") → nối `role: line` vào transcript + meeting log → set title card = line (giữ in_progress) → `await sleep(turnMs)`.
+  - Lỗi/isError 1 lượt (vd weekly-limit) → ghi note "lượt bị gián đoạn", tiếp tục (không retry vô hạn).
+  - Tổng hợp: gọi Orchestrator (system tổng hợp) với full transcript → synthesis.
+  - Ghi card **"📋 Kết luận cuộc họp: <goal>"** status done + note = synthesis. Set tất cả card họp → done.
+  - Return `{ rounds, turns, synthesis }`.
+- **M3.2** Wire vào `/command`: sau khi `runTasks` xong (await nó trong cùng fire-and-forget), nếu bật (`CLAUDE_ADAPTER_DISCUSSION` != "0") và ≥2 participant → gọi `runDiscussion`. Truyền `taskResults` từ kết quả runTasks (cần runTasks trả note/title — bổ sung nếu thiếu). `rounds` từ `CLAUDE_ADAPTER_DISCUSSION_ROUNDS` (default 2).
+- **M3.3** `.env.example`: `CLAUDE_ADAPTER_DISCUSSION=1`, `CLAUDE_ADAPTER_DISCUSSION_ROUNDS=2`, `CLAUDE_ADAPTER_DISCUSSION_TURN_MS=2500`, `CLAUDE_ADAPTER_DISCUSSION_MAX_PARTICIPANTS=4`.
+
+**Ràng buộc chặn token:** rounds≤2, participants≤4 → tối đa ~8 lượt + 1 synthesis claude call/lệnh. transcript cap độ dài. Bỏ qua thảo luận nếu <2 agent.
+
+**Tiêu chí Mốc 3:** chạy `npm run office-command "..."` → sau khi các task xong, các agent **ở lại khu họp thảo luận theo lượt** (bong bóng đổi theo người phát biểu), rồi xuất hiện card **"Kết luận cuộc họp"** trên Kanban với phần tổng hợp của Orchestrator.
 
 ## Ràng buộc
 - Node built-in cho adapter (không thêm dep). File < 200 LOC. TDD cho code mới.
