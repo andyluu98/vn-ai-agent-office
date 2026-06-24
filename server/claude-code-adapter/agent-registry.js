@@ -62,15 +62,17 @@ function createRegistry({ seed = [], maxAgents = DEFAULT_MAX_AGENTS, ttlMs = DEF
   }
 
   /**
-   * Remove an agent by id (any agent — seed or runtime).
-   * pruneIdle never removes seeds; this explicit call can.
-   * @returns {boolean} true if found and removed
+   * Remove an agent by id (runtime agents only).
+   * I-2: Seed agents are protected and cannot be removed via this call.
+   * pruneIdle also never removes seeds (separate guard).
+   * @returns {{ removed: true } | { removed: false, reason: 'not-found' | 'seed' }}
    */
   function remove(id) {
     const idx = agents.findIndex((a) => a.id === id);
-    if (idx === -1) return false;
+    if (idx === -1) return { removed: false, reason: "not-found" };
+    if (agents[idx].seed) return { removed: false, reason: "seed" };
     agents.splice(idx, 1);
-    return true;
+    return { removed: true };
   }
 
   /**

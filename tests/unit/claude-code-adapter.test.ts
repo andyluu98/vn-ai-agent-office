@@ -243,3 +243,85 @@ describe("claude-code adapter handler", () => {
     expect(roles).not.toContain("Overflow");
   });
 });
+
+// ── Security hardening tests ─────────────────────────────────────────────────
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { parseSpawnDirectives } = require("../../server/claude-code-adapter/spawn-directive");
+
+describe("parseSpawnDirectives (I-1: balanced-brace parser)", () => {
+  it("parses a directive whose system contains {placeholder} correctly", () => {
+    const text = `Hello.\n[[SPAWN: {"role":"Dev","system":"You handle {tasks} and {issues}."}]]`;
+    const { agents, cleanedText } = parseSpawnDirectives(text);
+    expect(agents).toHaveLength(1);
+    expect(agents[0].role).toBe("Dev");
+    expect(agents[0].system).toBe("You handle {tasks} and {issues}.");
+    expect(cleanedText).not.toContain("[[SPAWN");
+    expect(cleanedText).toContain("Hello.");
+  });
+
+  it("parses a multi-line directive (newline inside JSON)", () => {
+    const text = `Result.\n[[SPAWN: {\n  "role": "Analyst",\n  "system": "Analyze data."\n}]]`;
+    const { agents, cleanedText } = parseSpawnDirectives(text);
+    expect(agents).toHaveLength(1);
+    expect(agents[0].role).toBe("Analyst");
+    expect(cleanedText).not.toContain("[[SPAWN");
+  });
+
+  it("parses two directives both correctly", () => {
+    const text = `[[SPAWN: {"role":"Alpha","system":"First."}]] done [[SPAWN: {"role":"Beta","system":"Second."}]]`;
+    const { agents, cleanedText } = parseSpawnDirectives(text);
+    expect(agents).toHaveLength(2);
+    expect(agents[0].role).toBe("Alpha");
+    expect(agents[1].role).toBe("Beta");
+    expect(cleanedText).not.toContain("[[SPAWN");
+    expect(cleanedText).toContain("done");
+  });
+
+  it("leaves malformed JSON directive as raw text in cleanedText", () => {
+    const text = `Oops [[SPAWN: {bad json here}]] end`;
+    const { agents, cleanedText } = parseSpawnDirectives(text);
+    expect(agents).toHaveLength(0);
+    // Malformed directive must remain visible in the text
+    expect(cleanedText).toContain("[[SPAWN");
+  });
+});
+
+describe("agent-registry remove (I-2: seed protection)", () => {
+  it("DELETE /agents/:id on a seed agent returns 409; seed still present", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const registry = createRegistry({ seed: ROSTER, maxAgents: 5, ttlMs: 1_800_000 }) as any;
+    const seedId = ROSTER[0].id || "seed-1";
+    const r = await handleRequest({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      method: "DELETE", pathname: `/agents/${seedId}`, body: undefined as any, runner: okRunner, registry, model: MODEL,
+    });
+    expect(r.status).toBe(409);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((r.body as any).error).toMatch(/seed/i);
+    // Seed must still be listed
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const listRes = await handleRequest({ method: "GET", pathname: "/agents", body: undefined as any, runner: okRunner, registry, model: MODEL });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const roles = (listRes.body as any).agents.map((a: any) => a.role);
+    expect(roles).toContain(ROSTER[0].role);
+  });
+
+  it("DELETE /agents/:id on a spawned (non-seed) agent succeeds", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const registry = createRegistry({ seed: ROSTER, maxAgents: 5, ttlMs: 1_800_000 }) as any;
+    const addRes = await handleRequest({
+      method: "POST", pathname: "/agents", runner: okRunner, registry, model: MODEL,
+      body: { name: "Spawned", role: "Spawned" },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const agentId = (addRes.body as any).agent.id;
+    const delRes = await handleRequest({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      method: "DELETE", pathname: `/agents/${agentId}`, body: undefined as any, runner: okRunner, registry, model: MODEL,
+    });
+    expect(delRes.status).toBe(200);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((delRes.body as any).removed).toBe(true);
+  });
+});

@@ -62,17 +62,21 @@ describe("AgentRegistry", () => {
     const reg = createRegistry({ seed: BASE_SEEDS, maxAgents: 5 }) as any;
     const { agent } = reg.add({ name: "Temp", role: "Temp" }, 1_000_000);
     expect(reg.list()).toHaveLength(3);
-    const removed = reg.remove(agent.id);
-    expect(removed).toBe(true);
+    const result = reg.remove(agent.id);
+    // I-2: remove now returns { removed, reason } instead of a bare boolean
+    expect(result.removed).toBe(true);
     expect(reg.list()).toHaveLength(2);
   });
 
-  it("remove() can remove a seed agent by explicit id", () => {
+  it("remove() blocks deletion of a seed agent (I-2 seed protection)", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const reg = createRegistry({ seed: BASE_SEEDS, maxAgents: 5 }) as any;
-    const removed = reg.remove("orch");
-    expect(removed).toBe(true);
-    expect(reg.list()).toHaveLength(1);
+    const result = reg.remove("orch");
+    // Seed agents must NOT be removable
+    expect(result.removed).toBe(false);
+    expect(result.reason).toBe("seed");
+    // Seed still present
+    expect(reg.list()).toHaveLength(2);
   });
 
   it("pruneIdle removes non-seed agent with expired lastActive, keeps seed", () => {

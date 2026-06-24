@@ -29,8 +29,10 @@ function isNotFound(err, stderr) {
 // Spawn `claude` with the given trailing args, cross-platform + no DEP0190.
 function spawnClaude(bin, args, options, cb) {
   if (IS_WIN) {
-    // Quote the bin (may be a path with spaces); args here are space-free tokens.
-    const cmd = [`"${bin}"`, ...args].join(" ");
+    // C-1: Escape embedded double-quotes inside bin before wrapping in outer quotes
+    // to prevent command injection via a CLAUDE_BIN value containing `"` characters.
+    const safeBin = bin.replace(/"/g, '\\"');
+    const cmd = [`"${safeBin}"`, ...args].join(" ");
     return execFile(cmd, { ...options, shell: true }, cb);
   }
   return execFile(bin, args, options, cb);
@@ -58,6 +60,13 @@ function runClaudeCli({ prompt, model, system, claudeBin }) {
             ? NOT_FOUND_HELP
             : (stderr && stderr.trim()) || err.message;
           reject(new Error(msg));
+          return;
+        }
+        // I-4: When execFile truncates stdout at 16 MB, err.code is set even though
+        // stdout is non-empty. Detect this early with a clear message instead of
+        // falling through to a confusing JSON parse error.
+        if (err && err.code === "ERR_CHILD_PROCESS_STDIO_MAXBUFFER") {
+          reject(new Error("Claude output exceeded the 16MB buffer (response too large)."));
           return;
         }
         try {

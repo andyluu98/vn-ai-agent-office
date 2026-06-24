@@ -9,14 +9,19 @@ type CustomRuntimeRequestBody = {
   body?: unknown;
 };
 
+// I-5: In dev mode, default to loopback-only instead of allow-all to prevent
+// SSRF via the Next.js proxy route. Normal use (adapter on 127.0.0.1:7770)
+// passes through; production still requires an explicit allowlist env var.
 const isRuntimeUrlAllowed = (runtimeUrl: string): boolean => {
   const rawAllowlist = (
     process.env.CUSTOM_RUNTIME_ALLOWLIST ||
     process.env.UPSTREAM_ALLOWLIST ||
     ""
-  ).trim();
+  ).trim() || (process.env.NODE_ENV !== "production" ? "127.0.0.1,localhost,::1" : "");
+
   if (!rawAllowlist) {
-    return process.env.NODE_ENV !== "production";
+    // Production with no allowlist configured: deny all.
+    return false;
   }
   try {
     const parsed = new URL(runtimeUrl);

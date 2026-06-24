@@ -99,8 +99,14 @@ async function handleRequest({ method, pathname, body, runner, registry, model, 
   // ── Remove agent ──────────────────────────────────────────────────────────
   if (method === "DELETE" && pathname.startsWith("/agents/")) {
     const id = pathname.slice("/agents/".length);
-    const removed = registry.remove(id);
-    if (!removed) return { status: 404, body: { error: `Agent not found: ${id}` } };
+    // I-2: registry.remove now returns { removed, reason } to distinguish seed vs not-found.
+    const result = registry.remove(id);
+    if (!result.removed) {
+      if (result.reason === "seed") {
+        return { status: 409, body: { error: "Cannot delete a seed agent." } };
+      }
+      return { status: 404, body: { error: `Agent not found: ${id}` } };
+    }
     return { status: 200, body: { removed: true } };
   }
 
@@ -148,9 +154,11 @@ async function handleRequest({ method, pathname, body, runner, registry, model, 
     const blocked = [];
     for (const spec of requested) {
       if (!spec.role) continue;
+      // M-3: Use the same `now` value already captured at handler entry (deterministic,
+      // injectable for tests) instead of calling Date.now() directly here.
       const addResult = registry.add(
         { name: spec.name || spec.role, role: spec.role, system: spec.system, emoji: spec.emoji },
-        Date.now(),
+        now,
       );
       if (addResult.ok) {
         created.push(spec.role);
