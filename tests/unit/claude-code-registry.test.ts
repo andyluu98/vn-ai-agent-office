@@ -68,15 +68,24 @@ describe("AgentRegistry", () => {
     expect(reg.list()).toHaveLength(2);
   });
 
-  it("remove() blocks deletion of a seed agent (I-2 seed protection)", () => {
+  it("remove() allows deletion of a seed agent when other agents remain", () => {
+    // Seed protection removed: any agent can be removed as long as it is not the last.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const reg = createRegistry({ seed: BASE_SEEDS, maxAgents: 5 }) as any;
     const result = reg.remove("orch");
-    // Seed agents must NOT be removable
+    // Two seeds; removing one leaves one behind — must succeed.
+    expect(result.removed).toBe(true);
+    expect(reg.list()).toHaveLength(1);
+  });
+
+  it("remove() blocks deletion of the last remaining agent (last-agent guard)", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const reg = createRegistry({ seed: [BASE_SEEDS[0]], maxAgents: 5 }) as any;
+    const result = reg.remove("orch");
     expect(result.removed).toBe(false);
-    expect(result.reason).toBe("seed");
-    // Seed still present
-    expect(reg.list()).toHaveLength(2);
+    expect(result.reason).toBe("last");
+    // Still present
+    expect(reg.list()).toHaveLength(1);
   });
 
   it("pruneIdle removes non-seed agent with expired lastActive, keeps seed", () => {

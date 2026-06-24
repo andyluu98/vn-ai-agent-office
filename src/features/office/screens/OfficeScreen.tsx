@@ -2409,7 +2409,7 @@ export function OfficeScreen({
       );
       if (!agent) return;
       const confirmed = window.confirm(
-        `Delete ${agent.name}? This removes the agent record from OpenClaw and clears its scheduled automations. VN AI Agent Office will not touch workspace files.`,
+        `Xoá ${agent.name}? Thao tác này gỡ agent khỏi văn phòng và xoá các tự động hoá đã lên lịch. VN AI Agent Office sẽ không đụng tới file workspace.`,
       );
       if (!confirmed) return;
 

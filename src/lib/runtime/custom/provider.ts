@@ -304,6 +304,14 @@ export class CustomRuntimeProvider implements RuntimeProvider {
         return (await this.callSessionsReset(params)) as T;
       case "agent.wait":
         return (await this.callAgentWait(params)) as T;
+      case "cron.list":
+        // Custom runtime has no cron scheduler — return an empty job list.
+        return ({ jobs: [] } as T);
+      case "cron.remove":
+        // No-op: no cron jobs exist on the custom runtime.
+        return ({ ok: true, removed: 0 } as T);
+      case "agents.delete":
+        return (await this.callAgentsDelete(params)) as T;
       case "exec.approvals.get":
         return ({ file: { agents: {} } } as T);
       case "config.get":
@@ -686,6 +694,22 @@ export class CustomRuntimeProvider implements RuntimeProvider {
       this.activeRunIdBySessionKey.delete(key);
     }
     return { ok: true };
+  }
+
+  private async callAgentsDelete(rawParams: unknown) {
+    const params = isRecord(rawParams) ? rawParams : {};
+    const agentId = typeof params.agentId === "string" ? params.agentId.trim() : "";
+    if (!agentId) {
+      throw new Error("Custom runtime requires agentId for agents.delete.");
+    }
+    // POST /agents/remove because the Studio proxy only allows GET/POST (no DELETE).
+    await requestCustomRuntime({
+      runtimeUrl: this.baseUrl,
+      pathname: "/agents/remove",
+      method: "POST",
+      body: { id: agentId },
+    });
+    return { ok: true, removedBindings: 0 };
   }
 
   private async callAgentWait(rawParams: unknown) {

@@ -96,14 +96,30 @@ async function handleRequest({ method, pathname, body, runner, registry, model, 
     return { status: 201, body: { agent: result.agent } };
   }
 
-  // ── Remove agent ──────────────────────────────────────────────────────────
-  if (method === "DELETE" && pathname.startsWith("/agents/")) {
-    const id = pathname.slice("/agents/".length);
-    // I-2: registry.remove now returns { removed, reason } to distinguish seed vs not-found.
+  // ── Remove agent (POST /agents/remove) ───────────────────────────────────
+  // Studio proxy only supports GET/POST, so the browser uses this route.
+  if (method === "POST" && pathname === "/agents/remove") {
+    const id = body && typeof body.id === "string" ? body.id.trim() : "";
+    if (!id) {
+      return { status: 400, body: { error: "body.id is required." } };
+    }
     const result = registry.remove(id);
     if (!result.removed) {
-      if (result.reason === "seed") {
-        return { status: 409, body: { error: "Cannot delete a seed agent." } };
+      if (result.reason === "last") {
+        return { status: 409, body: { error: "Không thể xoá agent cuối cùng." } };
+      }
+      return { status: 404, body: { error: "Agent not found." } };
+    }
+    return { status: 200, body: { removed: true } };
+  }
+
+  // ── Remove agent (DELETE /agents/:id) — kept for curl/tests ──────────────
+  if (method === "DELETE" && pathname.startsWith("/agents/")) {
+    const id = pathname.slice("/agents/".length);
+    const result = registry.remove(id);
+    if (!result.removed) {
+      if (result.reason === "last") {
+        return { status: 409, body: { error: "Không thể xoá agent cuối cùng." } };
       }
       return { status: 404, body: { error: `Agent not found: ${id}` } };
     }

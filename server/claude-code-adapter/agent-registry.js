@@ -62,15 +62,15 @@ function createRegistry({ seed = [], maxAgents = DEFAULT_MAX_AGENTS, ttlMs = DEF
   }
 
   /**
-   * Remove an agent by id (runtime agents only).
-   * I-2: Seed agents are protected and cannot be removed via this call.
-   * pruneIdle also never removes seeds (separate guard).
-   * @returns {{ removed: true } | { removed: false, reason: 'not-found' | 'seed' }}
+   * Remove an agent by id.
+   * Any agent can be removed EXCEPT when it is the last one — removing the
+   * last agent would leave the registry empty and break routing.
+   * @returns {{ removed: true } | { removed: false, reason: 'notfound' | 'last' }}
    */
   function remove(id) {
     const idx = agents.findIndex((a) => a.id === id);
-    if (idx === -1) return { removed: false, reason: "not-found" };
-    if (agents[idx].seed) return { removed: false, reason: "seed" };
+    if (idx === -1) return { removed: false, reason: "notfound" };
+    if (agents.length === 1) return { removed: false, reason: "last" };
     agents.splice(idx, 1);
     return { removed: true };
   }

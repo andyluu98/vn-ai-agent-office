@@ -287,8 +287,9 @@ describe("parseSpawnDirectives (I-1: balanced-brace parser)", () => {
   });
 });
 
-describe("agent-registry remove (I-2: seed protection)", () => {
-  it("DELETE /agents/:id on a seed agent returns 409; seed still present", async () => {
+describe("agent-registry remove (updated: any agent removable; last-agent guard)", () => {
+  it("DELETE /agents/:id on a seed agent now succeeds (seed protection removed)", async () => {
+    // Registry has 3 seeds; removing one is allowed because 2 remain.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const registry = createRegistry({ seed: ROSTER, maxAgents: 5, ttlMs: 1_800_000 }) as any;
     const seedId = ROSTER[0].id || "seed-1";
@@ -296,15 +297,29 @@ describe("agent-registry remove (I-2: seed protection)", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       method: "DELETE", pathname: `/agents/${seedId}`, body: undefined as any, runner: okRunner, registry, model: MODEL,
     });
-    expect(r.status).toBe(409);
+    expect(r.status).toBe(200);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((r.body as any).error).toMatch(/seed/i);
-    // Seed must still be listed
+    expect((r.body as any).removed).toBe(true);
+    // Seed must no longer be listed
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const listRes = await handleRequest({ method: "GET", pathname: "/agents", body: undefined as any, runner: okRunner, registry, model: MODEL });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const roles = (listRes.body as any).agents.map((a: any) => a.role);
-    expect(roles).toContain(ROSTER[0].role);
+    expect(roles).not.toContain(ROSTER[0].role);
+  });
+
+  it("DELETE last remaining agent returns 409 with 'cuối cùng' message", async () => {
+    // Single-entry registry — cannot remove the last agent.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const registry = createRegistry({ seed: [ROSTER[0]], maxAgents: 5, ttlMs: 1_800_000 }) as any;
+    const seedId = ROSTER[0].id || "seed-1";
+    const r = await handleRequest({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      method: "DELETE", pathname: `/agents/${seedId}`, body: undefined as any, runner: okRunner, registry, model: MODEL,
+    });
+    expect(r.status).toBe(409);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((r.body as any).error).toMatch(/cuối cùng/i);
   });
 
   it("DELETE /agents/:id on a spawned (non-seed) agent succeeds", async () => {
@@ -323,5 +338,51 @@ describe("agent-registry remove (I-2: seed protection)", () => {
     expect(delRes.status).toBe(200);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((delRes.body as any).removed).toBe(true);
+  });
+
+  it("POST /agents/remove with valid id removes the agent (200)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const registry = createRegistry({ seed: ROSTER, maxAgents: 5, ttlMs: 1_800_000 }) as any;
+    const addRes = await handleRequest({
+      method: "POST", pathname: "/agents", runner: okRunner, registry, model: MODEL,
+      body: { name: "ToRemove", role: "ToRemove" },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const agentId = (addRes.body as any).agent.id;
+    const removeRes = await handleRequest({
+      method: "POST", pathname: "/agents/remove", runner: okRunner, registry, model: MODEL,
+      body: { id: agentId },
+    });
+    expect(removeRes.status).toBe(200);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((removeRes.body as any).removed).toBe(true);
+    // Confirm it's gone
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const listRes = await handleRequest({ method: "GET", pathname: "/agents", body: undefined as any, runner: okRunner, registry, model: MODEL });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const roles = (listRes.body as any).agents.map((a: any) => a.role);
+    expect(roles).not.toContain("ToRemove");
+  });
+
+  it("POST /agents/remove when only one agent remains returns 409", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const registry = createRegistry({ seed: [ROSTER[0]], maxAgents: 5, ttlMs: 1_800_000 }) as any;
+    const seedId = ROSTER[0].id || "seed-1";
+    const r = await handleRequest({
+      method: "POST", pathname: "/agents/remove", runner: okRunner, registry, model: MODEL,
+      body: { id: seedId },
+    });
+    expect(r.status).toBe(409);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((r.body as any).error).toMatch(/cuối cùng/i);
+  });
+
+  it("POST /agents/remove with unknown id returns 404", async () => {
+    const registry = makeDefaultRegistry();
+    const r = await handleRequest({
+      method: "POST", pathname: "/agents/remove", runner: okRunner, registry, model: MODEL,
+      body: { id: "does-not-exist" },
+    });
+    expect(r.status).toBe(404);
   });
 });
