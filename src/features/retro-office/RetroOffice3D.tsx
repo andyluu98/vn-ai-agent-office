@@ -104,6 +104,7 @@ import {
   projectFurnitureIntoRemoteOfficeZone,
   REMOTE_OFFICE_ZONE,
   REMOTE_ROAM_POINTS,
+  STANDBY_AREA_ZONE,
 } from "@/features/retro-office/core/district";
 import {
   buildJanitorActorsForCue,
@@ -137,6 +138,7 @@ import {
   resolveQaLabRoute,
   resolveSmsBoothRoute,
   resolveServerRoomRoute,
+  resolveStandbyTarget,
   ROAM_POINTS,
   SERVER_ROOM_TARGET,
 } from "@/features/retro-office/core/navigation";
@@ -964,6 +966,15 @@ function useAgentTick(
     const currentMap = new Map(renderAgentsRef.current.map((a) => [a.id, a]));
     const next: RenderAgent[] = [];
 
+    // Standby agent list: local non-janitor agents not summoned to the meeting.
+    // Used by resolveStandbyTarget so all agents share a consistent department grouping.
+    const standbyAgentList = agents.flatMap((a) => {
+      if ("role" in a && a.role === "janitor") return [];
+      if (isRemoteOfficeAgentId(a.id)) return [];
+      if (meetingActive && meetingParticipants.has(a.id)) return [];
+      return [{ id: a.id, department: (a as OfficeAgent).department ?? null }];
+    });
+
     agents.forEach((agent, idx) => {
       const now = Date.now();
       const existing = currentMap.get(agent.id);
@@ -1376,6 +1387,51 @@ function useAgentTick(
               ? "standing"
               : "walking";
           ns.facing = phoneBoothRoute.facing;
+        } else if (!isRemoteOfficeAgentId(agent.id) && !explicitDeskHold) {
+          // Standby zone routing (Lớp 2B): non-summoned local agents stand by grouped by dept.
+          const standbyTarget = resolveStandbyTarget(
+            agent.id,
+            (agent as OfficeAgent).department,
+            standbyAgentList,
+            STANDBY_AREA_ZONE,
+          );
+          ns.pingPongUntil = undefined;
+          ns.pingPongTargetX = undefined;
+          ns.pingPongTargetY = undefined;
+          ns.pingPongFacing = undefined;
+          ns.pingPongPartnerId = undefined;
+          ns.pingPongTableUid = undefined;
+          ns.pingPongSide = undefined;
+          ns.walkSpeed =
+            existing.pingPongPreviousWalkSpeed ?? existing.walkSpeed;
+          ns.pingPongPreviousWalkSpeed = undefined;
+          ns.interactionTarget = undefined;
+          ns.phoneBoothStage = undefined;
+          ns.serverRoomStage = undefined;
+          ns.gymStage = undefined;
+          ns.qaLabStage = undefined;
+          ns.qaLabStationType = undefined;
+          ns.workoutStyle = undefined;
+          const standbyTargetChanged =
+            existing.targetX !== standbyTarget.x ||
+            existing.targetY !== standbyTarget.y;
+          ns.targetX = standbyTarget.x;
+          ns.targetY = standbyTarget.y;
+          if (standbyTargetChanged)
+            ns.path = planPath(
+              existing.x,
+              existing.y,
+              standbyTarget.x,
+              standbyTarget.y,
+            );
+          ns.state =
+            Math.hypot(
+              existing.x - standbyTarget.x,
+              existing.y - standbyTarget.y,
+            ) < 15
+              ? "standing"
+              : "walking";
+          ns.facing = standbyTarget.facing;
         } else if (effectiveStatus === "working" && deskPos) {
           ns.pingPongUntil = undefined;
           ns.pingPongTargetX = undefined;
@@ -1475,6 +1531,16 @@ function useAgentTick(
               existing.y,
               qaStationPos,
             );
+            // For local non-summoned agents: standby zone is the "ready" position.
+            const statusChangeStandbyTarget =
+              !isRemoteOfficeAgentId(agent.id) && !explicitMeetingHold && !explicitDeskHold
+                ? resolveStandbyTarget(
+                    agent.id,
+                    (agent as OfficeAgent).department,
+                    standbyAgentList,
+                    STANDBY_AREA_ZONE,
+                  )
+                : null;
             const nextTarget =
               explicitMeetingHold && meetingTarget
                 ? { x: meetingTarget.x, y: meetingTarget.y }
@@ -1497,7 +1563,7 @@ function useAgentTick(
                               x: serverRoomRoute.targetX,
                               y: serverRoomRoute.targetY,
                             }
-                          : deskPos;
+                          : (statusChangeStandbyTarget ?? deskPos);
             if (!nextTarget) {
               ns.interactionTarget = undefined;
               ns.serverRoomStage = undefined;
@@ -1617,6 +1683,16 @@ function useAgentTick(
         const phoneBoothRoute = resolvePhoneBoothRoute(phoneBoothItem, sx, sy);
         const gymRoute = resolveGymRoute(sx, sy, gymWorkoutPos);
         const qaLabRoute = resolveQaLabRoute(sx, sy, qaStationPos);
+        // Standby target for new non-summoned local agents (2B).
+        const newAgentStandbyTarget =
+          !isRemoteOfficeAgentId(agent.id) && !explicitMeetingHold && !explicitDeskHold
+            ? resolveStandbyTarget(
+                agent.id,
+                (agent as OfficeAgent).department,
+                standbyAgentList,
+                STANDBY_AREA_ZONE,
+              )
+            : null;
         const initialTarget =
           effectiveStatus === "working"
             ? explicitMeetingHold && meetingTarget
@@ -1649,8 +1725,8 @@ function useAgentTick(
                             x: serverRoomRoute.targetX,
                             y: serverRoomRoute.targetY,
                           }
-                        : (deskPos ?? { x: sx, y: sy })
-            : { x: sx, y: sy };
+                        : (newAgentStandbyTarget ?? deskPos ?? { x: sx, y: sy })
+            : newAgentStandbyTarget ?? { x: sx, y: sy };
         ns = {
           x: sx,
           y: sy,

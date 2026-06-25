@@ -24,6 +24,10 @@ type AgentsListResult = {
     id: string;
     name?: string;
     role?: string;
+    /** Department code threaded from /state.departments (null when no department roster). */
+    department?: string | null;
+    /** Human-readable department name (null when no department roster). */
+    departmentName?: string | null;
     identity?: {
       name?: string;
       theme?: string;
@@ -270,6 +274,8 @@ export const deriveHydrateAgentFleetResult = (
       identityName,
       sessionDisplayName,
       role: typeof agent.role === "string" && agent.role.trim() ? agent.role.trim() : null,
+      department: typeof agent.department === "string" && agent.department.trim() ? agent.department.trim() : null,
+      departmentName: typeof agent.departmentName === "string" && agent.departmentName.trim() ? agent.departmentName.trim() : null,
       sessionKey: buildAgentMainSessionKey(agent.id, mainKey),
       avatarSeed,
       avatarProfile,

@@ -39,6 +39,8 @@ type CustomRuntimeStateResponse = {
   profileName?: string | null;
   registry_profile?: string | null;
   active?: Record<string, unknown> | null;
+  /** role → { department, departmentName } — populated when adapter loads a department roster */
+  departments?: Record<string, { department: string | null; departmentName: string | null }> | null;
   profile?: string | null;
   identity?: {
     name?: string | null;
@@ -72,6 +74,10 @@ type SyntheticAgent = {
   id: string;
   name: string;
   role: string | null;
+  /** Department code threaded from /state departments map (null when roster has no departments). */
+  department?: string | null;
+  /** Human-readable department name (null when roster has no departments). */
+  departmentName?: string | null;
 };
 
 type SessionMessage = {
@@ -203,6 +209,7 @@ const buildSyntheticAgents = (
   runtimeName: string
 ): SyntheticAgent[] => {
   const active = isRecord(state?.active) ? state.active : null;
+  const departmentsMap = isRecord(state?.departments) ? state.departments : null;
   if (active) {
     const agents: SyntheticAgent[] = [];
     for (const [roleKey, value] of Object.entries(active)) {
@@ -212,10 +219,13 @@ const buildSyntheticAgents = (
         (typeof value === "string" && value.trim()) ||
         (Array.isArray(value) && value.some((entry) => typeof entry === "string" && entry.trim()));
       if (!hasModels) continue;
+      const deptInfo = departmentsMap && isRecord(departmentsMap[role]) ? departmentsMap[role] : null;
       agents.push({
         id: role,
         name: titleCase(role),
         role,
+        department: deptInfo && typeof deptInfo.department === "string" ? deptInfo.department : null,
+        departmentName: deptInfo && typeof deptInfo.departmentName === "string" ? deptInfo.departmentName : null,
       });
     }
     if (agents.length > 0) {
@@ -406,6 +416,8 @@ export class CustomRuntimeProvider implements RuntimeProvider {
         id: agent.id,
         name: agent.name,
         role: agent.role,
+        department: agent.department ?? null,
+        departmentName: agent.departmentName ?? null,
       })),
     };
   }

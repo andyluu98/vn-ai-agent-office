@@ -19,6 +19,30 @@ export const LOCAL_OFFICE_ZONE: DistrictZone = {
   maxY: LOCAL_OFFICE_CANVAS_HEIGHT,
 };
 
+// ── Two-zone layout (Lớp 2) ────────────────────────────────────────────────
+// Meeting room: left-top area (x: 0..540, y: 0..320).
+// The meeting seat inference bounds in navigation.ts use x<=520, y<=300 so
+// they fit within this rect with a small safety margin.
+//
+// Standby zone: right+lower area (x: 560..1800, y: 0..720).
+// The two rects share no overlap (540 < 560 leaves a 20-px corridor).
+//
+// Both rects are fully inside LOCAL_OFFICE_ZONE (0..1800 × 0..720).
+
+export const MEETING_ROOM_ZONE: DistrictZone = {
+  minX: 0,
+  maxX: 540,
+  minY: 0,
+  maxY: 320,
+};
+
+export const STANDBY_AREA_ZONE: DistrictZone = {
+  minX: 560,
+  maxX: LOCAL_OFFICE_CANVAS_WIDTH,   // 1800
+  minY: 0,
+  maxY: LOCAL_OFFICE_CANVAS_HEIGHT,  // 720
+};
+
 export const CITY_PATH_ZONE: DistrictZone = {
   minX: 0,
   maxX: LOCAL_OFFICE_CANVAS_WIDTH,

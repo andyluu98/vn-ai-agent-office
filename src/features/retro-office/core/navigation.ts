@@ -1,4 +1,5 @@
 import { CANVAS_H, CANVAS_W } from "@/features/retro-office/core/constants";
+import type { DistrictZone } from "@/features/retro-office/core/district";
 import {
   getItemBounds,
   ITEM_FOOTPRINT,
@@ -305,17 +306,96 @@ export const getDeskLocations = (items: FurnitureItem[]) =>
     .filter((item) => item.type === "desk_cubicle")
     .map((item) => ({ x: item.x + 40, y: item.y - 5 }));
 
+// ── Standby zone placement ──────────────────────────────────────────────────
+
+// Grid cell size for standing spots within standby zone (pixels).
+const STANDBY_SLOT_W = 60;
+const STANDBY_SLOT_H = 60;
+
+/**
+ * Resolve a deterministic standing position for a non-summoned agent inside the
+ * standby zone, grouped by department.
+ *
+ * Strategy:
+ *   1. Collect all unique departments (preserving insertion order).
+ *   2. Divide the standby zone width into equal columns, one per department.
+ *   3. Within each column, lay agents in a grid (left-to-right, top-to-bottom).
+ *   4. Each agent's slot is computed from its position in the department list,
+ *      making placement stable so agents don't jitter across ticks.
+ *
+ * @param agentId - Stable ID of the agent being placed.
+ * @param department - Department code (null/undefined → treated as "default").
+ * @param allStandbyAgents - Ordered list of ALL standby agents (same order every
+ *   tick so slots are deterministic). Each entry: { id, department }.
+ * @param standbyZone - The canvas rect for the standby area.
+ */
+export const resolveStandbyTarget = (
+  agentId: string,
+  department: string | null | undefined,
+  allStandbyAgents: Array<{ id: string; department?: string | null }>,
+  standbyZone: DistrictZone,
+): FacingPoint => {
+  const normalizedDept = department?.trim() || "default";
+
+  // Build ordered unique department list from the agent list (preserves stable order).
+  const deptOrder: string[] = [];
+  const deptSeen = new Set<string>();
+  for (const a of allStandbyAgents) {
+    const d = a.department?.trim() || "default";
+    if (!deptSeen.has(d)) {
+      deptSeen.add(d);
+      deptOrder.push(d);
+    }
+  }
+
+  const deptCount = Math.max(1, deptOrder.length);
+  const deptIndex = Math.max(0, deptOrder.indexOf(normalizedDept));
+
+  const zoneW = standbyZone.maxX - standbyZone.minX;
+  const zoneH = standbyZone.maxY - standbyZone.minY;
+
+  // Each department gets an equal column.
+  const colW = zoneW / deptCount;
+  const colStartX = standbyZone.minX + deptIndex * colW;
+
+  // Usable columns and rows within the department column.
+  const slotsPerRow = Math.max(1, Math.floor(colW / STANDBY_SLOT_W));
+  const slotsPerCol = Math.max(1, Math.floor(zoneH / STANDBY_SLOT_H));
+  const slotsPerDept = slotsPerRow * slotsPerCol;
+
+  // Agents of the same department in stable insertion order.
+  const deptAgents = allStandbyAgents.filter(
+    (a) => (a.department?.trim() || "default") === normalizedDept,
+  );
+  const slotIndex = Math.max(0, deptAgents.findIndex((a) => a.id === agentId));
+  const wrappedSlot = slotsPerDept > 0 ? slotIndex % slotsPerDept : 0;
+
+  const row = Math.floor(wrappedSlot / slotsPerRow);
+  const col = wrappedSlot % slotsPerRow;
+
+  const x = snap(colStartX + col * STANDBY_SLOT_W + STANDBY_SLOT_W / 2);
+  const y = snap(standbyZone.minY + row * STANDBY_SLOT_H + STANDBY_SLOT_H / 2);
+
+  // Clamp to zone boundaries (safety).
+  const clampedX = Math.max(standbyZone.minX + 10, Math.min(standbyZone.maxX - 10, x));
+  const clampedY = Math.max(standbyZone.minY + 10, Math.min(standbyZone.maxY - 10, y));
+
+  // Face toward the meeting room (left) — agents are "ready" to be summoned.
+  return { x: clampedX, y: clampedY, facing: -Math.PI / 2 };
+};
+
 export const getMeetingSeatLocations = (items: FurnitureItem[]) => {
   // Meeting seats are inferred from chair placement in the conference area so standup
   // gathering follows the authored layout instead of a hardcoded attendee list.
+  // Enlarged bounds (2C): x<=520, y<=300 to match the MEETING_ROOM_ZONE (0..540 × 0..320).
   const chairs = items
     .filter(
       (item) =>
         item.type === "chair" &&
         item.x >= 0 &&
-        item.x <= 290 &&
+        item.x <= 520 &&
         item.y >= 0 &&
-        item.y <= 235,
+        item.y <= 300,
     )
     .sort((left, right) => left.y - right.y || left.x - right.x);
   if (chairs.length === 0) return [];
@@ -484,11 +564,24 @@ export const getQaLabStations = (
       };
     });
 
+// Overflow seats for the enlarged meeting room (2C).
+// Together with inferred chair seats these provide ~10-12 visible spots.
+// All coordinates are within MEETING_ROOM_ZONE (x:0..540, y:0..320).
 export const MEETING_OVERFLOW_LOCATIONS = [
+  // Original 4 spots (preserved for backward compat with standup layout).
   { x: 18, y: 118, facing: Math.PI / 2 },
   { x: 270, y: 118, facing: -Math.PI / 2 },
   { x: 145, y: 24, facing: Math.PI },
   { x: 145, y: 220, facing: 0 },
+  // Extended overflow using the enlarged room area (x up to 520, y up to 300).
+  { x: 380, y: 60, facing: Math.PI },
+  { x: 480, y: 130, facing: -Math.PI / 2 },
+  { x: 380, y: 200, facing: 0 },
+  { x: 480, y: 260, facing: -Math.PI / 2 },
+  { x: 60, y: 280, facing: Math.PI / 2 },
+  { x: 200, y: 290, facing: Math.PI },
+  { x: 320, y: 280, facing: Math.PI / 2 },
+  { x: 450, y: 290, facing: -Math.PI / 2 },
 ];
 
 export const resolveDeskIndexForItem = (

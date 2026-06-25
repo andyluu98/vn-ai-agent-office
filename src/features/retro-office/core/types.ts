@@ -9,6 +9,10 @@ export type OfficeAgent = {
   color: string;
   item: string;
   avatarProfile?: AgentAvatarProfile | null;
+  /** Department code from the roster (e.g. "engineering"). Undefined when not loaded from department roster. */
+  department?: string | null;
+  /** Human-readable department name (e.g. "Kỹ thuật"). Undefined when not loaded from department roster. */
+  departmentName?: string | null;
 };
 
 export type JanitorTool = "broom" | "vacuum" | "floor_scrubber";

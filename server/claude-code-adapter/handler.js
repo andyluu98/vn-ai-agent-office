@@ -51,7 +51,17 @@ function buildPrompt(messages) {
 function buildStateFromRegistry(agents, model) {
   const first = agents[0] || { name: "Claude", role: "Orchestrator" };
   const active = {};
-  for (const a of agents) active[a.role] = model;
+  const departments = {};
+  for (const a of agents) {
+    active[a.role] = model;
+    // Expose department metadata when present (loaded from department roster).
+    if (a.department || a.departmentName) {
+      departments[a.role] = {
+        department: a.department || null,
+        departmentName: a.departmentName || null,
+      };
+    }
+  }
   return {
     identity: { name: first.name, role: first.role, model_id: model },
     runtime: {
@@ -62,6 +72,9 @@ function buildStateFromRegistry(agents, model) {
       active_model: model,
     },
     active,
+    // departments: role → { department, departmentName }
+    // Only populated when the roster carries department metadata; empty otherwise.
+    departments,
   };
 }
 

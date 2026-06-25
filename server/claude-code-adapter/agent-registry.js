@@ -18,15 +18,21 @@ const DEFAULT_TTL_MS = 1_800_000; // 30 minutes
  */
 function createRegistry({ seed = [], maxAgents = DEFAULT_MAX_AGENTS, ttlMs = DEFAULT_TTL_MS, onChange } = {}) {
   // Normalise seed entries: ensure required fields, mark seed:true
-  const agents = seed.map((a, i) => ({
-    id: a.id || `seed-${i + 1}`,
-    name: a.name || a.role || `Agent ${i + 1}`,
-    role: a.role || a.name || `Agent${i + 1}`,
-    emoji: a.emoji || "🤖",
-    system: a.system || `You are the ${a.name || a.role} agent.`,
-    seed: true,
-    lastActive: 0, // seeds are never pruned regardless of this value
-  }));
+  const agents = seed.map((a, i) => {
+    const entry = {
+      id: a.id || `seed-${i + 1}`,
+      name: a.name || a.role || `Agent ${i + 1}`,
+      role: a.role || a.name || `Agent${i + 1}`,
+      emoji: a.emoji || "🤖",
+      system: a.system || `You are the ${a.name || a.role} agent.`,
+      seed: true,
+      lastActive: 0, // seeds are never pruned regardless of this value
+    };
+    // Preserve department grouping metadata when present (department roster).
+    if (a.department) entry.department = a.department;
+    if (a.departmentName) entry.departmentName = a.departmentName;
+    return entry;
+  });
 
   let nextId = 1;
 

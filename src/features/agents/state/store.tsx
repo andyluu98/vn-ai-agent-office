@@ -30,6 +30,10 @@ export type AgentStoreSeed = {
   identityName?: string | null;
   sessionDisplayName?: string | null;
   role?: string | null;
+  /** Department code from department roster (e.g. "engineering"). Undefined when not loaded. */
+  department?: string | null;
+  /** Human-readable department name (e.g. "Kỹ thuật"). Undefined when not loaded. */
+  departmentName?: string | null;
   sessionKey: string;
   avatarSeed?: string | null;
   avatarProfile?: AgentAvatarProfile | null;

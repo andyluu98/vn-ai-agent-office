@@ -575,6 +575,8 @@ const mapAgentToOffice = (agent: AgentState): OfficeAgent => {
       color: stringToColor(agent.agentId),
       item: getDeterministicItem(agent.agentId),
       avatarProfile: agent.avatarProfile ?? null,
+      department: agent.department ?? null,
+      departmentName: agent.departmentName ?? null,
     };
   }
   const isWorking = agent.status === "running" || Boolean(agent.runId);
@@ -586,6 +588,8 @@ const mapAgentToOffice = (agent: AgentState): OfficeAgent => {
     color: stringToColor(agent.agentId),
     item: getDeterministicItem(agent.agentId),
     avatarProfile: agent.avatarProfile ?? null,
+    department: agent.department ?? null,
+    departmentName: agent.departmentName ?? null,
   };
 };
 

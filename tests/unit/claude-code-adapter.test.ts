@@ -244,6 +244,47 @@ describe("claude-code adapter handler", () => {
   });
 });
 
+// ── 2A: /state departments threading ────────────────────────────────────────
+
+describe("GET /state departments (Lớp 2A)", () => {
+  it("returns empty departments object when roster has no department metadata", async () => {
+    const registry = makeDefaultRegistry();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = await handleRequest({ method: "GET", pathname: "/state", body: undefined as any, runner: okRunner, registry, model: MODEL });
+    expect(r.status).toBe(200);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const body = r.body as any;
+    expect(body.departments).toBeDefined();
+    expect(typeof body.departments).toBe("object");
+    // DEFAULT_ROSTER agents have no department; departments map should be empty.
+    expect(Object.keys(body.departments)).toHaveLength(0);
+  });
+
+  it("exposes department metadata for agents loaded from a department roster", async () => {
+    // Build a registry seeded with agents that carry department metadata.
+    const deptSeed = [
+      { id: "eng-1", name: "Engineer", role: "Engineer", department: "engineering", departmentName: "Kỹ thuật", seed: true },
+      { id: "mkt-1", name: "Marketer", role: "Marketer", department: "marketing", departmentName: "Marketing", seed: true },
+      { id: "no-dept", name: "NoDepAgent", role: "NoDepAgent", seed: true },
+    ];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const registry = createRegistry({ seed: deptSeed as any, maxAgents: 10, ttlMs: 1_800_000 }) as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = await handleRequest({ method: "GET", pathname: "/state", body: undefined as any, runner: okRunner, registry, model: MODEL });
+    expect(r.status).toBe(200);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const body = r.body as any;
+    // Engineer and Marketer should have department metadata; NoDepAgent should not.
+    expect(body.departments["Engineer"]).toEqual({ department: "engineering", departmentName: "Kỹ thuật" });
+    expect(body.departments["Marketer"]).toEqual({ department: "marketing", departmentName: "Marketing" });
+    expect(body.departments["NoDepAgent"]).toBeUndefined();
+    // active map is unaffected.
+    expect(body.active["Engineer"]).toBeTruthy();
+    expect(body.active["Marketer"]).toBeTruthy();
+    expect(body.active["NoDepAgent"]).toBeTruthy();
+  });
+});
+
 // ── Security hardening tests ─────────────────────────────────────────────────
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
