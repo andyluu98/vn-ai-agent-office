@@ -309,19 +309,20 @@ export const getDeskLocations = (items: FurnitureItem[]) =>
 // ── Standby zone placement ──────────────────────────────────────────────────
 
 // Cluster grid: 4 columns × 3 rows = 12 cluster slots (one per department).
-// Within each cluster, agents sit in a 2-column micro-grid with 75px spacing.
+// Within each cluster, agents sit in a 2-column micro-grid with 90px spacing
+// so the always-on name labels (≤16 chars) don't collide.
 const CLUSTER_COLS = 4;
 const CLUSTER_ROWS = 3;
-// Padding inside the standby zone before the first cluster.
-const CLUSTER_ZONE_PAD_X = 30;
-const CLUSTER_ZONE_PAD_Y = 30;
-// Gap between cluster columns / rows.
-const CLUSTER_GAP_X = 20;
-const CLUSTER_GAP_Y = 40;
-// Agent spacing within a cluster (must be ≥70 to avoid label overlap).
-const AGENT_SLOT_W = 80;
-const AGENT_SLOT_H = 80;
-// Agents per cluster row (2 columns).
+// Padding inside the standby zone before the first cluster (reclaimed gym/QA space).
+const CLUSTER_ZONE_PAD_X = 40;
+const CLUSTER_ZONE_PAD_Y = 50;
+// Gap between cluster columns / rows — wide enough to visually separate clusters.
+const CLUSTER_GAP_X = 30;
+const CLUSTER_GAP_Y = 60;
+// Agent spacing within a cluster — 90px keeps micro-labels from overlapping.
+const AGENT_SLOT_W = 90;
+const AGENT_SLOT_H = 90;
+// Agents per cluster row (2 columns → up to 6 agents per cluster row-pair).
 const AGENTS_PER_CLUSTER_ROW = 2;
 
 export type ClusterInfo = {
@@ -369,8 +370,9 @@ export const computeClusterLayout = (
       originX,
       originY,
       centerX: originX + clusterW / 2,
-      // Label sits above the first agent row; leave 14px headroom above.
-      labelY: originY - 14,
+      // Label sits above the first agent row; leave 20px headroom so it clears
+      // the micro-label that now appears above every agent head.
+      labelY: originY - 20,
     };
   });
 };

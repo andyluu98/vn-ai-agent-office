@@ -89,6 +89,7 @@ import {
   ensureOfficeSmsBooth,
   ensureOfficeJukebox,
   ensureOfficeServerRoom,
+  stripGymQaFurniture,
   isRetiredPingPongLamp,
   materializeDefaults,
   type OfficeLayoutPreset,
@@ -1675,10 +1676,24 @@ function useAgentTick(
             ns.qaLabStage = undefined;
             ns.qaLabStationType = undefined;
             ns.workoutStyle = undefined;
-            const r = pickRoamPoint(agent.id);
-            ns.targetX = r.x;
-            ns.targetY = r.y;
-            ns.path = planPath(existing.x, existing.y, r.x, r.y);
+            // R3: non-summoned local agents return to their standby spot instead
+            // of roaming. Remote agents still use a roam point so they look active.
+            if (!isRemoteOfficeAgentId(agent.id)) {
+              const idleStandbyTarget = resolveStandbyTarget(
+                agent.id,
+                (agent as OfficeAgent).department,
+                standbyAgentList,
+                STANDBY_AREA_ZONE,
+              );
+              ns.targetX = idleStandbyTarget.x;
+              ns.targetY = idleStandbyTarget.y;
+              ns.path = planPath(existing.x, existing.y, idleStandbyTarget.x, idleStandbyTarget.y);
+            } else {
+              const r = pickRoamPoint(agent.id);
+              ns.targetX = r.x;
+              ns.targetY = r.y;
+              ns.path = planPath(existing.x, existing.y, r.x, r.y);
+            }
             ns.state = "walking";
           }
         }
@@ -2197,7 +2212,11 @@ function useAgentTick(
               }
             }
             ns = isAway ? ("away" as const) : "standing";
-            if (Math.random() < 0.005) {
+            // R3: Local non-summoned agents hold their standby spot — no idle roaming.
+            // Remote agents still use the social/roam logic so they look active.
+            if (!isRemoteOfficeAgentId(agent.id) && !isJanitor) {
+              // Already at standby spot — stay put. Nothing to do here.
+            } else if (Math.random() < 0.005) {
               // Idea 6: 15% chance to walk to a social furniture item instead of a random roam point.
               let target: { x: number; y: number } | null = null;
               const socialCandidates = isRemoteOfficeAgentId(agent.id)
@@ -2326,7 +2345,10 @@ const buildInitialFurnitureLayout = (
               ensureOfficeSmsBooth(
                 ensureOfficeAtm(
                   ensureOfficePingPongTable(
-                    loadFurniture(storageNamespace) ?? materializeDefaults(layoutPreset),
+                    // R4: strip leftover gym/QA furniture from existing localStorage layouts.
+                    stripGymQaFurniture(
+                      loadFurniture(storageNamespace) ?? materializeDefaults(layoutPreset),
+                    ),
                   ),
                 ),
               ),
@@ -2350,19 +2372,20 @@ const DepartmentClusterLabels = memo(function DepartmentClusterLabels({
     <>
       {clusters.map((cluster) => {
         const [wx, , wz] = toWorld(cluster.centerX, cluster.labelY);
+        // Department cluster label — fontSize 0.12 > agent micro-label 0.078 (hierarchy spec).
         return (
-          <Billboard key={cluster.department} position={[wx, 1.6, wz]}>
+          <Billboard key={cluster.department} position={[wx, 1.72, wz]}>
             <mesh position={[0, 0, -0.001]}>
-              <planeGeometry args={[1.1, 0.22]} />
-              <meshBasicMaterial color="#0d1117" transparent opacity={0.78} />
+              <planeGeometry args={[1.2, 0.24]} />
+              <meshBasicMaterial color="#0d1117" transparent opacity={0.82} />
             </mesh>
             <Text
               position={[0, 0, 0.001]}
-              fontSize={0.095}
+              fontSize={0.12}
               color="#c9b88a"
               anchorX="center"
               anchorY="middle"
-              maxWidth={1.0}
+              maxWidth={1.1}
               font={undefined}
             >
               {cluster.departmentName}
@@ -5949,6 +5972,7 @@ export function RetroOffice3D({
                     agent.id === followAgentId ||
                     meetingParticipantsForRender.has(agent.id)
                   }
+                  miniLabelText={isJanitor ? null : (agent.name ?? null)}
                 />
               );
             })}
