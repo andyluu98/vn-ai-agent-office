@@ -4,6 +4,7 @@
 // from GET /state.active (key = role -> model).
 const fs = require("node:fs");
 const path = require("node:path");
+const { loadDepartmentRoster } = require("./department-loader");
 
 const DEFAULT_MODEL = process.env.CLAUDE_ADAPTER_MODEL || "claude-haiku-4-5-20251001";
 
@@ -80,6 +81,15 @@ function readRosterFile(file) {
 }
 
 function loadRoster() {
+  // Highest precedence: departments folder (vn-one-person-company integration).
+  const deptsDir = process.env.CLAUDE_ADAPTER_DEPARTMENTS_DIR;
+  if (deptsDir) {
+    const deptAgents = loadDepartmentRoster(deptsDir);
+    if (deptAgents && deptAgents.length > 0) {
+      return normalizeAgents(deptAgents);
+    }
+  }
+
   // Runtime file wins if present — an explicit empty list means the user
   // cleared the roster and will re-hire, so respect it (do NOT fall back to seed).
   const runtime = readRosterFile(RUNTIME_FILE);
@@ -117,4 +127,4 @@ function saveRoster(agents, file) {
   fs.writeFileSync(filePath, JSON.stringify(payload, null, 2) + "\n", "utf8");
 }
 
-module.exports = { ROSTER, DEFAULT_ROSTER, loadRoster, saveRoster, DEFAULT_MODEL, buildRegistryPayload };
+module.exports = { ROSTER, DEFAULT_ROSTER, loadRoster, saveRoster, DEFAULT_MODEL, buildRegistryPayload, loadDepartmentRoster };
