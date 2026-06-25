@@ -308,73 +308,121 @@ export const getDeskLocations = (items: FurnitureItem[]) =>
 
 // ── Standby zone placement ──────────────────────────────────────────────────
 
-// Grid cell size for standing spots within standby zone (pixels).
-const STANDBY_SLOT_W = 60;
-const STANDBY_SLOT_H = 60;
+// Cluster grid: 4 columns × 3 rows = 12 cluster slots (one per department).
+// Within each cluster, agents sit in a 2-column micro-grid with 75px spacing.
+const CLUSTER_COLS = 4;
+const CLUSTER_ROWS = 3;
+// Padding inside the standby zone before the first cluster.
+const CLUSTER_ZONE_PAD_X = 30;
+const CLUSTER_ZONE_PAD_Y = 30;
+// Gap between cluster columns / rows.
+const CLUSTER_GAP_X = 20;
+const CLUSTER_GAP_Y = 40;
+// Agent spacing within a cluster (must be ≥70 to avoid label overlap).
+const AGENT_SLOT_W = 80;
+const AGENT_SLOT_H = 80;
+// Agents per cluster row (2 columns).
+const AGENTS_PER_CLUSTER_ROW = 2;
+
+export type ClusterInfo = {
+  /** Unique department code, e.g. "01-governance". */
+  department: string;
+  /** Human-readable name, e.g. "Tài chính & Kế toán". */
+  departmentName: string;
+  /** Top-left canvas X of this cluster's bounding box. */
+  originX: number;
+  /** Top-left canvas Y of this cluster's bounding box. */
+  originY: number;
+  /** Canvas X of the cluster's horizontal center (for label rendering). */
+  centerX: number;
+  /** Canvas Y of the top of the cluster (for label rendering above agents). */
+  labelY: number;
+};
+
+/**
+ * Compute the cluster layout for the standby area given the full standby zone.
+ * Returns one entry per unique department, in stable department-code order.
+ *
+ * Each cluster is a rectangular slot in a CLUSTER_COLS × CLUSTER_ROWS grid
+ * spanning the standby zone. The caller can use originX/originY + per-agent
+ * offset to position each agent, or use centerX/labelY for the cluster label.
+ */
+export const computeClusterLayout = (
+  orderedDepts: Array<{ department: string; departmentName: string }>,
+  standbyZone: DistrictZone,
+): ClusterInfo[] => {
+  const zoneW = standbyZone.maxX - standbyZone.minX;
+  const zoneH = standbyZone.maxY - standbyZone.minY;
+  const usableW = zoneW - CLUSTER_ZONE_PAD_X * 2;
+  const usableH = zoneH - CLUSTER_ZONE_PAD_Y * 2;
+  const clusterW = (usableW - CLUSTER_GAP_X * (CLUSTER_COLS - 1)) / CLUSTER_COLS;
+  const clusterH = (usableH - CLUSTER_GAP_Y * (CLUSTER_ROWS - 1)) / CLUSTER_ROWS;
+
+  return orderedDepts.map(({ department, departmentName }, idx) => {
+    const col = idx % CLUSTER_COLS;
+    const row = Math.floor(idx / CLUSTER_COLS);
+    const originX = standbyZone.minX + CLUSTER_ZONE_PAD_X + col * (clusterW + CLUSTER_GAP_X);
+    const originY = standbyZone.minY + CLUSTER_ZONE_PAD_Y + row * (clusterH + CLUSTER_GAP_Y);
+    return {
+      department,
+      departmentName,
+      originX,
+      originY,
+      centerX: originX + clusterW / 2,
+      // Label sits above the first agent row; leave 14px headroom above.
+      labelY: originY - 14,
+    };
+  });
+};
 
 /**
  * Resolve a deterministic standing position for a non-summoned agent inside the
- * standby zone, grouped by department.
+ * standby zone, grouped into per-department cluster rectangles.
  *
- * Strategy:
- *   1. Collect all unique departments (preserving insertion order).
- *   2. Divide the standby zone width into equal columns, one per department.
- *   3. Within each column, lay agents in a grid (left-to-right, top-to-bottom).
- *   4. Each agent's slot is computed from its position in the department list,
- *      making placement stable so agents don't jitter across ticks.
+ * Clusters are arranged in a 4-col × 3-row grid. Within each cluster, agents
+ * are placed in a 2-column micro-grid (80px × 80px spacing) so name labels
+ * don't collide. Placement is fully deterministic — no jitter across ticks.
  *
  * @param agentId - Stable ID of the agent being placed.
  * @param department - Department code (null/undefined → treated as "default").
  * @param allStandbyAgents - Ordered list of ALL standby agents (same order every
- *   tick so slots are deterministic). Each entry: { id, department }.
+ *   tick). Each entry: { id, department, departmentName }.
  * @param standbyZone - The canvas rect for the standby area.
  */
 export const resolveStandbyTarget = (
   agentId: string,
   department: string | null | undefined,
-  allStandbyAgents: Array<{ id: string; department?: string | null }>,
+  allStandbyAgents: Array<{ id: string; department?: string | null; departmentName?: string | null }>,
   standbyZone: DistrictZone,
 ): FacingPoint => {
   const normalizedDept = department?.trim() || "default";
 
   // Build ordered unique department list from the agent list (preserves stable order).
-  const deptOrder: string[] = [];
+  const deptOrder: Array<{ department: string; departmentName: string }> = [];
   const deptSeen = new Set<string>();
   for (const a of allStandbyAgents) {
     const d = a.department?.trim() || "default";
     if (!deptSeen.has(d)) {
       deptSeen.add(d);
-      deptOrder.push(d);
+      deptOrder.push({ department: d, departmentName: a.departmentName?.trim() || d });
     }
   }
 
-  const deptCount = Math.max(1, deptOrder.length);
-  const deptIndex = Math.max(0, deptOrder.indexOf(normalizedDept));
-
-  const zoneW = standbyZone.maxX - standbyZone.minX;
-  const zoneH = standbyZone.maxY - standbyZone.minY;
-
-  // Each department gets an equal column.
-  const colW = zoneW / deptCount;
-  const colStartX = standbyZone.minX + deptIndex * colW;
-
-  // Usable columns and rows within the department column.
-  const slotsPerRow = Math.max(1, Math.floor(colW / STANDBY_SLOT_W));
-  const slotsPerCol = Math.max(1, Math.floor(zoneH / STANDBY_SLOT_H));
-  const slotsPerDept = slotsPerRow * slotsPerCol;
+  const clusterLayout = computeClusterLayout(deptOrder, standbyZone);
+  const clusterIdx = clusterLayout.findIndex((c) => c.department === normalizedDept);
+  const cluster = clusterLayout[Math.max(0, clusterIdx)];
 
   // Agents of the same department in stable insertion order.
   const deptAgents = allStandbyAgents.filter(
     (a) => (a.department?.trim() || "default") === normalizedDept,
   );
   const slotIndex = Math.max(0, deptAgents.findIndex((a) => a.id === agentId));
-  const wrappedSlot = slotsPerDept > 0 ? slotIndex % slotsPerDept : 0;
 
-  const row = Math.floor(wrappedSlot / slotsPerRow);
-  const col = wrappedSlot % slotsPerRow;
+  const col = slotIndex % AGENTS_PER_CLUSTER_ROW;
+  const row = Math.floor(slotIndex / AGENTS_PER_CLUSTER_ROW);
 
-  const x = snap(colStartX + col * STANDBY_SLOT_W + STANDBY_SLOT_W / 2);
-  const y = snap(standbyZone.minY + row * STANDBY_SLOT_H + STANDBY_SLOT_H / 2);
+  const x = snap(cluster.originX + col * AGENT_SLOT_W + AGENT_SLOT_W / 2);
+  const y = snap(cluster.originY + row * AGENT_SLOT_H + AGENT_SLOT_H / 2);
 
   // Clamp to zone boundaries (safety).
   const clampedX = Math.max(standbyZone.minX + 10, Math.min(standbyZone.maxX - 10, x));

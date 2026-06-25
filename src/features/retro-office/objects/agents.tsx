@@ -63,6 +63,7 @@ export const AgentModel = memo(function AgentModel({
   showSpeech = false,
   speechText = null,
   suppressSpeechBubble = false,
+  showNameplate = true,
 }: AgentModelProps) {
   const groupRef = useRef<THREE.Group>(null);
   const leftArmRef = useRef<THREE.Group>(null);
@@ -1099,7 +1100,7 @@ export const AgentModel = memo(function AgentModel({
           depthWrite={false}
         />
       </mesh>
-      {!activeSpeechBubble && nameplateText ? (
+      {!activeSpeechBubble && nameplateText && showNameplate ? (
         <Billboard position={[0, 1.05, 0]}>
           <mesh position={[0, 0, -0.001]}>
             <planeGeometry args={[0.82, subtitleText ? 0.34 : 0.24]} />

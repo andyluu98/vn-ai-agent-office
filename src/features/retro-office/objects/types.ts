@@ -43,4 +43,6 @@ export type AgentModelProps = {
   showSpeech?: boolean;
   speechText?: string | null;
   suppressSpeechBubble?: boolean;
+  /** When false, suppress the floating nameplate (used for standby agents to reduce clutter). Defaults to true. */
+  showNameplate?: boolean;
 };
