@@ -725,76 +725,15 @@ export const ensureOfficeServerRoom = (
 export const ensureOfficeGymRoom = (
   items: FurnitureItem[],
 ): FurnitureItem[] => {
-  const hasCurrentGymRoom = hasSignature(items, GYM_ROOM_SIGNATURES);
-  if (hasCurrentGymRoom) return items;
-
-  const hasPreviousGymRoom = hasAllSignatures(
-    items,
-    PREVIOUS_GYM_ROOM_SIGNATURES,
-  );
-  if (hasPreviousGymRoom) {
-    return [
-      ...replaceBySignatureSet(items, PREVIOUS_GYM_ROOM_SIGNATURES),
-      ...DEFAULT_GYM_ITEMS.map((item) => ({ ...item, _uid: nextUid() })),
-    ];
-  }
-
-  const hasLegacyGymRoom = hasAllSignatures(items, LEGACY_GYM_ROOM_SIGNATURES);
-  if (hasLegacyGymRoom) {
-    return [
-      ...replaceBySignatureSet(items, LEGACY_GYM_ROOM_SIGNATURES),
-      ...DEFAULT_GYM_ITEMS.map((item) => ({ ...item, _uid: nextUid() })),
-    ];
-  }
-
-  const hasGymEquipment = items.some((item) =>
-    [
-      "treadmill",
-      "weight_bench",
-      "dumbbell_rack",
-      "exercise_bike",
-      "punching_bag",
-      "rowing_machine",
-      "kettlebell_rack",
-      "yoga_mat",
-    ].includes(item.type),
-  );
-  if (hasGymEquipment) return items;
-  if (hasGymRoomMigrationApplied()) return items;
-  return [
-    ...items,
-    ...DEFAULT_GYM_ITEMS.map((item) => ({ ...item, _uid: nextUid() })),
-  ];
+  // Gym room removed from standby area (Layer 2B). Return items unchanged so
+  // gym furniture is never seeded. Existing layouts that already have gym items
+  // are not affected (they keep those items until the user deletes them manually).
+  return items;
 };
 
 export const ensureOfficeQaLab = (items: FurnitureItem[]): FurnitureItem[] => {
-  const hasCurrentQaLab = hasSignature(items, QA_LAB_SIGNATURES);
-  if (hasCurrentQaLab) return items;
-
-  const hasPreviousQaLab = hasAllSignatures(items, PREVIOUS_QA_LAB_SIGNATURES);
-  if (hasPreviousQaLab) {
-    return [
-      ...replaceBySignatureSet(items, PREVIOUS_QA_LAB_SIGNATURES),
-      ...DEFAULT_QA_LAB_ITEMS.map((item) => ({ ...item, _uid: nextUid() })),
-    ];
-  }
-
-  const hasLegacyQaLab = hasAllSignatures(items, LEGACY_QA_LAB_SIGNATURES);
-  if (hasLegacyQaLab) {
-    return [
-      ...replaceBySignatureSet(items, LEGACY_QA_LAB_SIGNATURES),
-      ...DEFAULT_QA_LAB_ITEMS.map((item) => ({ ...item, _uid: nextUid() })),
-    ];
-  }
-
-  const hasQaFurniture = items.some((item) =>
-    ["qa_terminal", "device_rack", "test_bench"].includes(item.type),
-  );
-  if (hasQaFurniture) return items;
-  if (hasQaLabMigrationApplied()) return items;
-
-  return [
-    ...items,
-    ...DEFAULT_QA_LAB_ITEMS.map((item) => ({ ...item, _uid: nextUid() })),
-  ];
+  // QA lab removed from standby area (Layer 2B). Return items unchanged so
+  // QA furniture is never seeded. Existing layouts that already have QA items
+  // are not affected (they keep those items until the user deletes them manually).
+  return items;
 };

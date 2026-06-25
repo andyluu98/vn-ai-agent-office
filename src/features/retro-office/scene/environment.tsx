@@ -1,5 +1,9 @@
 "use client";
 
+// Gym and QA specialty rooms are removed from the standby area (Layer 2B).
+// Set to true to restore them (e.g. for upstream demo parity).
+const RENDER_GYM_QA_ROOMS = false;
+
 import { memo, type ReactNode } from "react";
 import * as THREE from "three";
 import {
@@ -342,7 +346,7 @@ export const FloorAndWalls = memo(function FloorAndWalls({
         </>
       ) : null}
 
-      {gymZoneFloorWidth > 0 && roomZoneFloorHeight > 0 ? (
+      {RENDER_GYM_QA_ROOMS && gymZoneFloorWidth > 0 && roomZoneFloorHeight > 0 ? (
         <>
           <mesh
             position={[gymZoneCenterX, 0.002, roomZoneCenterZ]}
@@ -373,7 +377,7 @@ export const FloorAndWalls = memo(function FloorAndWalls({
         </>
       ) : null}
 
-      {qaZoneFloorWidth > 0 && roomZoneFloorHeight > 0 ? (
+      {RENDER_GYM_QA_ROOMS && qaZoneFloorWidth > 0 && roomZoneFloorHeight > 0 ? (
         <>
           <mesh
             position={[qaZoneCenterX, 0.003, roomZoneCenterZ]}
