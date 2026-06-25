@@ -25,7 +25,7 @@ import {
   useState,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, OrbitControls } from "@react-three/drei";
+import { Billboard, Environment, OrbitControls, Text } from "@react-three/drei";
 import * as THREE from "three";
 import { SettingsPanel } from "@/features/office/components/panels/SettingsPanel";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -120,9 +120,11 @@ import {
   snap,
   toWorld,
 } from "@/features/retro-office/core/geometry";
+import type { ClusterInfo } from "@/features/retro-office/core/navigation";
 import {
   astar,
   buildNavGrid,
+  computeClusterLayout,
   getDeskLocations,
   getGymWorkoutLocations,
   getJanitorCleaningStops,
@@ -968,11 +970,16 @@ function useAgentTick(
 
     // Standby agent list: local non-janitor agents not summoned to the meeting.
     // Used by resolveStandbyTarget so all agents share a consistent department grouping.
+    // departmentName is included so computeClusterLayout can supply it to the label renderer.
     const standbyAgentList = agents.flatMap((a) => {
       if ("role" in a && a.role === "janitor") return [];
       if (isRemoteOfficeAgentId(a.id)) return [];
       if (meetingActive && meetingParticipants.has(a.id)) return [];
-      return [{ id: a.id, department: (a as OfficeAgent).department ?? null }];
+      return [{
+        id: a.id,
+        department: (a as OfficeAgent).department ?? null,
+        departmentName: (a as OfficeAgent).departmentName ?? null,
+      }];
     });
 
     agents.forEach((agent, idx) => {
@@ -2330,6 +2337,43 @@ const buildInitialFurnitureLayout = (
     ),
   );
 
+/**
+ * Renders floating department name labels above each cluster in the standby area.
+ * One label per department, centered above the cluster's first agent row.
+ */
+const DepartmentClusterLabels = memo(function DepartmentClusterLabels({
+  clusters,
+}: {
+  clusters: ClusterInfo[];
+}) {
+  return (
+    <>
+      {clusters.map((cluster) => {
+        const [wx, , wz] = toWorld(cluster.centerX, cluster.labelY);
+        return (
+          <Billboard key={cluster.department} position={[wx, 1.6, wz]}>
+            <mesh position={[0, 0, -0.001]}>
+              <planeGeometry args={[1.1, 0.22]} />
+              <meshBasicMaterial color="#0d1117" transparent opacity={0.78} />
+            </mesh>
+            <Text
+              position={[0, 0, 0.001]}
+              fontSize={0.095}
+              color="#c9b88a"
+              anchorX="center"
+              anchorY="middle"
+              maxWidth={1.0}
+              font={undefined}
+            >
+              {cluster.departmentName}
+            </Text>
+          </Billboard>
+        );
+      })}
+    </>
+  );
+});
+
 export function RetroOffice3D({
   agents,
   officeCenterSignal = 0,
@@ -2693,6 +2737,19 @@ export function RetroOffice3D({
   const standupActive =
     standupMeeting?.phase === "gathering" ||
     standupMeeting?.phase === "in_progress";
+  // Unified meeting flag and participant set — mirrors what useAgentTick computes internally.
+  const meetingActiveForRender = standupActive || orchestrationMeetingActive;
+  const meetingParticipantsForRender = useMemo(
+    () =>
+      new Set(
+        standupActive
+          ? (standupMeeting?.participantOrder ?? [])
+          : orchestrationMeetingActive
+            ? orchestrationParticipants
+            : [],
+      ),
+    [standupActive, standupMeeting?.participantOrder, orchestrationMeetingActive, orchestrationParticipants],
+  );
   const standupSpeechTextByAgentId = useMemo(() => {
     if (!standupMeeting || standupMeeting.phase !== "in_progress") return {};
     const currentCard =
@@ -2948,6 +3005,31 @@ export function RetroOffice3D({
     () => [...agents, ...janitorActors],
     [agents, janitorActors],
   );
+
+  // Cluster info for the standby area — computed from local non-summoned agents.
+  // Stable: only changes when the set of standby agents / departments changes.
+  const standbyClusterInfos = useMemo(() => {
+    const standbyAgentsForClusters = agents.flatMap((a) => {
+      if ("role" in a && a.role === "janitor") return [];
+      if (isRemoteOfficeAgentId(a.id)) return [];
+      if (meetingActiveForRender && meetingParticipantsForRender.has(a.id)) return [];
+      return [{
+        id: a.id,
+        department: (a as OfficeAgent).department ?? null,
+        departmentName: (a as OfficeAgent).departmentName ?? null,
+      }];
+    });
+    const deptOrder: Array<{ department: string; departmentName: string }> = [];
+    const deptSeen = new Set<string>();
+    for (const a of standbyAgentsForClusters) {
+      const d = a.department?.trim() || "default";
+      if (!deptSeen.has(d)) {
+        deptSeen.add(d);
+        deptOrder.push({ department: d, departmentName: a.departmentName?.trim() || d });
+      }
+    }
+    return computeClusterLayout(deptOrder, STANDBY_AREA_ZONE);
+  }, [agents, meetingActiveForRender, meetingParticipantsForRender]);
 
   const {
     renderAgentsRef,
@@ -5861,11 +5943,22 @@ export function RetroOffice3D({
                     suppressSceneSpeechBubbles &&
                     !meetingSpeechByAgentId[agent.id]
                   }
+                  showNameplate={
+                    isJanitor ||
+                    agent.id === hoveredAgentId ||
+                    agent.id === followAgentId ||
+                    meetingParticipantsForRender.has(agent.id)
+                  }
                 />
               );
             })}
 
             <ScenePingPongBall agentsRef={renderAgentsRef} />
+
+            {/* Department cluster labels — one floating label per department in the standby area. */}
+            {standbyClusterInfos.length > 0 ? (
+              <DepartmentClusterLabels clusters={standbyClusterInfos} />
+            ) : null}
 
             {/* New Idea 5: Agent color trails while walking. */}
             {trailMode ? (
