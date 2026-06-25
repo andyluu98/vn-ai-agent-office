@@ -185,6 +185,25 @@ const detectOpenClawVersion = () => {
   }
 };
 
+const detectClaudeCodeVersion = () => {
+  const bin = trim(process.env.CLAUDE_BIN) || "claude";
+  const candidates =
+    process.platform === "win32" ? [bin, `${bin}.cmd`, `${bin}.exe`] : [bin];
+  for (const candidate of candidates) {
+    try {
+      const version = execFileSync(candidate, ["--version"], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+        timeout: 5000,
+      }).trim();
+      return { ok: true, version };
+    } catch {
+      // try next candidate
+    }
+  }
+  return { ok: false, version: "" };
+};
+
 const detectWorkspaceState = () => {
   try {
     const branch = execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
@@ -577,6 +596,105 @@ async function main() {
       );
     }
   }
+
+  // ── OPC Mirror readiness (vn-one-person-company integration) ──────────────
+  // Helps a student verify their clone is wired to their existing Claude Code +
+  // vn-opc install so the 3D office can show agents working.
+  const claude = detectClaudeCodeVersion();
+  checks.push(
+    claude.ok
+      ? checkPass("OPC Mirror", "Claude Code CLI", `Phát hiện: ${claude.version}`)
+      : checkWarn("OPC Mirror", "Claude Code CLI", "Không tìm thấy lệnh `claude`.", [
+          "Cài Claude Code và đăng nhập (hoặc đặt ANTHROPIC_API_KEY). Cần cho `npm run claude-adapter`.",
+        ]),
+  );
+
+  const deptDir = trim(env.CLAUDE_ADAPTER_DEPARTMENTS_DIR);
+  if (!deptDir) {
+    checks.push(
+      checkWarn(
+        "OPC Mirror",
+        "departments dir",
+        "CLAUDE_ADAPTER_DEPARTMENTS_DIR chưa đặt → office dùng 8 agent mặc định, chưa thấy phòng ban vn-opc.",
+        ["Trong .env đặt: CLAUDE_ADAPTER_DEPARTMENTS_DIR=<đường dẫn>/vn-one-person-company/departments"],
+      ),
+    );
+  } else if (!fs.existsSync(deptDir)) {
+    checks.push(
+      checkFail("OPC Mirror", "departments dir", `Không tồn tại: ${deptDir}`, [
+        "Sửa CLAUDE_ADAPTER_DEPARTMENTS_DIR trong .env trỏ đúng thư mục departments của vn-opc trên máy này.",
+      ]),
+    );
+  } else {
+    let count = 0;
+    try {
+      count = fs
+        .readdirSync(deptDir, { withFileTypes: true })
+        .filter((e) => e.isDirectory() && /^\d{2}-/.test(e.name)).length;
+    } catch {}
+    checks.push(
+      count > 0
+        ? checkPass("OPC Mirror", "departments dir", `${deptDir} (${count} phòng ban)`)
+        : checkWarn(
+            "OPC Mirror",
+            "departments dir",
+            `${deptDir} không có thư mục phòng ban dạng NN-name.`,
+            ["Đường dẫn phải trỏ vào .../vn-one-person-company/departments."],
+          ),
+    );
+  }
+
+  const vault = trim(env.VN_OS_DEFAULT_VAULT);
+  if (!vault) {
+    checks.push(
+      checkWarn(
+        "OPC Mirror",
+        "vault",
+        "VN_OS_DEFAULT_VAULT chưa đặt → `npm run opc-mirror` không biết vault nào.",
+        [
+          "vn-opc thường đã setx VN_OS_DEFAULT_VAULT. Nếu chưa: đặt trong .env, hoặc chạy `npm run opc-mirror -- --vault \"<đường dẫn vault>\"`.",
+        ],
+      ),
+    );
+  } else if (!fs.existsSync(vault)) {
+    checks.push(
+      checkFail("OPC Mirror", "vault", `Không tồn tại: ${vault}`, [
+        "Sửa VN_OS_DEFAULT_VAULT trỏ đúng vault vn-opc.",
+      ]),
+    );
+  } else {
+    let taskCount = 0;
+    try {
+      taskCount = fs
+        .readdirSync(path.join(vault, "02-Tasks"), { withFileTypes: true })
+        .filter((e) => e.isDirectory()).length;
+    } catch {}
+    checks.push(
+      checkPass("OPC Mirror", "vault", `${vault} (${taskCount} task trong 02-Tasks)`),
+    );
+  }
+
+  const adapterPort = trim(env.CLAUDE_ADAPTER_PORT) || "7770";
+  const agentsProbe = await probeHttpJson({
+    url: `http://127.0.0.1:${adapterPort}/agents`,
+  });
+  const agentCount = Array.isArray(agentsProbe.json?.agents)
+    ? agentsProbe.json.agents.length
+    : 0;
+  checks.push(
+    agentsProbe.ok
+      ? checkPass(
+          "OPC Mirror",
+          "Claude adapter",
+          `Adapter sống ở :${adapterPort} (${agentCount} agent).`,
+        )
+      : checkWarn(
+          "OPC Mirror",
+          "Claude adapter",
+          `Adapter chưa chạy ở :${adapterPort}.`,
+          ["Chạy `npm run claude-adapter` để nạp agent phòng ban vào office."],
+        ),
+  );
 
   const summary = summarizeChecks(checks);
   const reportInput = {

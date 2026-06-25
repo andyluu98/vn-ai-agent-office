@@ -275,8 +275,26 @@ async function handleRequest({
     const concurrency = DEFAULT_MEETING_CONCURRENCY;
     const nowFnResolved = typeof nowFn === "function" ? nowFn : () => Date.now();
 
-    // Build role list from live registry
-    const roles = registry.list().map((a) => a.role);
+    // Build role list from live registry. Optional body.roles restricts the
+    // meeting to specific agents (e.g. summon only Sale + Admin + Accounting),
+    // so the orchestrator can only assign tasks to — and seat in the meeting —
+    // the chosen participants. Unknown roles are ignored; empty intersection
+    // falls back to the full roster.
+    const allRoles = registry.list().map((a) => a.role);
+    let roles = allRoles;
+    if (Array.isArray(body.roles) && body.roles.length > 0) {
+      const requested = body.roles
+        .filter((r) => typeof r === "string")
+        .map((r) => r.trim());
+      const filtered = allRoles.filter((r) => requested.includes(r));
+      if (filtered.length > 0) {
+        roles = filtered;
+      } else {
+        console.warn(
+          "[command] body.roles matched no registered agents; using full roster.",
+        );
+      }
+    }
 
     // Decompose goal → task list (one claude -p call; can throw on error/empty)
     let tasks;

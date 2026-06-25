@@ -15,7 +15,10 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 export async function GET() {
   try {
-    return json({ tasks: listSharedTasks() });
+    // Archived cards (e.g. cleaned-up finished meetings) must not surface on the
+    // board or in the 3D office, otherwise stale "in_progress" meeting cards keep
+    // showing phantom attendees in the meeting room across runs.
+    return json({ tasks: listSharedTasks().filter((task) => !task.isArchived) });
   } catch (error) {
     console.error("[task-store] GET failed:", error);
     return errorJson("Internal error reading task store.", 500);

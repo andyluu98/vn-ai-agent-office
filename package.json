@@ -16,6 +16,7 @@
     "sync:gateway-client": "node scripts/sync-openclaw-gateway-client.ts",
     "studio:setup": "node scripts/studio-setup.js",
     "office-command": "node scripts/office-command.mjs",
+    "opc-mirror": "node scripts/opc-mirror.mjs",
     "doctor": "node scripts/vn-office-doctor.mjs",
     "smoke:dev-server": "node scripts/smoke-dev-server.mjs",
     "typecheck": "tsc --noEmit",

@@ -121,11 +121,18 @@ import {
   snap,
   toWorld,
 } from "@/features/retro-office/core/geometry";
-import type { ClusterInfo } from "@/features/retro-office/core/navigation";
+import {
+  computeStandbySeating,
+  type StandbyClusterBox,
+} from "@/features/retro-office/core/standby-seating";
+import {
+  computeMeetingSeats,
+  MEETING_ROOM_RECT,
+} from "@/features/retro-office/core/meeting-seating";
+import { buildDeskComments } from "@/features/retro-office/core/meeting-commenters";
 import {
   astar,
   buildNavGrid,
-  computeClusterLayout,
   getDeskLocations,
   getGymWorkoutLocations,
   getJanitorCleaningStops,
@@ -141,7 +148,6 @@ import {
   resolveQaLabRoute,
   resolveSmsBoothRoute,
   resolveServerRoomRoute,
-  resolveStandbyTarget,
   ROAM_POINTS,
   SERVER_ROOM_TARGET,
 } from "@/features/retro-office/core/navigation";
@@ -242,6 +248,16 @@ type FeedEvent = {
   kind?: "status" | "reply";
 };
 
+// Distance (canvas px) within which a standby agent snaps to and locks on its
+// reserved seat — large enough to absorb sub-pixel drift, small enough that the
+// snap is invisible.
+const STANDBY_FREEZE_EPS = 8;
+// Static department-office mode: agents stand still in department clusters and
+// only glide into the meeting room when summoned. Disables the movement sim
+// (furniture, desks, roaming, ping-pong, A* pathing) in favour of fixed seats.
+const STATIC_DEPARTMENT_MODE = true;
+// How many chairs the meeting room always shows (agents sit on the first N).
+const MEETING_ROOM_CHAIR_COUNT = 8;
 const EMPTY_STRING_RECORD: Record<string, string> = {};
 const EMPTY_BOOLEAN_RECORD: Record<string, boolean> = {};
 const EMPTY_NUMBER_RECORD: Record<string, number> = {};
@@ -955,6 +971,42 @@ function useAgentTick(
     [meetingSeatLocations, meetingParticipantOrder],
   );
 
+  // Stable standby seating. Every department agent gets a FIXED reserved spot,
+  // computed over the FULL roster (summoned agents kept in) so summoning one
+  // agent never reshuffles the others. Order-independent + deterministic, so a
+  // parked agent's target never drifts → it stands perfectly still.
+  const standbySeating = useMemo(
+    () =>
+      computeStandbySeating(
+        agents.flatMap((a) => {
+          if ("role" in a && a.role === "janitor") return [];
+          if (isRemoteOfficeAgentId(a.id)) return [];
+          return [
+            {
+              id: a.id,
+              department: (a as OfficeAgent).department ?? null,
+              departmentName: (a as OfficeAgent).departmentName ?? null,
+            },
+          ];
+        }),
+        STANDBY_AREA_ZONE,
+      ),
+    [agents],
+  );
+  const standbySeatById = standbySeating.seats;
+  const resolveStableStandby = useCallback(
+    (agentId: string): { x: number; y: number; facing: number } => {
+      const seat = standbySeatById.get(agentId);
+      if (seat) return { x: seat.x, y: seat.y, facing: seat.facing };
+      return {
+        x: STANDBY_AREA_ZONE.minX + 40,
+        y: STANDBY_AREA_ZONE.minY + 40,
+        facing: -Math.PI / 2,
+      };
+    },
+    [standbySeatById],
+  );
+
   useEffect(() => {
     const activeIds = new Set(agents.map((a) => a.id));
     for (const id of deskByAgentRef.current.keys())
@@ -968,20 +1020,6 @@ function useAgentTick(
 
     const currentMap = new Map(renderAgentsRef.current.map((a) => [a.id, a]));
     const next: RenderAgent[] = [];
-
-    // Standby agent list: local non-janitor agents not summoned to the meeting.
-    // Used by resolveStandbyTarget so all agents share a consistent department grouping.
-    // departmentName is included so computeClusterLayout can supply it to the label renderer.
-    const standbyAgentList = agents.flatMap((a) => {
-      if ("role" in a && a.role === "janitor") return [];
-      if (isRemoteOfficeAgentId(a.id)) return [];
-      if (meetingActive && meetingParticipants.has(a.id)) return [];
-      return [{
-        id: a.id,
-        department: (a as OfficeAgent).department ?? null,
-        departmentName: (a as OfficeAgent).departmentName ?? null,
-      }];
-    });
 
     agents.forEach((agent, idx) => {
       const now = Date.now();
@@ -1397,12 +1435,7 @@ function useAgentTick(
           ns.facing = phoneBoothRoute.facing;
         } else if (!isRemoteOfficeAgentId(agent.id) && !explicitDeskHold) {
           // Standby zone routing (Lớp 2B): non-summoned local agents stand by grouped by dept.
-          const standbyTarget = resolveStandbyTarget(
-            agent.id,
-            (agent as OfficeAgent).department,
-            standbyAgentList,
-            STANDBY_AREA_ZONE,
-          );
+          const standbyTarget = resolveStableStandby(agent.id);
           ns.pingPongUntil = undefined;
           ns.pingPongTargetX = undefined;
           ns.pingPongTargetY = undefined;
@@ -1543,12 +1576,7 @@ function useAgentTick(
             // For local non-summoned agents: standby zone is the "ready" position.
             const statusChangeStandbyTarget =
               !isRemoteOfficeAgentId(agent.id) && !explicitMeetingHold && !explicitDeskHold
-                ? resolveStandbyTarget(
-                    agent.id,
-                    (agent as OfficeAgent).department,
-                    standbyAgentList,
-                    STANDBY_AREA_ZONE,
-                  )
+                ? resolveStableStandby(agent.id)
                 : null;
             const nextTarget =
               explicitMeetingHold && meetingTarget
@@ -1680,12 +1708,7 @@ function useAgentTick(
             // R3: non-summoned local agents return to their standby spot instead
             // of roaming. Remote agents still use a roam point so they look active.
             if (!isRemoteOfficeAgentId(agent.id)) {
-              const idleStandbyTarget = resolveStandbyTarget(
-                agent.id,
-                (agent as OfficeAgent).department,
-                standbyAgentList,
-                STANDBY_AREA_ZONE,
-              );
+              const idleStandbyTarget = resolveStableStandby(agent.id);
               ns.targetX = idleStandbyTarget.x;
               ns.targetY = idleStandbyTarget.y;
               ns.path = planPath(existing.x, existing.y, idleStandbyTarget.x, idleStandbyTarget.y);
@@ -1709,12 +1732,7 @@ function useAgentTick(
         // Standby target for new non-summoned local agents (2B).
         const newAgentStandbyTarget =
           !isRemoteOfficeAgentId(agent.id) && !explicitMeetingHold && !explicitDeskHold
-            ? resolveStandbyTarget(
-                agent.id,
-                (agent as OfficeAgent).department,
-                standbyAgentList,
-                STANDBY_AREA_ZONE,
-              )
+            ? resolveStableStandby(agent.id)
             : null;
         const initialTarget =
           effectiveStatus === "working"
@@ -1855,6 +1873,7 @@ function useAgentTick(
     pickSpawnPoint,
     planPath,
     resolveMeetingTarget,
+    resolveStableStandby,
     standupActive,
     standupMeeting,
   ]);
@@ -1951,6 +1970,25 @@ function useAgentTick(
           path: astar(agent.x, agent.y, agent.targetX, agent.targetY, grid),
           frame: agent.frame + 1,
         };
+      }
+      // Standby agents are PINNED to their reserved seat. Once within range they
+      // hard-freeze: no walking, no re-pathing, position locked. This is what
+      // makes the standby area stand perfectly still (the target itself never
+      // drifts because seats are stable). Agents still far from their seat (just
+      // spawned / returning from a meeting) fall through and walk there once.
+      if (agent.interactionTarget === "standby") {
+        const seatX = agent.targetX;
+        const seatY = agent.targetY;
+        if (Math.hypot(seatX - agent.x, seatY - agent.y) <= STANDBY_FREEZE_EPS) {
+          return {
+            ...agent,
+            x: seatX,
+            y: seatY,
+            path: [],
+            state: "standing" as const,
+            frame: agent.frame + 1,
+          };
+        }
       }
       const baseSpeed = agent.walkSpeed ?? WALK_SPEED;
       const speed =
@@ -2360,41 +2398,169 @@ const buildInitialFurnitureLayout = (
     ),
   );
 
+// 12-colour palette for department floor pads — muted, distinct, readable on
+// the tan office floor. Picked by cluster order (stable, dept-code sorted).
+const DEPARTMENT_PAD_COLORS = [
+  "#3b6ea5", "#a5683b", "#3ba56e", "#a53b6e",
+  "#6e3ba5", "#a5a53b", "#3ba5a5", "#a53b3b",
+  "#5a7d3b", "#3b3ba5", "#a56e3b", "#7d3b7d",
+];
+
 /**
- * Renders floating department name labels above each cluster in the standby area.
- * One label per department, centered above the cluster's first agent row.
+ * Renders each department's standby zone: a coloured floor pad sized to the
+ * cluster cell, plus a raised name board. Pads make the 12 departments visible
+ * as distinct areas; the agents stand on their department's pad.
  */
 const DepartmentClusterLabels = memo(function DepartmentClusterLabels({
   clusters,
 }: {
-  clusters: ClusterInfo[];
+  clusters: StandbyClusterBox[];
 }) {
   return (
     <>
-      {clusters.map((cluster) => {
-        const [wx, , wz] = toWorld(cluster.centerX, cluster.labelY);
-        // Department cluster label — fontSize 0.12 > agent micro-label 0.078 (hierarchy spec).
+      {clusters.map((cluster, idx) => {
+        const [x0, , z0] = toWorld(cluster.originX, cluster.originY);
+        const [x1, , z1] = toWorld(
+          cluster.originX + cluster.width,
+          cluster.originY + cluster.height,
+        );
+        const padW = Math.abs(x1 - x0);
+        const padH = Math.abs(z1 - z0);
+        const padCx = (x0 + x1) / 2;
+        const padCz = (z0 + z1) / 2;
+        const color = DEPARTMENT_PAD_COLORS[idx % DEPARTMENT_PAD_COLORS.length];
+        const [labelX, , labelZ] = toWorld(cluster.centerX, cluster.labelY);
         return (
-          <Billboard key={cluster.department} position={[wx, 1.72, wz]}>
-            <mesh position={[0, 0, -0.001]}>
-              <planeGeometry args={[1.2, 0.24]} />
-              <meshBasicMaterial color="#0d1117" transparent opacity={0.82} />
+          <group key={cluster.department}>
+            {/* Coloured floor pad for the department area. */}
+            <mesh position={[padCx, 0.02, padCz]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+              <planeGeometry args={[padW, padH]} />
+              <meshStandardMaterial color={color} transparent opacity={0.42} roughness={0.95} />
             </mesh>
-            <Text
-              position={[0, 0, 0.001]}
-              fontSize={0.12}
-              color="#c9b88a"
-              anchorX="center"
-              anchorY="middle"
-              maxWidth={1.1}
-              font={undefined}
-            >
-              {cluster.departmentName}
-            </Text>
-          </Billboard>
+            {/* Pad border outline for crisper separation. */}
+            <lineSegments position={[padCx, 0.05, padCz]} rotation={[-Math.PI / 2, 0, 0]}>
+              <edgesGeometry args={[new THREE.PlaneGeometry(padW, padH)]} />
+              <lineBasicMaterial color={color} transparent opacity={0.9} />
+            </lineSegments>
+            {/* Raised department name board. */}
+            <Billboard position={[labelX, 1.95, labelZ]}>
+              <mesh position={[0, 0, -0.001]}>
+                <planeGeometry args={[1.7, 0.32]} />
+                <meshBasicMaterial color="#0d1117" transparent opacity={0.88} />
+              </mesh>
+              <Text
+                position={[0, 0, 0.001]}
+                fontSize={0.15}
+                color="#f0e6c8"
+                anchorX="center"
+                anchorY="middle"
+                maxWidth={1.55}
+                font={undefined}
+              >
+                {cluster.departmentName}
+              </Text>
+            </Billboard>
+          </group>
         );
       })}
     </>
+  );
+});
+
+/**
+ * Visible meeting room: a coloured floor, four low walls, a central table, a ring
+ * of chairs at the meeting seats, and a "PHÒNG HỌP" sign. Walls are kept low so
+ * they never occlude the agents inside when viewed from the default camera.
+ * Chairs sit exactly at computeMeetingSeats() so summoned agents land on a chair.
+ */
+const MeetingRoomGeometry = memo(function MeetingRoomGeometry() {
+  const [x0, , z0] = toWorld(MEETING_ROOM_RECT.minX, MEETING_ROOM_RECT.minY);
+  const [x1, , z1] = toWorld(MEETING_ROOM_RECT.maxX, MEETING_ROOM_RECT.maxY);
+  const cx = (x0 + x1) / 2;
+  const cz = (z0 + z1) / 2;
+  const w = Math.abs(x1 - x0);
+  const d = Math.abs(z1 - z0);
+  const wallH = 0.55;
+  const wallT = 0.06;
+  const [tcx, , tcz] = toWorld(
+    (MEETING_ROOM_RECT.minX + MEETING_ROOM_RECT.maxX) / 2,
+    (MEETING_ROOM_RECT.minY + MEETING_ROOM_RECT.maxY) / 2,
+  );
+  const [signX, , signZ] = toWorld(
+    (MEETING_ROOM_RECT.minX + MEETING_ROOM_RECT.maxX) / 2,
+    MEETING_ROOM_RECT.minY,
+  );
+  return (
+    <group>
+      {/* Floor */}
+      <mesh position={[cx, 0.03, cz]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[w, d]} />
+        <meshStandardMaterial color="#2f6f6a" roughness={0.92} metalness={0.02} />
+      </mesh>
+      <lineSegments position={[cx, 0.06, cz]} rotation={[-Math.PI / 2, 0, 0]}>
+        <edgesGeometry args={[new THREE.PlaneGeometry(w, d)]} />
+        <lineBasicMaterial color="#9fe8df" />
+      </lineSegments>
+      {/* Four low walls */}
+      <mesh position={[cx, wallH / 2, z0]} castShadow>
+        <boxGeometry args={[w, wallH, wallT]} />
+        <meshStandardMaterial color="#39474f" />
+      </mesh>
+      <mesh position={[cx, wallH / 2, z1]} castShadow>
+        <boxGeometry args={[w, wallH, wallT]} />
+        <meshStandardMaterial color="#39474f" />
+      </mesh>
+      <mesh position={[x0, wallH / 2, cz]} castShadow>
+        <boxGeometry args={[wallT, wallH, d]} />
+        <meshStandardMaterial color="#39474f" />
+      </mesh>
+      <mesh position={[x1, wallH / 2, cz]} castShadow>
+        <boxGeometry args={[wallT, wallH, d]} />
+        <meshStandardMaterial color="#39474f" />
+      </mesh>
+      {/* Central conference table */}
+      <mesh position={[tcx, 0.34, tcz]} castShadow receiveShadow>
+        <boxGeometry args={[w * 0.46, 0.08, d * 0.34]} />
+        <meshStandardMaterial color="#6b4a2f" roughness={0.6} />
+      </mesh>
+      <mesh position={[tcx, 0.17, tcz]}>
+        <boxGeometry args={[w * 0.4, 0.34, d * 0.28]} />
+        <meshStandardMaterial color="#5a3f28" roughness={0.7} />
+      </mesh>
+      {/* Chairs at each meeting seat */}
+      {computeMeetingSeats(MEETING_ROOM_RECT, MEETING_ROOM_CHAIR_COUNT).map((seat, i) => {
+        const [sx, , sz] = toWorld(seat.x, seat.y);
+        return (
+          <group key={i} position={[sx, 0, sz]}>
+            <mesh position={[0, 0.13, 0]} castShadow>
+              <boxGeometry args={[0.17, 0.06, 0.17]} />
+              <meshStandardMaterial color="#46505a" />
+            </mesh>
+            <mesh position={[0, 0.27, -0.07]} castShadow>
+              <boxGeometry args={[0.17, 0.24, 0.04]} />
+              <meshStandardMaterial color="#46505a" />
+            </mesh>
+          </group>
+        );
+      })}
+      {/* Room sign */}
+      <Billboard position={[signX, 1.15, signZ]}>
+        <mesh position={[0, 0, -0.001]}>
+          <planeGeometry args={[1.5, 0.34]} />
+          <meshBasicMaterial color="#0d1117" transparent opacity={0.9} />
+        </mesh>
+        <Text
+          position={[0, 0, 0.001]}
+          fontSize={0.17}
+          color="#9fe8df"
+          anchorX="center"
+          anchorY="middle"
+          font={undefined}
+        >
+          PHÒNG HỌP
+        </Text>
+      </Billboard>
+    </group>
   );
 });
 
@@ -2797,6 +2963,19 @@ export function RetroOffice3D({
     standupMeeting?.phase === "gathering" ||
     standupMeeting?.phase === "in_progress" ||
     orchestrationMeetingActive;
+  // Members of a meeting department who stay at their desk but "comment from
+  // outside" — show a speech bubble at their station while their head meets.
+  const deskCommentByAgentId = useMemo(
+    () =>
+      buildDeskComments(
+        meetingParticipantsForRender,
+        agents.map((a) => ({
+          id: a.id,
+          department: (a as OfficeAgent).department ?? null,
+        })),
+      ),
+    [meetingParticipantsForRender, agents],
+  );
   // New Idea 2: camera preset target ref (shared into Canvas).
   const cameraPresetRef = useRef<{
     pos: [number, number, number];
@@ -3030,30 +3209,41 @@ export function RetroOffice3D({
     [agents, janitorActors],
   );
 
-  // Cluster info for the standby area — computed from local non-summoned agents.
-  // Stable: only changes when the set of standby agents / departments changes.
-  const standbyClusterInfos = useMemo(() => {
-    const standbyAgentsForClusters = agents.flatMap((a) => {
-      if ("role" in a && a.role === "janitor") return [];
-      if (isRemoteOfficeAgentId(a.id)) return [];
-      if (meetingActiveForRender && meetingParticipantsForRender.has(a.id)) return [];
-      return [{
-        id: a.id,
-        department: (a as OfficeAgent).department ?? null,
-        departmentName: (a as OfficeAgent).departmentName ?? null,
-      }];
-    });
-    const deptOrder: Array<{ department: string; departmentName: string }> = [];
-    const deptSeen = new Set<string>();
-    for (const a of standbyAgentsForClusters) {
-      const d = a.department?.trim() || "default";
-      if (!deptSeen.has(d)) {
-        deptSeen.add(d);
-        deptOrder.push({ department: d, departmentName: a.departmentName?.trim() || d });
-      }
-    }
-    return computeClusterLayout(deptOrder, STANDBY_AREA_ZONE);
-  }, [agents, meetingActiveForRender, meetingParticipantsForRender]);
+  // Department cluster boxes for rendering pads + labels — uses the SAME pure
+  // computeStandbySeating as agent placement (over the full roster), so pads and
+  // labels always sit exactly under the agents and never reshuffle.
+  // Stable department seating for the static scene: fixed station per agent +
+  // cluster boxes for pads/labels. Computed over the full roster (order-independent).
+  const departmentSeating = useMemo(
+    () =>
+      computeStandbySeating(
+        agents.flatMap((a) => {
+          if ("role" in a && a.role === "janitor") return [];
+          if (isRemoteOfficeAgentId(a.id)) return [];
+          return [
+            {
+              id: a.id,
+              department: (a as OfficeAgent).department ?? null,
+              departmentName: (a as OfficeAgent).departmentName ?? null,
+            },
+          ];
+        }),
+        STANDBY_AREA_ZONE,
+      ),
+    [agents],
+  );
+  const standbyClusterInfos = departmentSeating.clusters;
+  const departmentSeatById = departmentSeating.seats;
+  // Meeting participant order (same precedence as useAgentTick) → seat index.
+  const meetingParticipantOrderForRender = useMemo(
+    () =>
+      standupActive
+        ? (standupMeeting?.participantOrder ?? [])
+        : orchestrationMeetingActive
+          ? orchestrationParticipants
+          : [],
+    [standupActive, standupMeeting?.participantOrder, orchestrationMeetingActive, orchestrationParticipants],
+  );
 
   const {
     renderAgentsRef,
@@ -3081,6 +3271,53 @@ export function RetroOffice3D({
     orchestrationMeetingActive,
     orchestrationParticipants,
   );
+
+  // Static-mode movement: no A*, no roam, no collision. Each office agent eases
+  // toward its fixed department station, or — if summoned — toward its meeting
+  // seat, then holds. AgentModel's own visual lerp smooths the glide further.
+  const staticTick = useCallback(() => {
+    const arr = renderAgentsRef.current;
+    if (arr.length === 0) return;
+    const order = meetingParticipantOrderForRender;
+    const meetingSeats = computeMeetingSeats(MEETING_ROOM_RECT, order.length);
+    for (const agent of arr) {
+      if ("role" in agent && agent.role === "janitor") continue;
+      let tx: number;
+      let ty: number;
+      let tf: number;
+      const seatIdx = meetingActiveForRender ? order.indexOf(agent.id) : -1;
+      if (seatIdx >= 0) {
+        const seat = meetingSeats[seatIdx] ?? meetingSeats[0];
+        tx = seat.x;
+        ty = seat.y;
+        tf = seat.facing;
+      } else {
+        const station = departmentSeatById.get(agent.id);
+        if (!station) {
+          agent.state = "standing";
+          agent.frame += 1;
+          continue;
+        }
+        tx = station.x;
+        ty = station.y;
+        tf = station.facing;
+      }
+      agent.x += (tx - agent.x) * 0.12;
+      agent.y += (ty - agent.y) * 0.12;
+      agent.facing = tf;
+      agent.targetX = tx;
+      agent.targetY = ty;
+      agent.path = [];
+      agent.state = Math.hypot(tx - agent.x, ty - agent.y) < 4 ? "standing" : "walking";
+      agent.frame += 1;
+    }
+  }, [
+    renderAgentsRef,
+    meetingActiveForRender,
+    meetingParticipantOrderForRender,
+    departmentSeatById,
+  ]);
+
   useEffect(() => {
     const syncRenderAgentUi = () => {
       const next: Record<string, RenderAgentUiSnapshot> = {};
@@ -5441,8 +5678,9 @@ export function RetroOffice3D({
               }}
             />
 
-            {/* Game loop — no React state, pure ref mutations. */}
-            <SceneGameLoop tick={tick} />
+            {/* Game loop — no React state, pure ref mutations. In static
+                department mode the movement sim is replaced by staticTick. */}
+            <SceneGameLoop tick={STATIC_DEPARTMENT_MODE ? staticTick : tick} />
 
             {/* New Idea 2: Camera preset animator. */}
             <CameraPresetAnimator
@@ -5492,7 +5730,9 @@ export function RetroOffice3D({
               <Environment preset="city" />
             </Suspense>
 
-            {/* Furniture models — each loads its GLB asynchronously. */}
+            {/* Furniture models — hidden in static department mode (no desks/
+                furniture sim); each loads its GLB asynchronously otherwise. */}
+            {!STATIC_DEPARTMENT_MODE && (
             <Suspense fallback={null}>
               {!editMode ? (
                 <PrimitiveInstancedWallSegmentsModel items={wallItems} />
@@ -5917,8 +6157,9 @@ export function RetroOffice3D({
                 ),
               )}
             </Suspense>
+            )}
 
-            {remoteLayoutFurniture.length > 0 ? (
+            {!STATIC_DEPARTMENT_MODE && remoteLayoutFurniture.length > 0 ? (
               <ReadOnlyFurnitureClone furniture={remoteLayoutFurniture} />
             ) : null}
 
@@ -5950,7 +6191,8 @@ export function RetroOffice3D({
                     isJanitor
                       ? false
                       : suppressSceneSpeechBubbles
-                        ? Boolean(meetingSpeechByAgentId[agent.id])
+                        ? Boolean(meetingSpeechByAgentId[agent.id]) ||
+                          Boolean(deskCommentByAgentId[agent.id])
                         : speechAgentIds.has(agent.id) ||
                           Boolean(streamingTextByAgentId[agent.id])
                   }
@@ -5958,14 +6200,17 @@ export function RetroOffice3D({
                     isJanitor
                       ? null
                       : suppressSceneSpeechBubbles
-                        ? (meetingSpeechByAgentId[agent.id] ?? null)
+                        ? (meetingSpeechByAgentId[agent.id] ??
+                            deskCommentByAgentId[agent.id] ??
+                            null)
                         : (speechTextByAgentId[agent.id] ??
                             streamingTextByAgentId[agent.id] ??
                             null)
                   }
                   suppressSpeechBubble={
                     suppressSceneSpeechBubbles &&
-                    !meetingSpeechByAgentId[agent.id]
+                    !meetingSpeechByAgentId[agent.id] &&
+                    !deskCommentByAgentId[agent.id]
                   }
                   showNameplate={
                     isJanitor ||
@@ -5978,11 +6223,17 @@ export function RetroOffice3D({
               );
             })}
 
-            <ScenePingPongBall agentsRef={renderAgentsRef} />
+            {!STATIC_DEPARTMENT_MODE && (
+              <ScenePingPongBall agentsRef={renderAgentsRef} />
+            )}
 
-            {/* Department cluster labels — one floating label per department in the standby area. */}
+            {/* Department zones (coloured pads + labels) + visible meeting room.
+                Shown when a department roster is loaded. */}
             {standbyClusterInfos.length > 0 ? (
-              <DepartmentClusterLabels clusters={standbyClusterInfos} />
+              <>
+                <DepartmentClusterLabels clusters={standbyClusterInfos} />
+                <MeetingRoomGeometry />
+              </>
             ) : null}
 
             {/* New Idea 5: Agent color trails while walking. */}

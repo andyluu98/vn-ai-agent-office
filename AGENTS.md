@@ -10,6 +10,14 @@ If you use local private overlay instructions, keep them outside the repository 
 
 Do not commit personal, environment-specific, or secret instructions to this repository.
 
+## vn-opc integration
+
+This office can act as a read-only **mirror** of a vn-one-person-company (vn-opc)
+install. To integrate or extend that integration, read **`docs/tich-hop-vn-opc.md`**
+first — it documents the env vars, the vault-watch bridge, and the file map.
+Never commit absolute vault paths, company/vault names, or secrets; use env vars
+and placeholders (e.g. `<vault>`, `C:/vaults/<TenDN>`).
+
 ## Cursor Cloud specific instructions
 
 ### Service overview

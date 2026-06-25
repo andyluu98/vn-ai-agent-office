@@ -1112,18 +1112,20 @@ export const AgentModel = memo(function AgentModel({
       </mesh>
       {/* Small always-on micro-label — visible when the full rich nameplate is hidden. */}
       {!activeSpeechBubble && !showNameplate && miniLabelText ? (
-        <Billboard position={[0, 0.92, 0]}>
+        <Billboard position={[0, 1.04, 0]}>
           <mesh position={[0, 0, -0.001]}>
-            <planeGeometry args={[0.52, 0.14]} />
-            <meshBasicMaterial color="#080c14" transparent opacity={0.65} />
+            <planeGeometry args={[0.94, 0.2]} />
+            <meshBasicMaterial color="#0a0e16" transparent opacity={0.86} />
           </mesh>
           <Text
             position={[0, 0, 0.001]}
-            fontSize={0.078}
-            color="#c8b890"
+            fontSize={0.115}
+            color="#f3ecd6"
             anchorX="center"
             anchorY="middle"
-            maxWidth={0.48}
+            maxWidth={0.88}
+            outlineWidth={0.006}
+            outlineColor="#000000"
             font={undefined}
           >
             {formatMiniLabelText(miniLabelText)}
