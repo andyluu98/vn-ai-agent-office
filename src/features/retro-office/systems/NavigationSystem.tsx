@@ -36,6 +36,8 @@ export function applyAgentCollisionBumps({
   for (let i = 0; i < moved.length; i += 1) {
     const mi = moved[i];
     if ("role" in mi && mi.role === "janitor") continue;
+    // Standby agents walk to their assigned cluster slot and must not be deflected by bumps
+    if (mi.interactionTarget === "standby") continue;
     if (
       moved[i].state === "sitting" ||
       moved[i].state === "working_out" ||
@@ -62,6 +64,8 @@ export function applyAgentCollisionBumps({
           if (i === j) continue;
           const mj = moved[j];
           if ("role" in mj && mj.role === "janitor") continue;
+          // Standby agents neither push nor are pushed — they hold their cluster slot
+          if (mj.interactionTarget === "standby") continue;
           let ddx = moved[i].x - moved[j].x;
           let ddy = moved[i].y - moved[j].y;
           const d = Math.hypot(ddx, ddy);

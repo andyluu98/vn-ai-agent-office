@@ -10,7 +10,8 @@ export const OFFICE_INTERACTION_TARGETS = [
 ] as const;
 
 export type OfficeInteractionTargetId =
-  (typeof OFFICE_INTERACTION_TARGETS)[number];
+  | (typeof OFFICE_INTERACTION_TARGETS)[number]
+  | "standby";
 
 export const OFFICE_SKILL_TRIGGER_MOVEMENT_TARGETS = [
   "desk",

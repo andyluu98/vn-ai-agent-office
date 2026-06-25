@@ -1413,7 +1413,8 @@ function useAgentTick(
           ns.walkSpeed =
             existing.pingPongPreviousWalkSpeed ?? existing.walkSpeed;
           ns.pingPongPreviousWalkSpeed = undefined;
-          ns.interactionTarget = undefined;
+          // Mark as standby so NavigationSystem exempts these agents from collision bumps
+          ns.interactionTarget = "standby";
           ns.phoneBoothStage = undefined;
           ns.serverRoomStage = undefined;
           ns.gymStage = undefined;
