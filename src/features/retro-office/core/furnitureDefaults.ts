@@ -727,13 +727,42 @@ export const ensureOfficeGymRoom = (
 ): FurnitureItem[] => {
   // Gym room removed from standby area (Layer 2B). Return items unchanged so
   // gym furniture is never seeded. Existing layouts that already have gym items
-  // are not affected (they keep those items until the user deletes them manually).
+  // are cleaned by stripGymQaFurniture on load.
   return items;
 };
 
 export const ensureOfficeQaLab = (items: FurnitureItem[]): FurnitureItem[] => {
   // QA lab removed from standby area (Layer 2B). Return items unchanged so
   // QA furniture is never seeded. Existing layouts that already have QA items
-  // are not affected (they keep those items until the user deletes them manually).
+  // are cleaned by stripGymQaFurniture on load.
   return items;
 };
+
+/**
+ * Idempotent one-time migration: remove gym and QA lab furniture items that
+ * were seeded by old versions of ensureOfficeGymRoom / ensureOfficeQaLab.
+ *
+ * Safe to call multiple times — items that don't match are passed through
+ * untouched, so running this on an already-clean layout is a no-op.
+ *
+ * Exact type strings correspond to those seeded in LEGACY_GYM_ROOM_ITEMS,
+ * DEFAULT_GYM_ITEMS, LEGACY_QA_LAB_ITEMS, and DEFAULT_QA_LAB_ITEMS.
+ */
+export const GYM_QA_FURNITURE_TYPES: ReadonlySet<string> = new Set([
+  // Gym equipment
+  "treadmill",
+  "weight_bench",
+  "dumbbell_rack",
+  "exercise_bike",
+  "punching_bag",
+  "rowing_machine",
+  "kettlebell_rack",
+  "yoga_mat",
+  // QA lab equipment
+  "qa_terminal",
+  "device_rack",
+  "test_bench",
+]);
+
+export const stripGymQaFurniture = (items: FurnitureItem[]): FurnitureItem[] =>
+  items.filter((item) => !GYM_QA_FURNITURE_TYPES.has(item.type));
