@@ -2,6 +2,32 @@
 // HTTP entry point for the Claude Code adapter.
 // Creates one shared AgentRegistry seeded from the static roster, then passes
 // it to the pure handleRequest handler on every request.
+
+// Minimal .env loader (no dependency). Must run BEFORE requiring ./roster, which
+// reads CLAUDE_ADAPTER_DEPARTMENTS_DIR at module-load time. Only sets vars not
+// already present in the real environment.
+(function loadDotEnv() {
+  try {
+    const fsEnv = require("node:fs");
+    const pathEnv = require("node:path");
+    const raw = fsEnv.readFileSync(pathEnv.join(process.cwd(), ".env"), "utf8");
+    for (const line of raw.split(/\r?\n/)) {
+      const t = line.trim();
+      if (!t || t.startsWith("#")) continue;
+      const eq = t.indexOf("=");
+      if (eq === -1) continue;
+      const key = t.slice(0, eq).trim();
+      let val = t.slice(eq + 1).trim();
+      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.slice(1, -1);
+      }
+      if (key && process.env[key] === undefined) process.env[key] = val;
+    }
+  } catch {
+    // no .env file → use real environment only
+  }
+})();
+
 const http = require("node:http");
 const { handleRequest } = require("./claude-code-adapter/handler");
 const { runClaudeCli, checkClaudeAvailable } = require("./claude-code-adapter/claude-runner");

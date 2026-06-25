@@ -58,14 +58,20 @@ const RUNTIME_FILE =
 const SEED_FILE = path.join(process.cwd(), "claude-agents.json");
 
 function normalizeAgents(list) {
-  return list.map((a, i) => ({
-    id: a.id || `agent-${i + 1}`,
-    name: a.name || a.role || `Agent ${i + 1}`,
-    role: a.role || a.name || `Agent${i + 1}`,
-    emoji: a.emoji || "🤖",
-    seed: true,
-    system: a.system || `You are the ${a.name || a.role} agent in a virtual office.`,
-  }));
+  return list.map((a, i) => {
+    const agent = {
+      id: a.id || `agent-${i + 1}`,
+      name: a.name || a.role || `Agent ${i + 1}`,
+      role: a.role || a.name || `Agent${i + 1}`,
+      emoji: a.emoji || "🤖",
+      seed: true,
+      system: a.system || `You are the ${a.name || a.role} agent in a virtual office.`,
+    };
+    // Preserve department grouping metadata when present (department roster).
+    if (a.department) agent.department = a.department;
+    if (a.departmentName) agent.departmentName = a.departmentName;
+    return agent;
+  });
 }
 
 // Read an agents array from a roster file. Returns the array (possibly empty)
