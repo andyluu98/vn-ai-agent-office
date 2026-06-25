@@ -15,6 +15,7 @@ import type {
 import { AgentModelProps } from "@/features/retro-office/objects/types";
 
 const MAX_NAMEPLATE_TEXT_LENGTH = 10;
+const MAX_MINI_LABEL_TEXT_LENGTH = 16;
 const MAX_SPEECH_BUBBLE_TEXT_LENGTH = 180;
 const MAX_SPEECH_BUBBLE_LINES = 4;
 
@@ -24,6 +25,14 @@ const formatAgentNameplateText = (value: string): string => {
   if (normalized.length <= MAX_NAMEPLATE_TEXT_LENGTH) return normalized;
   const [firstName] = normalized.split(" ");
   return firstName || normalized;
+};
+
+/** Truncate to MAX_MINI_LABEL_TEXT_LENGTH chars for the always-on micro-label. */
+const formatMiniLabelText = (value: string): string => {
+  const normalized = value.replace(/\s+/g, " ").trim();
+  if (!normalized) return "";
+  if (normalized.length <= MAX_MINI_LABEL_TEXT_LENGTH) return normalized;
+  return `${normalized.slice(0, MAX_MINI_LABEL_TEXT_LENGTH - 1)}…`;
 };
 
 const flattenSpeechBubbleMarkdown = (value: string) =>
@@ -64,6 +73,7 @@ export const AgentModel = memo(function AgentModel({
   speechText = null,
   suppressSpeechBubble = false,
   showNameplate = true,
+  miniLabelText = null,
 }: AgentModelProps) {
   const groupRef = useRef<THREE.Group>(null);
   const leftArmRef = useRef<THREE.Group>(null);
@@ -1100,6 +1110,26 @@ export const AgentModel = memo(function AgentModel({
           depthWrite={false}
         />
       </mesh>
+      {/* Small always-on micro-label — visible when the full rich nameplate is hidden. */}
+      {!activeSpeechBubble && !showNameplate && miniLabelText ? (
+        <Billboard position={[0, 0.92, 0]}>
+          <mesh position={[0, 0, -0.001]}>
+            <planeGeometry args={[0.52, 0.14]} />
+            <meshBasicMaterial color="#080c14" transparent opacity={0.65} />
+          </mesh>
+          <Text
+            position={[0, 0, 0.001]}
+            fontSize={0.078}
+            color="#c8b890"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={0.48}
+            font={undefined}
+          >
+            {formatMiniLabelText(miniLabelText)}
+          </Text>
+        </Billboard>
+      ) : null}
       {!activeSpeechBubble && nameplateText && showNameplate ? (
         <Billboard position={[0, 1.05, 0]}>
           <mesh position={[0, 0, -0.001]}>

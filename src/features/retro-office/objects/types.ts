@@ -45,4 +45,6 @@ export type AgentModelProps = {
   suppressSpeechBubble?: boolean;
   /** When false, suppress the floating nameplate (used for standby agents to reduce clutter). Defaults to true. */
   showNameplate?: boolean;
+  /** Short display name for the always-on micro-label above every agent. Truncated to 16 chars. */
+  miniLabelText?: string | null;
 };
